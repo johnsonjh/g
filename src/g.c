@@ -1738,7 +1738,7 @@ wait_user( void )
 private void *
 getvec( const size_t len )
     {
-    void * const p = malloc( len );
+    void * const p = malloc( len+1 );
     if( p == NULL )
         {
         term();
