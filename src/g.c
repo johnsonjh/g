@@ -10315,7 +10315,7 @@ hist_recall( char * const comm )
 private void
 do_ins( char csc str, const int len )
     {
-    if( e_col + len > E_BUFF_LEN )
+    if( (unsigned long)e_col + len > E_BUFF_LEN )
         g_err( LINE_TOO_LONG, NULL );
     movelr( e_buff + e_col, str, len );   /* append string */
     e_col += len;
@@ -10623,7 +10623,7 @@ PT( VERB csc opts )
                 break;
 
             case OR_END:
-                if( e_col >= val )
+                if( (unsigned long)e_col >= val )
                     break;
                 val = i_col + (val - e_col) + 1;
             case R_END:
@@ -10895,7 +10895,7 @@ Join( VERB csc opts )
         const int len = ep - sp;
         *ec++ = SPACE;
         e_col = (ec - eb) + len;
-        if( e_col > E_BUFF_LEN )
+        if( (unsigned long)e_col > E_BUFF_LEN )
             g_err( LINE_TOO_LONG, NULL );
         movelr( ec, sp, len );
         }
@@ -11993,7 +11993,7 @@ main( int i, char csc * argv )
 
 #if UNIX
 /*ARGSUSED*/ /* standard version is too large and slow */
-char *ttyname( int fd ) { return (char*)tty_file; }
+/* char *ttyname( int fd ) { return (char*)tty_file; } */
 #endif
 
 /*--  Processed by BTIDY V6.2 on 14/Jun/82. --*/
