@@ -279,7 +279,7 @@
 #endif
 
         /* length of temp strings */
-#define STR_LEN   256
+#define STR_LEN   2048
 typedef char string[STR_LEN];
 
         /* history, del/ins record stacks */
@@ -295,7 +295,7 @@ typedef char FNAME[STR_LEN];
 #endif
 
         /* Length of system provided date string */
-#define DATE_LEN  24
+#define DATE_LEN  33
 
 #if ASM86
         /* smaller or faster versions of standard functions */
