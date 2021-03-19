@@ -1,42 +1,42 @@
-		       T H E   G   E D I T O R
+                       T H E   G   E D I T O R
 
-			  Reference Manual
+                          Reference Manual
 
-		       Jeremy Hall - 95/10/20
+                       Jeremy Hall - 95/10/20
 
 Contents
 ~~~~~~~~
       0.  Introduction
       1.  Getting Started
-	  1.1   Installation (DOS)
-	  1.2   Installation (UNIX)
+          1.1   Installation (DOS)
+          1.2   Installation (UNIX)
       2.  Glossary
       3.  The G Command Line
-	  3.1   More on the Initial Command
+          3.1   More on the Initial Command
       4.  The Screen Editor
-	  4.1   Screen Format
-	  4.2   Screen Commands
-	  4.3   Quick Reference
-	  4.4   Home Commands
+          4.1   Screen Format
+          4.2   Screen Commands
+          4.3   Quick Reference
+          4.4   Home Commands
       5.  The Context Editor
-	  5.1   Command Endpoints
-	  5.2   Control of Repetition
-	  5.3   Conditional Execution
-	  5.4   The G Verbs
-	  5.5   Supplementary Commands
-	  5.6   Arithmetic
-	  5.7   Regular Expressions
-	  5.8   Shorthand Forms
-	  5.9   Environment
+          5.1   Command Endpoints
+          5.2   Control of Repetition
+          5.3   Conditional Execution
+          5.4   The G Verbs
+          5.5   Supplementary Commands
+          5.6   Arithmetic
+          5.7   Regular Expressions
+          5.8   Shorthand Forms
+          5.9   Environment
       6.  The Line Editor
-	  6.1   The Prompt
+          6.1   The Prompt
       7.  Built in Macros
       8.  Binary Data
-	  8.1   Display
-	  8.2   Insertion
-	  8.3   Searching
-	  8.4   Transformations
-	  8.5   Parity
+          8.1   Display
+          8.2   Insertion
+          8.3   Searching
+          8.4   Transformations
+          8.5   Parity
       9.  Limits
 
 
@@ -105,7 +105,7 @@ ARISING OUT OF THE USE OF, OR INABILITY TO USE, G.
 ~~~~~~~~~~~~~~~~~~~
 Having just unzipped G, you can try it right away by typing:-
 
-	g g.txt
+        g g.txt
 
 To get help, press F1 (then press "return" to get each page),  to get
 out  of  G,   press  ESC  or F7.  You can move around and make simple
@@ -169,20 +169,20 @@ To  make it available to all users,  put it in the same place as "vi"
 or "ed".  Try:  "ls -l /usr/bin/vi",  or "ls -l /bin/vi" and give  it
 similar ownership and permissions, e.g.
 
-	cp g /bin/g
-	chown bin /bin/g
-	chgrp bin /bin/g
-	chmod 555 /bin/g
+        cp g /bin/g
+        chown bin /bin/g
+        chgrp bin /bin/g
+        chmod 555 /bin/g
 
 On systems with a UNIX base earlier than SVR4 you could chmod 1555 to
 set the "sticky" bit for fast startup.
 
 To install it just for your own use :-
 
-	cd
-	mkdir bin      /* if its not there */
-	cp g bin/g
-	echo $PATH     /* add $HOME/bin if its not there */
+        cd
+        mkdir bin      /* if its not there */
+        cp g bin/g
+        echo $PATH     /* add $HOME/bin if its not there */
 
 Log out and back in again to ensure its all set up.
 
@@ -205,8 +205,8 @@ default in future.
 2.  Glossary
 ~~~~~~~~~~~~
     Shell               Command line interpreter.  On  UNIX  this  is
-			usually  'ksh',  'sh' or 'csh'.  On DOS it is
-			'command.com'.
+                        usually  'ksh',  'sh' or 'csh'.  On DOS it is
+                        'command.com'.
 
     Record              Another word for a file "line".
 
@@ -217,30 +217,30 @@ default in future.
     Transcribe          Copy text from the old to the new file.
 
     Endpoint            Command qualifier specifying when or where a
-			command should finish.
+                        command should finish.
 
     Regular Expression  An elaborate form of "wild card" notation for
-			search strings and replacements.
+                        search strings and replacements.
 
     Primary Files       The files that G transcribes to and from.
 
     Transient File      An  in-core temporary file used for cut/paste
-			operations (a clipboard).
+                        operations (a clipboard).
 
     Edit Files          Files  (often  called  Batch  or  Use  files)
-			containing context  editor  commands.   These
-			files have names suffixed with ".g".
+                        containing context  editor  commands.   These
+                        files have names suffixed with ".g".
 
     ASCII               American   Standard   Code   for  Information
-			Interchange.  Standard character set  that  G
-			supports.
+                        Interchange.  Standard character set  that  G
+                        supports.
 
     Verb                Context   editor   command  starting  with  a
-			letter.
+                        letter.
 
     Hexadecimal         Radix  16  notation  for  explicitly denoting
-			character codes.  The numbers 10  to  15  are
-			given as A - F.
+                        character codes.  The numbers 10  to  15  are
+                        given as A - F.
 
     EOF                 End Of File. Usually refers to the old file.
 
@@ -252,22 +252,22 @@ default in future.
 The  shell command line used to invoke G permits use as a filter,  or
 editing of a specific file.
 
-	G  filename
-		edit the file specified
+        G  filename
+                edit the file specified
 
-	G  filename  anotherfilename
-		edit from filename to anotherfilename
+        G  filename  anotherfilename
+                edit from filename to anotherfilename
 
-	G  filename  -
-		edit filename to standard output
+        G  filename  -
+                edit filename to standard output
 
-	G  -  filename
-		edit standard input to filename
+        G  -  filename
+                edit standard input to filename
 
-	G
+        G
 
-	G  -  -
-		edit the standard input to the standard output
+        G  -  -
+                edit the standard input to the standard output
 
 If the standard input is not used for data it may instead be used for
 edit commands.
@@ -277,24 +277,24 @@ The normal action is to go straight into full screen mode.
 G  accepts  five  command line "option" flags introduced by a hyphen.
 These are :-
 
-	-r      read-only mode. G will not allow the Input file to be
-		overwritten.
+        -r      read-only mode. G will not allow the Input file to be
+                overwritten.
 
-	-b      binary mode. G will not alter tabs or trailing spaces
-		in  a  file.   Tabs  appear on the screen as ordinary
-		control characters (Control-I).  See  section  8  for
-		more details.
+        -b      binary mode. G will not alter tabs or trailing spaces
+                in  a  file.   Tabs  appear on the screen as ordinary
+                control characters (Control-I).  See  section  8  for
+                more details.
 
-	-c "initial command"
-		An  initial G context editor command.  If the command
-		doesn't start with one of the option letters (R B C S
-		or V), the option letter "C" may be omitted.  See the
-		next section for some examples.
+        -c "initial command"
+                An  initial G context editor command.  If the command
+                doesn't start with one of the option letters (R B C S
+                or V), the option letter "C" may be omitted.  See the
+                next section for some examples.
 
-	-s number
-		Screen soft tab width (defaults to every four).
+        -s number
+                Screen soft tab width (defaults to every four).
 
-	-v      Prints G version/author information and quits.
+        -v      Prints G version/author information and quits.
 
 Should  you wish to edit a file whose name starts with a '-',  prefix
 it with "./".
@@ -307,7 +307,7 @@ the ~ is just before the pathname separators '/' or '\'.
 DOS pathnames may be separated with the forward '/' as  well  as  the
 traditional '\'.  For example:
 
-	g /windows/system.ini    and    g \windows\system.ini
+        g /windows/system.ini    and    g \windows\system.ini
 
 are both valid DOS commands.
 
@@ -320,17 +320,17 @@ Here are some example command lines:-
 
 To simply edit a C program in the normal way:
 
-	g demo.c
+        g demo.c
 
 is all that is needed. To create a different version without touching
 the original (similar to "copy demo.c newdemo.c; g newdemo.c"):
 
-	g demo.c newdemo.c
+        g demo.c newdemo.c
 
 A very common requirement is to view program output as an alternative
 to "more":
 
-	lint *.c | g
+        lint *.c | g
 
 Corrections may then be made to the source files without leaving  the
 lint  listing  by  calling  G  from within itself.  Using G as a file
@@ -343,24 +343,24 @@ the command line that's of interest here.
 Here is a complete command to edit  a  named  file  by  changing  all
 occurrences of fred to bill by calling the built in macro "c":
 
-	g somefile -c ".c/fred/bill/,e"
+        g somefile -c ".c/fred/bill/,e"
 
 using G as a filter:
 
-	dir | g "-p7,t/ /,pe,e" >filelist
+        dir | g "-p7,t/ /,pe,e" >filelist
 
 Here the header (also the initial . and .. entries)  and trailer of a
 DOS  directory  listing  are silently removed before the file list is
 written out.  To count lines that are exactly two letters long:
 
-	g fred - "-(pr/^..$/,t)e,e"  |  wc -l
+        g fred - "-(pr/^..$/,t)e,e"  |  wc -l
 
 and so on.
 
 In most cases, the G command is quoted to avoid unwanted interference
 from the shell.
 
-	g !cal this_month
+        g !cal this_month
 
 puts a calendar in the file this_month allowing you to edit it  first
 (using the UNIX command "cal").
@@ -369,7 +369,7 @@ Very complicated commands will not usually work first time.  They may
 also be needed more than once.  In such cases,  the command  sequence
 may be placed in a file (here it is "page.g"):
 
-	cat fred.doc  |  g -upage.g  |  lp
+        cat fred.doc  |  g -upage.g  |  lp
 
 might invoke your own paginator in page.g. See the section describing
 the U verb for more details.  This mechanism may be used  to  include
@@ -379,18 +379,18 @@ definitions.  These may be defaulted with: alias g='g -umacros.g,:'.
 If a named file is being edited the standard input may  be  used  for
 commands:
 
-	g fred.doc - <page.g  |  lp
+        g fred.doc - <page.g  |  lp
 
 This has the same effect as the command above started with cat.  This
 is particularly useful in UNIX shell scripts where the edit  commands
 may be given as "here" documents.
 
-	g $1 <<end_g_com
-	t20
-	(p./ / p.s t)e #
-	...
-	e
-	end_g_com
+        g $1 <<end_g_com
+        t20
+        (p./ / p.s t)e #
+        ...
+        e
+        end_g_com
 
 
 3.1  More on the Initial Command
@@ -406,12 +406,12 @@ further  edit  commands.   Unless  an  error occurs,  no messages are
 produced when G is used in this way. This is very useful for altering
 files from within shell scripts.
 
-	g fred -t20,pe,e
+        g fred -t20,pe,e
 
 silently truncates the file fred.  Conversely,  to delete a four line
 header from "outfile":
 
-	g outfile -p4,e
+        g outfile -p4,e
 
 There  several  more  examples  of this sort of usage in the previous
 section.
@@ -423,20 +423,20 @@ The ':' command is used to switch between screen mode and line  mode
 working, To execute some commands prior to a normal full screen edit,
 try:
 
-	g  fred  -t500,:
+        g  fred  -t500,:
 
 which starts the editor at line 500.
 
 To  simply force line-mode working,  give a null initial command such
 as:
 
-	g  fred  -,     (',' is treated as a space and ignored)
+        g  fred  -,     (',' is treated as a space and ignored)
 
 One use of this is to set up G as the ksh command line editor instead
 of the vi-like system that  is  the  default.   Place  the  following
 command in your ".profile" in the home directory:
 
-	export FCEDIT='g -,'
+        export FCEDIT='g -,'
 
 You  may  now type just 'fc' to edit and re-execute previous commands
 using G's line editor. All the features of G are available, so if its
@@ -467,7 +467,7 @@ information about your position and files.  The information comprises
 three sections: cursor position,  file names,  and line/file lengths.
 The cursor position field looks like:
 
-	LINE nn.mm (hh)   for example:   LINE 212.33 (20)
+        LINE nn.mm (hh)   for example:   LINE 212.33 (20)
 
 The  first  figure is the line number in the file,  the second is the
 column number within the line.  Note that within G, lines and columns
@@ -481,7 +481,7 @@ line context editor commands will act upon).
 
 The file names are presented in the centre as:
 
-	old_file  >GI>  new_file
+        old_file  >GI>  new_file
 
 Old_file and new_file are the current input and output files  of  the
 editor,   the  '>'s show the direction of the edit.  If only a single
@@ -491,7 +491,7 @@ indicates  "insert"  or  "expand"  mode,   and  changes to "O" during
 
 The file and line lengths are given on the right hand side:
 
-	EOR nn EOF nnn   for example:   EOR 12 EOF 330
+        EOR nn EOF nnn   for example:   EOR 12 EOF 330
 
 This  indicates  that "End Of Record" is at column 12 for the current
 line (the line the cursor is positioned on) and "End Of File"  is  at
@@ -566,96 +566,96 @@ section and may also be obtained from  within  the  editor  with  the
 4.2.1  Single Key Commands
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
     1.  ^E, ^X, ^S, ^D and the arrow keys
-	are the cursor movement keys - up,   down,   left  and  right
-	respectively.
+        are the cursor movement keys - up,   down,   left  and  right
+        respectively.
 
     2.  ^A,  ^F, ^T and ^B
-	provide  word  move  backwards/forwards   and   word   delete
-	left/right  operations  respectively.  These keys move to the
-	start of the next word or  punctuation  either  backwards  or
-	forwards.  Words comprise the letters: A-Z, a-z, 0-9, and _ .
-	Lines will be skipped and  the  screen  shifted  sideways  as
-	needed.   Word  delete  is  a  particularly useful key.  When
-	pressed between two words it deletes all whitespace and blank
-	lines  before  the  next  word but leaves the word untouched.
-	When pressed at the start of a word it deletes the  word  and
-	all  spaces up to the next word.  Punctuation is deleted as a
-	word would be.  WordStar does not  recognise  punctuation  in
-	word  operations,   G treats punctuation as a special kind of
-	word (as does vi). ^B acts similarly to ^T but in the reverse
-	(left) direction.
+        provide  word  move  backwards/forwards   and   word   delete
+        left/right  operations  respectively.  These keys move to the
+        start of the next word or  punctuation  either  backwards  or
+        forwards.  Words comprise the letters: A-Z, a-z, 0-9, and _ .
+        Lines will be skipped and  the  screen  shifted  sideways  as
+        needed.   Word  delete  is  a  particularly useful key.  When
+        pressed between two words it deletes all whitespace and blank
+        lines  before  the  next  word but leaves the word untouched.
+        When pressed at the start of a word it deletes the  word  and
+        all  spaces up to the next word.  Punctuation is deleted as a
+        word would be.  WordStar does not  recognise  punctuation  in
+        word  operations,   G treats punctuation as a special kind of
+        word (as does vi). ^B acts similarly to ^T but in the reverse
+        (left) direction.
 
     3.  ^W and ^Z
-	scroll the window up and down one line.  The cursor  position
-	is not changed.
+        scroll the window up and down one line.  The cursor  position
+        is not changed.
 
     4.  ^R and ^C, or Prev/Next or Page Up/Page Down
-	move  the  file  window  up and down by one screen full.  The
-	cursor position is not changed.
+        move  the  file  window  up and down by one screen full.  The
+        cursor position is not changed.
 
     5.  ^G, or DEL
-	The ^G key deletes the character under the cursor. If pressed
-	beyond the end of a line the newline is deleted and the  next
-	line  joined  on  to  the  current  line  at  that point.  In
-	overwrite mode these keys simply replace the character with a
-	space.
+        The ^G key deletes the character under the cursor. If pressed
+        beyond the end of a line the newline is deleted and the  next
+        line  joined  on  to  the  current  line  at  that point.  In
+        overwrite mode these keys simply replace the character with a
+        space.
 
     6.  ^H, "Rub Out" or the big left arrow above <return>.
-	move  the  cursor left and delete the character under it.  If
-	pressed at the start of a line,  the  newline  is  deleted  -
-	appending it to the line above.  In overwrite mode these keys
-	simply replace the character with a space.
+        move  the  cursor left and delete the character under it.  If
+        pressed at the start of a line,  the  newline  is  deleted  -
+        appending it to the line above.  In overwrite mode these keys
+        simply replace the character with a space.
 
     7.  ^N, ^M or <return>
-	insert new lines into the text.  ^N opens a blank line  under
-	the cursor leaving the cursor position unchanged.  The return
-	key (which is the same as ^M) splits the line at  the  cursor
-	position  and leaves the cursor on the next line in the first
-	column.
+        insert new lines into the text.  ^N opens a blank line  under
+        the cursor leaving the cursor position unchanged.  The return
+        key (which is the same as ^M) splits the line at  the  cursor
+        position  and leaves the cursor on the next line in the first
+        column.
 
     8.  ^Y, ^U and ^J
-	provide line deletion and restoration.  ^Y deletes  the  line
-	under  the  cursor.  The line is saved on a stack in case the
-	key was pressed by mistake. The ^U key restores the last line
-	deleted  by  "popping"  it  off  the  top  of  the  stack and
-	inserting it under the cursor.  A convenient way  to  move  a
-	line  (or  several  lines)  is to delete it (them),  move the
-	cursor to the new position and restore it (them) with the  ^U
-	key.   The  ^J key simply saves the current line on the stack
-	without deleting it.  This can be used in a  similar  way  to
-	copy one or more lines.  ^J^U is a quick way to duplicate the
-	line under the cursor.
+        provide line deletion and restoration.  ^Y deletes  the  line
+        under  the  cursor.  The line is saved on a stack in case the
+        key was pressed by mistake. The ^U key restores the last line
+        deleted  by  "popping"  it  off  the  top  of  the  stack and
+        inserting it under the cursor.  A convenient way  to  move  a
+        line  (or  several  lines)  is to delete it (them),  move the
+        cursor to the new position and restore it (them) with the  ^U
+        key.   The  ^J key simply saves the current line on the stack
+        without deleting it.  This can be used in a  similar  way  to
+        copy one or more lines.  ^J^U is a quick way to duplicate the
+        line under the cursor.
 
     9.  ^I, Tab and Back-Tab
-	move the cursor to the next or previous tab position.   These
-	are "soft" tabs.  No 'tab' character is inserted in the file.
-	They are only used for alignment or rapid  left-right  cursor
-	movement.  A real tab may be inserted with ^PI if needed. The
-	tab width is determined by the command line "-s" option,  and
-	defaults to every fourth column.
+        move the cursor to the next or previous tab position.   These
+        are "soft" tabs.  No 'tab' character is inserted in the file.
+        They are only used for alignment or rapid  left-right  cursor
+        movement.  A real tab may be inserted with ^PI if needed. The
+        tab width is determined by the command line "-s" option,  and
+        defaults to every fourth column.
 
    10.  ^Pc
-	enters  a  control  character  into  the file.  Here 'c' is a
-	letter (upper or lower case or  a  control  character).   The
-	corresponding control character is inserted. For example, ^pg
-	would insert the bell character (control-G).
+        enters  a  control  character  into  the file.  Here 'c' is a
+        letter (upper or lower case or  a  control  character).   The
+        corresponding control character is inserted. For example, ^pg
+        would insert the bell character (control-G).
 
    11.  ^V or Insert
-	toggle  expand/overwrite  mode.   The  editor is initially in
-	expand mode.
+        toggle  expand/overwrite  mode.   The  editor is initially in
+        expand mode.
 
    12.  ^L
-	moves on in the file to the next matching line.  ^L  is  used
-	after  a  find (^QF),  a "/string" home command.
+        moves on in the file to the next matching line.  ^L  is  used
+        after  a  find (^QF),  a "/string" home command.
 
    13.  Home
-	toggles the cursor between the home area and the  file  area.
-	The original position is remembered when this key is pressed.
-	Same as ^QH. See also the similar ^KH.
+        toggles the cursor between the home area and the  file  area.
+        The original position is remembered when this key is pressed.
+        Same as ^QH. See also the similar ^KH.
 
    14.  ^left arrow and ^right arrow
-	shift the window left and right in the file.  These keys  are
-	not available on all terminals.
+        shift the window left and right in the file.  These keys  are
+        not available on all terminals.
 
 
 4.2.2  Function Keys
@@ -664,31 +664,31 @@ These all duplicate common keys which should be  referred  to  for  a
 full description.  They may not be available on all systems.
 
     1.  F1
-	displays the screen editor help text.
+        displays the screen editor help text.
 
     2.  F2, F3 and F4
-	mark the beginning (F2) and end (F3) of a word,  phrase,   or
-	block.  Retrieve with F4.  Same as ^KB,  ^KK,  and ^KC.  If a
-	block (e.g.  more than one line) is marked, the text is saved
-	in the transient file.
+        mark the beginning (F2) and end (F3) of a word,  phrase,   or
+        block.  Retrieve with F4.  Same as ^KB,  ^KK,  and ^KC.  If a
+        block (e.g.  more than one line) is marked, the text is saved
+        in the transient file.
 
     3.  F5 and F6
-	read and write blocks of text to and from a file.  Please see
-	descriptions of the equivalent ^KR and ^KW below for details.
+        read and write blocks of text to and from a file.  Please see
+        descriptions of the equivalent ^KR and ^KW below for details.
 
     4.  F7 and F8
-	abandon the edit or save the file and exit.  Same as ^KQ  and
-	^KX.   These keys prompt if the file has changed.  On DOS the
-	ESC key will exit without saving the file.
+        abandon the edit or save the file and exit.  Same as ^KQ  and
+        ^KX.   These keys prompt if the file has changed.  On DOS the
+        ESC key will exit without saving the file.
 
     5.  F9
-	retrieve last home command.  Same as ^QK. Repeatedly pressing
-	F9 scrolls back through the command history.
+        retrieve last home command.  Same as ^QK. Repeatedly pressing
+        F9 scrolls back through the command history.
 
     6.  F10
-	save the file without leaving the editor.  Same as ^KS.  This
-	is a useful checkpoint save.  The user is prompted whever the
-	the file has been changed or not.
+        save the file without leaving the editor.  Same as ^KS.  This
+        is a useful checkpoint save.  The user is prompted whever the
+        the file has been changed or not.
 
 
 4.2.3  Quick Key Commands
@@ -698,240 +698,240 @@ intended as short cut's or larger scale operations  than  the  single
 keys.
 
     1.  ^QS and ^QD (or End)
-	move the cursor to the start or end of the current line.
+        move the cursor to the start or end of the current line.
 
     2.  ^QE and ^QX
-	move the cursor to the top or bottom of the screen.
+        move the cursor to the top or bottom of the screen.
 
     3.  ^QR and ^QC
-	move the cursor to the start or end of the entire file.
+        move the cursor to the start or end of the entire file.
 
     4.  ^Q DEL and ^QY
-	erase from the cursor position to the start  or  end  of  the
-	line.   In  both  cases if the entire line is deleted,  it is
-	saved on the stack.
+        erase from the cursor position to the start  or  end  of  the
+        line.   In  both  cases if the entire line is deleted,  it is
+        saved on the stack.
 
     5.  ^QB
-	justifies  the  paragraph from the current line downwards and
-	leaves the cursor at the start of the first  line  after  the
-	paragraph.   Since  the paragraph formatter skips blank lines
-	and lines starting with a dot  found  before  the  paragraph,
-	repeatedly  typing this command enables many paragraphs to be
-	formatted in quick succession.
+        justifies  the  paragraph from the current line downwards and
+        leaves the cursor at the start of the first  line  after  the
+        paragraph.   Since  the paragraph formatter skips blank lines
+        and lines starting with a dot  found  before  the  paragraph,
+        repeatedly  typing this command enables many paragraphs to be
+        formatted in quick succession.
 
     6.  ^QH
-	switches between the home area  and  the  file  area  as  the
-	"Home" key does.
+        switches between the home area  and  the  file  area  as  the
+        "Home" key does.
 
     7.  ^QK
-	overwrites the command line with the previous command in  the
-	saved list of context editor commands.  Same as F9.
+        overwrites the command line with the previous command in  the
+        saved list of context editor commands.  Same as F9.
 
     8.  ^QJ
-	prints the quick reference section (below) on the  screen  by
-	calling the "HW" (Help WordStar) context editor command.  The
-	display pauses after every section. To move on, press return.
+        prints the quick reference section (below) on the  screen  by
+        calling the "HW" (Help WordStar) context editor command.  The
+        display pauses after every section. To move on, press return.
 
     9.  ^QQ<key>
-	repeat  the command following until the space bar is pressed.
-	Initially,  the command is repeated every 200ms but the  rate
-	may  be  altered  by  pressing  a  digit key - the larger the
-	number the slower the speed.  Press 0 (zero) and the  command
-	is repeated as fast as possible.  To be more precise, between
-	0 and 5, the rate is every digit*100ms, between 6 and 9,  the
-	rate  is  every  digit*400ms.  The latter allows more relaxed
-	browsing a file with repeated page downs  for  example.   The
-	command  following  may  be  any  other standard key sequence
-	including of course a simple character.   To  browse  a  file
-	press  ^QQ<page  down>9 which repeats the page down key every
-	few seconds).  To get down the file very quickly  indeed  try
-	^QQ<page  down>0  !  To insert a row of hyphens try ^QQ- then
-	press the 1 or even the 0 key to speed things up. ^QQ^QB will
-	format an entire file.
+        repeat  the command following until the space bar is pressed.
+        Initially,  the command is repeated every 200ms but the  rate
+        may  be  altered  by  pressing  a  digit key - the larger the
+        number the slower the speed.  Press 0 (zero) and the  command
+        is repeated as fast as possible.  To be more precise, between
+        0 and 5, the rate is every digit*100ms, between 6 and 9,  the
+        rate  is  every  digit*400ms.  The latter allows more relaxed
+        browsing a file with repeated page downs  for  example.   The
+        command  following  may  be  any  other standard key sequence
+        including of course a simple character.   To  browse  a  file
+        press  ^QQ<page  down>9 which repeats the page down key every
+        few seconds).  To get down the file very quickly  indeed  try
+        ^QQ<page  down>0  !  To insert a row of hyphens try ^QQ- then
+        press the 1 or even the 0 key to speed things up. ^QQ^QB will
+        format an entire file.
 
    10.  ^QW and ^QZ
-	are  abbreviations  for  ^QQ^W0 and ^QQ^Z0 respectively which
-	start the screen scrolling up and down.
+        are  abbreviations  for  ^QQ^W0 and ^QQ^Z0 respectively which
+        start the screen scrolling up and down.
 
    11.  ^QF
-	searches for a string. A regular expression search pattern is
-	requested.   Type  it in and press return.  Don't worry about
-	delimiters.  If  the  search  succeeds  the  window  will  be
-	positioned  such that the matched string is under the cursor.
-	The matched segment of the line will be marked in red. The ^L
-	command  may be used to find the next occurrence.  The search
-	string may be edited in the normal way but  pressing  ^U  (or
-	ESC on DOS) will abandon the command. (Use ^PU to get ^U into
-	the string).
+        searches for a string. A regular expression search pattern is
+        requested.   Type  it in and press return.  Don't worry about
+        delimiters.  If  the  search  succeeds  the  window  will  be
+        positioned  such that the matched string is under the cursor.
+        The matched segment of the line will be marked in red. The ^L
+        command  may be used to find the next occurrence.  The search
+        string may be edited in the normal way but  pressing  ^U  (or
+        ESC on DOS) will abandon the command. (Use ^PU to get ^U into
+        the string).
 
    12.  ^QA
-	requests a search string like ^QF and also a replacement.  If
-	the pattern is found,  the cursor is positioned over it,  the
-	matched text is marked in red and you are prompted to replace
-	the text with the previously given replacement.  Reply with a
-	'Y' or 'y' for yes, anything else for no.  The search is then
-	automatically repeated.  A 'Q' or ^U (or ESC on DOS) given in
-	reply will abandon the operation.
+        requests a search string like ^QF and also a replacement.  If
+        the pattern is found,  the cursor is positioned over it,  the
+        matched text is marked in red and you are prompted to replace
+        the text with the previously given replacement.  Reply with a
+        'Y' or 'y' for yes, anything else for no.  The search is then
+        automatically repeated.  A 'Q' or ^U (or ESC on DOS) given in
+        reply will abandon the operation.
 
    13.  ^QI
-	requests a line number and moves  to  it.   The  line  number
-	defaults to zero (the top of the file).
+        requests a line number and moves  to  it.   The  line  number
+        defaults to zero (the top of the file).
 
    14.  ^QGc
-	waits for a character from the  keyboard  and  then  searches
-	forwards on the screen for it.   If "return" is typed instead
-	of a character, the cursor is placed at the first blank line.
+        waits for a character from the  keyboard  and  then  searches
+        forwards on the screen for it.   If "return" is typed instead
+        of a character, the cursor is placed at the first blank line.
 
    15.  ^QV
-	this   command   attempts  to  match  parenthesis,   strings,
-	sentences,  and statements in the text.  It places the cursor
-	over the matching character.  The action taken depends on the
-	character currently under the cursor according to the table:-
+        this   command   attempts  to  match  parenthesis,   strings,
+        sentences,  and statements in the text.  It places the cursor
+        over the matching character.  The action taken depends on the
+        character currently under the cursor according to the table:-
 
-	character under cursor     target character      direction
-	----------------------------------------------------------
-		(                        )               forwards
-		)                        (               backwards
-		[                        ]               forwards
-		]                        [               backwards
-		{                        }               forwards
-		}                        {               backwards
-	  "   '   `   /          the same character      forwards
-	any other character         .  ;   !   ?         forwards
+        character under cursor     target character      direction
+        ----------------------------------------------------------
+                (                        )               forwards
+                )                        (               backwards
+                [                        ]               forwards
+                ]                        [               backwards
+                {                        }               forwards
+                }                        {               backwards
+          "   '   `   /          the same character      forwards
+        any other character         .  ;   !   ?         forwards
 
 
 4.2.4  Block Commands
 ~~~~~~~~~~~~~~~~~~~~~
     1.  ^KW and ^KA
-	write  or append a block of text to a file.  The filename and
-	an endpoint are requested.   If  no  filename  is  given  the
-	transient file is written to. The endpoint should be given as
-	described in section 5.1.  If no endpoint is given the entire
-	transient  file  is  written  out.   The  transient file will
-	usually have been created by marking a block with F2 and  F3.
-	Otherwise,   text  from  the cursor line downwards is written
-	(^KW) or appended (^KA) to the file  until  the  endpoint  is
-	reached.  When the file does not exist it is created.  If the
-	filename starts with an exclamation mark  (!),   then  it  is
-	taken  to be the pathname of a program which is then run with
-	its standard input connected to G  (UNIX  only).   The  block
-	becomes input data for the program. You could write a section
-	of 20 lines to "lp" for example.
+        write  or append a block of text to a file.  The filename and
+        an endpoint are requested.   If  no  filename  is  given  the
+        transient file is written to. The endpoint should be given as
+        described in section 5.1.  If no endpoint is given the entire
+        transient  file  is  written  out.   The  transient file will
+        usually have been created by marking a block with F2 and  F3.
+        Otherwise,   text  from  the cursor line downwards is written
+        (^KW) or appended (^KA) to the file  until  the  endpoint  is
+        reached.  When the file does not exist it is created.  If the
+        filename starts with an exclamation mark  (!),   then  it  is
+        taken  to be the pathname of a program which is then run with
+        its standard input connected to G  (UNIX  only).   The  block
+        becomes input data for the program. You could write a section
+        of 20 lines to "lp" for example.
 
     2.  ^KR
-	requests a filename and inputs the file at the current cursor
-	position.  If no filename is given the transient file is used
-	(which  would  normally  have been created by marking a block
-	with F2 and F3). It is not possible to read in part of a file
-	from  the  screen editor,  to do this use the Merge verb from
-	the context editor.  As with ^KW a filename starting  '!'  is
-	executed with its standard output connected to G (UNIX only).
-	The output of the program is inserted below the cursor.
+        requests a filename and inputs the file at the current cursor
+        position.  If no filename is given the transient file is used
+        (which  would  normally  have been created by marking a block
+        with F2 and F3). It is not possible to read in part of a file
+        from  the  screen editor,  to do this use the Merge verb from
+        the context editor.  As with ^KW a filename starting  '!'  is
+        executed with its standard output connected to G (UNIX only).
+        The output of the program is inserted below the cursor.
 
     3.  ^K! and ^K| (UNIX only)
-	prompt you for the name of a shell command.   For  ^K!,   the
-	command  given is executed and the results (from its standard
-	output) inserted in the text at the cursor position.  This is
-	similar  to  ^KR with !filename but the screen is not cleared
-	beforehand and any error messages it produces are lost.   ^K|
-	requests  a  command  and  also  an Endpoint.  Text up to the
-	Endpoint is filtered through the command.  This  facility  is
-	particularly  useful  with commands like "sort".  The text is
-	written to the standard input of the command and deleted from
-	your  file.  Any results the command produces on the standard
-	output are then placed in the file at  the  cursor  position.
-	The  screen  is  not cleared and any standard error output is
-	discarded.  Beware of commands that don't produce any output!
+        prompt you for the name of a shell command.   For  ^K!,   the
+        command  given is executed and the results (from its standard
+        output) inserted in the text at the cursor position.  This is
+        similar  to  ^KR with !filename but the screen is not cleared
+        beforehand and any error messages it produces are lost.   ^K|
+        requests  a  command  and  also  an Endpoint.  Text up to the
+        Endpoint is filtered through the command.  This  facility  is
+        particularly  useful  with commands like "sort".  The text is
+        written to the standard input of the command and deleted from
+        your  file.  Any results the command produces on the standard
+        output are then placed in the file at  the  cursor  position.
+        The  screen  is  not cleared and any standard error output is
+        discarded.  Beware of commands that don't produce any output!
 
     4.  ^KU
-	requests a filename  which  is  assumed  to  contain  context
-	editor  commands  (an "edit" file) and executes it.  The line
-	under the cursor is the current line when the command file is
-	executed.
+        requests a filename  which  is  assumed  to  contain  context
+        editor  commands  (an "edit" file) and executes it.  The line
+        under the cursor is the current line when the command file is
+        executed.
 
     5.  ^KB, ^KK and ^KC  (same as F2, F3 and F4)
-	mark words,  groups of words,  or a block of lines for future
-	use. ^KB marks the start and ^KK the end. The block so marked
-	may be retrieved as many times as wished until another  block
-	is  marked.   It is also possible to mark part of the command
-	line. If the marked block spans more than one line, the block
-	is saved in the transient file, otherwise the line segment is
-	saved in an independent buffer and the transient file is  not
-	touched.   To  retrieve the saved block use ^KC or F4 and the
-	block will be inserted at the cursor position.  The new block
-	may be inserted anywhere in the file, outside the file, or on
-	the command line (single lines only).
+        mark words,  groups of words,  or a block of lines for future
+        use. ^KB marks the start and ^KK the end. The block so marked
+        may be retrieved as many times as wished until another  block
+        is  marked.   It is also possible to mark part of the command
+        line. If the marked block spans more than one line, the block
+        is saved in the transient file, otherwise the line segment is
+        saved in an independent buffer and the transient file is  not
+        touched.   To  retrieve the saved block use ^KC or F4 and the
+        block will be inserted at the cursor position.  The new block
+        may be inserted anywhere in the file, outside the file, or on
+        the command line (single lines only).
 
     6.  ^KQ, ^KX and ^KD
-	all exit the screen editor and/or G itself.  ^KQ (or F7,   or
-	ESC  on  DOS)  abandons  the  entire  edit and returns to the
-	operating system.  Confirmation is requested by G if the file
-	has  been changed before you throw away all your work!  It is
-	therefore safer than typing 'Q' on the command line.  ^KX (or
-	F8) is equivalent to typing 'E' on the command line, it saves
-	the file and returns to the  operating  system.   ^KD  simply
-	exits the screen editor and reverts to single line mode. This
-	is equivalent to typing ':' on the command line.  You have to
-	use ':' to return to screen mode of course.
+        all exit the screen editor and/or G itself.  ^KQ (or F7,   or
+        ESC  on  DOS)  abandons  the  entire  edit and returns to the
+        operating system.  Confirmation is requested by G if the file
+        has  been changed before you throw away all your work!  It is
+        therefore safer than typing 'Q' on the command line.  ^KX (or
+        F8) is equivalent to typing 'E' on the command line, it saves
+        the file and returns to the  operating  system.   ^KD  simply
+        exits the screen editor and reverts to single line mode. This
+        is equivalent to typing ':' on the command line.  You have to
+        use ':' to return to screen mode of course.
 
     7.  ^KS (same as F10)
-	writes out the file as if ^KX had been pressed but  does  not
-	leave  the  screen  editor.   It  is  intended  for  use as a
-	checkpoint save.
+        writes out the file as if ^KX had been pressed but  does  not
+        leave  the  screen  editor.   It  is  intended  for  use as a
+        checkpoint save.
 
     8.  ^KP
-	sends the file to the printer. Usually, the screen will clear
-	and a message from the print spooler appears.
+        sends the file to the printer. Usually, the screen will clear
+        and a message from the print spooler appears.
 
     9.  ^KZ or Clear
-	clears and redraws the screen should it get untidy  for  some
-	reason (a system message perhaps).
+        clears and redraws the screen should it get untidy  for  some
+        reason (a system message perhaps).
 
    10.  ^KO
-	requests a filename which then replaces the old  file.   This
-	effectively restarts the edit.  If no filename is given,  the
-	previous old file is reloaded  (a  quick  way  of  discarding
-	changes). Any alterations to the previous file are lost. This
-	is useful if you misspell the filename on the  command  line,
-	it  saves  having to leave the editor and come back in.  (The
-	context editor command "O" followed by return is quicker here
-	since  you  are  already  on  the command line.) It is also a
-	quick way of re-trying a complex home command line because of
-	course the command history is retained.
+        requests a filename which then replaces the old  file.   This
+        effectively restarts the edit.  If no filename is given,  the
+        previous old file is reloaded  (a  quick  way  of  discarding
+        changes). Any alterations to the previous file are lost. This
+        is useful if you misspell the filename on the  command  line,
+        it  saves  having to leave the editor and come back in.  (The
+        context editor command "O" followed by return is quicker here
+        since  you  are  already  on  the command line.) It is also a
+        quick way of re-trying a complex home command line because of
+        course the command history is retained.
 
    11   ^KH
-	switches  between the home area and the file area as the home
-	key and ^QH do,  but when moving from the text  area  to  the
-	home area, the screen is scrolled up such that the line under
-	the cursor when ^KH was pressed  becomes  the  top  line  and
-	therefore the context editor current line.
+        switches  between the home area and the file area as the home
+        key and ^QH do,  but when moving from the text  area  to  the
+        home area, the screen is scrolled up such that the line under
+        the cursor when ^KH was pressed  becomes  the  top  line  and
+        therefore the context editor current line.
 
    12   ^KE
-	temporarily  leaves  the  editor  for  the operating system's
-	command line. On typing "exit" or ^D, the screen is refreshed
-	and editing continues unaffected. The same as ! <return> from
-	the command line.
+        temporarily  leaves  the  editor  for  the operating system's
+        command line. On typing "exit" or ^D, the screen is refreshed
+        and editing continues unaffected. The same as ! <return> from
+        the command line.
 
    13.  ^KF
-	lists  all  files  in the current directory in columns on the
-	screen.
+        lists  all  files  in the current directory in columns on the
+        screen.
 
    14.  ^KL
-	requests  a  directory  name and changes the "current working
-	directory" to the one given.  Any files then written  without
-	an  absolute  pathname  will  be  created relative to the new
-	directory's position.
+        requests  a  directory  name and changes the "current working
+        directory" to the one given.  Any files then written  without
+        an  absolute  pathname  will  be  created relative to the new
+        directory's position.
 
    15.  ^K?
-	Displays in a window some statistics  about  the  file  being
-	edited.  For example:
+        Displays in a window some statistics  about  the  file  being
+        edited.  For example:
 
-	    Lines   Words   Punct.  Cntrl.  Sent.   L.O.C   Chars.
-	    1144    3176    5313    0       92      460     26043
+            Lines   Words   Punct.  Cntrl.  Sent.   L.O.C   Chars.
+            1144    3176    5313    0       92      460     26043
 
-	L.O.C (Lines Of Code) simply counts the number of  semicolons
-	and  is  of  course meaningless for a document.  "Sent." is a
-	count of the '.', '!' and '?' characters.
+        L.O.C (Lines Of Code) simply counts the number of  semicolons
+        and  is  of  course meaningless for a document.  "Sent." is a
+        count of the '.', '!' and '?' characters.
 
 
 4.2.5  Justification
@@ -942,42 +942,42 @@ left and right margin columns are displayed on the scale line as  '<'
 and '>' overlaid in magenta.
 
     1.  ^OL and ^OR
-	set  the  left  and  right margins respectively.  The current
-	cursor column is taken as the new margin.
+        set  the  left  and  right margins respectively.  The current
+        cursor column is taken as the new margin.
 
     2.  ^OJ
-	switches  right  adjustment on and off during formatting.  By
-	default both left  and  right  margins  are  adjusted.   With
-	adjustment  on,   gaps  between the words are padded out with
-	spaces until the end of the last word reaches the right  hand
-	margin.   Priority  is given to ends of sentences and comma's
-	when choosing gaps to add spaces to.
+        switches  right  adjustment on and off during formatting.  By
+        default both left  and  right  margins  are  adjusted.   With
+        adjustment  on,   gaps  between the words are padded out with
+        spaces until the end of the last word reaches the right  hand
+        margin.   Priority  is given to ends of sentences and comma's
+        when choosing gaps to add spaces to.
 
     3.  ^OS
-	sets line spacing during formatting.  You are asked  for  the
-	number  of  blank lines to be inserted between each text line
-	which may be between 0 (the default) and 9. One (1) therefore
-	results in "double" spacing.
+        sets line spacing during formatting.  You are asked  for  the
+        number  of  blank lines to be inserted between each text line
+        which may be between 0 (the default) and 9. One (1) therefore
+        results in "double" spacing.
 
     4.  ^OB
-	justifies text from the cursor position to  the  end  of  the
-	paragraph.   Paragraphs  are  ended  by a blank line,  a line
-	starting with a dot '.' (text formatter control  line)  or  a
-	line  starting with a control character.  The cursor does not
-	move on in  the  file.   Overhanging  or  initially  indented
-	paragraphs are simple, since formatting starts at the current
-	cursor column.  This is the  most  commonly  used  formatting
-	command. (WordStar had this as ^B, even in non-document mode,
-	which is too easy to type by mistake,  possibly wrecking much
-	code or data).
+        justifies text from the cursor position to  the  end  of  the
+        paragraph.   Paragraphs  are  ended  by a blank line,  a line
+        starting with a dot '.' (text formatter control  line)  or  a
+        line  starting with a control character.  The cursor does not
+        move on in  the  file.   Overhanging  or  initially  indented
+        paragraphs are simple, since formatting starts at the current
+        cursor column.  This is the  most  commonly  used  formatting
+        command. (WordStar had this as ^B, even in non-document mode,
+        which is too easy to type by mistake,  possibly wrecking much
+        code or data).
 
     5.  ^OC
-	centres  the  current line within the margins.  An attempt is
-	still made even if the line is wider than the margins.
+        centres  the  current line within the margins.  An attempt is
+        still made even if the line is wider than the margins.
 
     6.  ^OW
-	toggle  word  wrap  when  inserting text.  Text typed after a
-	right margin is moved (the entire word) to the next line.
+        toggle  word  wrap  when  inserting text.  Text typed after a
+        right margin is moved (the entire word) to the next line.
 
 
 4.3  Quick Reference
@@ -985,7 +985,7 @@ and '>' overlaid in magenta.
 This listing may be obtained with the  keys  F1,   ^QJ  or  the  home
 command help (16bit DOS) or "hw".
 
-	SINGLE KEY COMMANDS
+        SINGLE KEY COMMANDS
 ^A      Word move left              ^N      Open blank line
 ^B      Word delete left            ^Pc     Enter control character c
 ^C      Page down                   ^R      Page up
@@ -999,7 +999,7 @@ command help (16bit DOS) or "hw".
 ^L      Repeat search/replace       ^Z      Scroll down one line
 ^M      Split line                  ^N      Insert line
 
-	QUICK COMMANDS
+        QUICK COMMANDS
 ^Q DEL  Erase to start of line      ^QA     Search and replace
 ^QB     Justify and move on         ^QC     Move to end of file
 ^QD/End Cursor to end of line       ^QE     Cursor to top of screen
@@ -1011,7 +1011,7 @@ command help (16bit DOS) or "hw".
 ^QW     Fast repeat scroll up       ^QX     Cursor to bot. of screen
 ^QY     Erase to end of line        ^QZ     Fast repeat scroll down
 
-	BLOCK AND SAVE COMMANDS
+        BLOCK AND SAVE COMMANDS
 ^KA     Append block to file        ^KB/F2  Mark start of block
 ^KC/F4  Copy from marked block      ^KD     Exit SE, stay in G
 ^KE     Spawn shell                 ^KF     List files
@@ -1022,7 +1022,7 @@ command help (16bit DOS) or "hw".
 ^KU     Use (execute) edit file     ^KW/F3  Write block to file
 ^KX/F8  Save file and exit          ^K?     Display file statistics
 
-	JUSTIFICATION
+        JUSTIFICATION
 ^OB     Justify paragraph           ^OC     Centre current line
 ^OL     Set left margin             ^OR     Set right margin
 ^OS     Set line spacing            ^OJ     Toggle right adjust
@@ -1043,7 +1043,7 @@ in the file.  On the other hand if you wish to view the results of  a
 command you have to return to the current position.  A convenient way
 of doing this is with the "@" verb:
 
-	(i/    / t)/}/ @
+        (i/    / t)/}/ @
 
 This indents a C language subroutine - on the screen. The "@" verb is
 a short hand notation for "T#{@}".
@@ -1083,26 +1083,26 @@ process.   Only  three  basic  operations  are  needed to achieve all
 possible editing actions:-
 
 Transcription   Move text unchanged to the output file.  The text may
-		come from any position in the input file.  The effect
-		is to move forward through the file without  changing
-		anything.
+                come from any position in the input file.  The effect
+                is to move forward through the file without  changing
+                anything.
 
 Positioning     Move the pointer in the input file independently from
-		the output file.  The effect of this is to  duplicate
-		or  delete  text.  If the input file pointer is moved
-		forwards,  the text passed over will  not  be  copied
-		into  the  output file when copying is later resumed.
-		This deletes the text.  On the other  hand,   if  the
-		input  file  pointer were to be moved backwards,  the
-		same  text  would  be  copied  twice   (duplication).
-		Alternatively, the pointer may be positioned anywhere
-		in the input file,  a section of text copied  to  the
-		output  file and then the input file pointer returned
-		to its original position.
+                the output file.  The effect of this is to  duplicate
+                or  delete  text.  If the input file pointer is moved
+                forwards,  the text passed over will  not  be  copied
+                into  the  output file when copying is later resumed.
+                This deletes the text.  On the other  hand,   if  the
+                input  file  pointer were to be moved backwards,  the
+                same  text  would  be  copied  twice   (duplication).
+                Alternatively, the pointer may be positioned anywhere
+                in the input file,  a section of text copied  to  the
+                output  file and then the input file pointer returned
+                to its original position.
 
 Insertion       Add new text into the output file that has  not  come
-		from  the  input.   It is possible to insert multiple
-		records or just a few letters in a line.
+                from  the  input.   It is possible to insert multiple
+                records or just a few letters in a line.
 
 These three actions are invoked by the T, P and I verbs respectively.
 For example:
@@ -1219,35 +1219,35 @@ abbreviated form from the 'he' verb (help endpoints).
 E           Continue until the end of the file is reached.
 
 [+/-]number Repeat the verb,  until "number" lines have passed in the
-	    forward  or  backwards direction.  For transcription type
-	    commands,  this  may  involve  a  complete  'wrap-around'
-	    through line zero.
+            forward  or  backwards direction.  For transcription type
+            commands,  this  may  involve  a  complete  'wrap-around'
+            through line zero.
 
 #number     Continue executing the verb until the  line  "number"  is
-	    reached  in  the  input  file.  The first line has a line
-	    number of zero.  It is usually possible to specify a line
-	    number that is previous to the current line.
+            reached  in  the  input  file.  The first line has a line
+            number of zero.  It is usually possible to specify a line
+            number that is previous to the current line.
 
 Onumber     Continue  executing  the  verb until the line "number" is
-	    reached in the output file.
+            reached in the output file.
 
 /string/    Continue forward to a line that starts with string.
 
 S/string/   Continue   forward   to  a  line  whose  first  non-space
-	    characters are string.
+            characters are string.
 
 C/string/   Continue forward to a line containing string.
 
 F/string/   Continue forward to a line that finishes with string.
 
 R/string/   Continue  forward  to  line  that  matches  the   Regular
-	    Expression.   See  section  5.7 for a full description of
-	    this type of endpoint.
+            Expression.   See  section  5.7 for a full description of
+            this type of endpoint.
 
 *number     The verb is executed "number"  times  regardless  of  how
-	    many   records  have  passed  by.   See  the  section  on
-	    repetition.  If number is missing,  the verb is  repeated
-	    until an error condition occurs.
+            many   records  have  passed  by.   See  the  section  on
+            repetition.  If number is missing,  the verb is  repeated
+            until an error condition occurs.
 
 After one of the above moves, the G pointer is always left positioned
 at the start of the line. In the case of the E end-point this will be
@@ -1259,8 +1259,8 @@ in any combination.
 These are:
 
     X   The string is to be specified in hexadecimal notation. Upper
-	or  lower case hexadecimal digits may be used and the string
-	is delimited in the normal way.
+        or  lower case hexadecimal digits may be used and the string
+        is delimited in the normal way.
 
     I   This causes case to be ignored in the search.
 
@@ -1278,7 +1278,7 @@ should be noted:
   .-S   move backwards to the last non-space character.
 
   C/string/  F/string/  S/string/
-	these are meaningless within lines and are not accepted.
+        these are meaningless within lines and are not accepted.
 
 The line and character parts of these qualifiers may be combined, for
 example:
@@ -1904,9 +1904,9 @@ to list backwards.
 Syntax of L verbs for other functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 LON   -   turn  system  message  listing on - it is turned off by the
-	  system when G commands are being read from  an  Edit  file,
-	  and back on again when input returns to the terminal. It is
-	  also turned off while in the Screen editor.
+          system when G commands are being read from  an  Edit  file,
+          and back on again when input returns to the terminal. It is
+          also turned off while in the Screen editor.
 
 LOFF  -   turn system message listing off.
 
@@ -1919,13 +1919,13 @@ LH    -   list the command history.
 LS    -   display statistics (words, sentences etc.) of the old file.
 
 LX    -   display  the current line in hexadecimal.  The ASCII values
-	  and offsets are also displayed.
+          and offsets are also displayed.
 
 L0    -   is a special endpoint that lists the current  line  out  in
-	  its  entirety  and without the leading two spaces.  L0 does
-	  not  try  to  make  any  control  characters  in  the  line
-	  printable.  Thus "(l0 t)e" prints the complete file exactly
-	  as is.
+          its  entirety  and without the leading two spaces.  L0 does
+          not  try  to  make  any  control  characters  in  the  line
+          printable.  Thus "(l0 t)e" prints the complete file exactly
+          as is.
 
 
 5.4.13  M  -  Merge from file
@@ -2148,17 +2148,17 @@ positioning operations with P/T.
 The format of the save verb is
 
     SNfilename  -  save  creating  a  New  file  or  overwriting  an
-		   existing  file.   If  no  filename is given,  the
-		   transient file is saved to.
+                   existing  file.   If  no  filename is given,  the
+                   transient file is saved to.
 
     SAfilename  -  save Appending to an existing file (if  the  file
-		   does not exist, it is created).
+                   does not exist, it is created).
 
     S           -  save to the transient file (same as SN  with  the
-		   filename omitted).
+                   filename omitted).
 
     SQ          -  quit  the current save file,  delete it and leave
-		   the output file unchanged.
+                   the output file unchanged.
 
 The save verb may be used to open several different files during a  G
 edit and more than one save file may be open at the same time, nested
@@ -2276,7 +2276,7 @@ of pages in the document.
     ;
     ;   Macro to process page headers
     cpage/%0/ ix/0C1B54/ mwsp.hed tc/%p/./%p/ p.2 i{++p} t./%t/ p.2
-	      i{t} te xm ix/1B49/ t
+              i{t} te xm ix/1B49/ t
     ;
     ;   Save the header in a temp file and replace with .pa in file
     snwsp.hed t/.eh/ xs p/.eh/ p.3 i/.pa/ t#0
@@ -2312,12 +2312,12 @@ V  accepts most endpoints with the following meanings.  References to
 enclosed in {}.
 
 number      the  check  returns  success  for  any  non-zero  number,
-	    failure otherwise.  This is very useful if "number" is an
-	    expression, when the all the 'C' relational operators may
-	    be used.  V0 may be used to force a failure condition.
+            failure otherwise.  This is very useful if "number" is an
+            expression, when the all the 'C' relational operators may
+            be used.  V0 may be used to force a failure condition.
 
 #number     success  if  the  input  file  record  number  is exactly
-	    "number".
+            "number".
 
 Onumber     ... the output file record number is exactly "number".
 
@@ -2417,12 +2417,12 @@ Synopsis:
 The . verb is used to invoke a previously defined macro command.
 
 Macro-name    a name of any length of which the  first  4  characters
-	      are significant.
+              are significant.
 
 /Arg1...Arg9/ a possibly empty list of string arguments. If there are
-	      no arguments,  there must be  no  delimiter  after  the
-	      macro-name. The number of arguments must agree with the
-	      number specified in the definition.
+              no arguments,  there must be  no  delimiter  after  the
+              macro-name. The number of arguments must agree with the
+              number specified in the definition.
 
 
 Related G verbs
@@ -2539,22 +2539,22 @@ names available are:
     A ... Z   user settable variables.  Case is not significant.
 
     .         is assigned the result of the previous expression,
-	      useful for chain calculations.
+              useful for chain calculations.
 
     #         is the current record number (in the old file).
 
     $         is the record number of the last record in the file.
 
     @         is the record number that was current when the command
-	      line execution started.
+              line execution started.
 
     &         is the record number in the new or output file.
 
     *         is  the  numerical  value  of  the  character at the G
-	      pointer.
+              pointer.
 
     ..        one extra variable for use within macros (see the .num
-	      macro for example).
+              macro for example).
 
 The four variables `#`,  `@`,  `&` and `$` may be prefixed with a dot
 (.) to return the current column number,  the column that was current
@@ -2622,17 +2622,17 @@ The following "one-character" RE's match a single character:
       special characters are:
 
       a.   ., *, [, and \ (period, asterisk, left square bracket, and
-	   backslash,   respectively),   which  are  always  special,
-	   except  when  they appear within square brackets ([];  see
-	   1.4 below).
+           backslash,   respectively),   which  are  always  special,
+           except  when  they appear within square brackets ([];  see
+           1.4 below).
 
       b.   ^  (caret  or  circumflex),   which  is  special  at   the
-	   beginning of an entire RE (see 3.1 and 3.2 below), or when
-	   it immediately follows  the  left  of  a  pair  of  square
-	   brackets ([]; see 1.4 below).
+           beginning of an entire RE (see 3.1 and 3.2 below), or when
+           it immediately follows  the  left  of  a  pair  of  square
+           brackets ([]; see 1.4 below).
 
       c.   $  (dollar),   which is special at the end of an entire RE
-	   (see 3.2 below).
+           (see 3.2 below).
 
 1.3   A backslash followed by  one  of  abfnrtv  represents  a  Bell,
       Backspace,  Formfeed,  Newline,  Return,  Tab,  or Vertical Tab
@@ -2767,41 +2767,41 @@ There are a number of abbreviations possible for  common  positioning
 operations.
 
 number          (In the screen editor only.)
-		Position  the  first  line  of the window on the line
-		"number" given.  Equivalent to:  T#number.
+                Position  the  first  line  of the window on the line
+                "number" given.  Equivalent to:  T#number.
 
 #number         Same  as  above,   but  may  be used from the context
-		editor command line.  "number" defaults to zero.
+                editor command line.  "number" defaults to zero.
 
 +/-number       Move the window backwards or forwards in the file  by
-		number  lines.  Equivalent to:  T+/-number.  "number"
-		defaults to one.
+                number  lines.  Equivalent to:  T+/-number.  "number"
+                defaults to one.
 
 /string         Move the window forwards to the first line found that
-		matches "string".  The string is a Regular Expression
-		and is terminated by the  end  of  the  command  line
-		(thus  it  must  be  the  last  command on the line).
-		Equivalent  to  "TR/string/"  except  that  the   '/'
-		character  may  be used within the string so that for
-		example  "//return"  searches  for  the   next   line
-		containing  a  /.   Remember  also  that  a  single /
-		continues  the  search   using   the   last   Regular
-		Expression used.
+                matches "string".  The string is a Regular Expression
+                and is terminated by the  end  of  the  command  line
+                (thus  it  must  be  the  last  command on the line).
+                Equivalent  to  "TR/string/"  except  that  the   '/'
+                character  may  be used within the string so that for
+                example  "//return"  searches  for  the   next   line
+                containing  a  /.   Remember  also  that  a  single /
+                continues  the  search   using   the   last   Regular
+                Expression used.
 
 ?string         This  is  identical  to  the "/string" command except
-		that the search starts at the beginning of the  file.
-		Equivalent to: "T#0 TR/string/".
+                that the search starts at the beginning of the  file.
+                Equivalent to: "T#0 TR/string/".
 
 ^string         Identical   to  the  "/string"  command  except  that
-		"string" is only matched at  the  start  of  a  line.
-		Equivalent to: "TR/^string/".
+                "string" is only matched at  the  start  of  a  line.
+                Equivalent to: "TR/^string/".
 
 @               Returns to the position in the file when the  command
-		started.   This  is  very useful on the screen editor
-		command line.  Equivalent to:  "T#{@}".  For example:
-		(i/  /  t)s/}/  @ indents the statements within a a C
-		block and then returns to the  starting  point.   The
-		text simply shifts across on the screen.
+                started.   This  is  very useful on the screen editor
+                command line.  Equivalent to:  "T#{@}".  For example:
+                (i/  /  t)s/}/  @ indents the statements within a a C
+                block and then returns to the  starting  point.   The
+                text simply shifts across on the screen.
 
 
 5.9  Environment
@@ -2963,11 +2963,11 @@ available automatically on start up.
   .r/RE1/RE2/           Change str1 to str2 from here on (RE)
 
   .tpri/lines/cols/ff/  Paginated,    line-numbered  listings,   with
-			"lines" per page,  headings "cols" wide,  and
-			ff=1 formfeeds between pages or (ff=0) not.
+                        "lines" per page,  headings "cols" wide,  and
+                        ff=1 formfeeds between pages or (ff=0) not.
 
   .clean                Clear  the  parity bit from entire file,  and
-			then delete any unprintable characters
+                        then delete any unprintable characters
 
   .lis/string/          List all lines containing string (case ign.)
 
