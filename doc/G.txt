@@ -1,0 +1,3124 @@
+		       T H E   G   E D I T O R
+
+			  Reference Manual
+
+		       Jeremy Hall - 95/10/20
+
+Contents
+~~~~~~~~
+      0.  Introduction
+      1.  Getting Started
+	  1.1   Installation (DOS)
+	  1.2   Installation (UNIX)
+      2.  Glossary
+      3.  The G Command Line
+	  3.1   More on the Initial Command
+      4.  The Screen Editor
+	  4.1   Screen Format
+	  4.2   Screen Commands
+	  4.3   Quick Reference
+	  4.4   Home Commands
+      5.  The Context Editor
+	  5.1   Command Endpoints
+	  5.2   Control of Repetition
+	  5.3   Conditional Execution
+	  5.4   The G Verbs
+	  5.5   Supplementary Commands
+	  5.6   Arithmetic
+	  5.7   Regular Expressions
+	  5.8   Shorthand Forms
+	  5.9   Environment
+      6.  The Line Editor
+	  6.1   The Prompt
+      7.  Built in Macros
+      8.  Binary Data
+	  8.1   Display
+	  8.2   Insertion
+	  8.3   Searching
+	  8.4   Transformations
+	  8.5   Parity
+      9.  Limits
+
+
+0.  Introduction
+~~~~~~~~~~~~~~~~
+This text editor  for  DOS  and  UNIX  combines  features  from  many
+sources.   For  example,   the  macro  language  was derived from ICL
+mainframe editors, regular expressions (among other things) come from
+VI,   the  screen editor keystrokes are similar to WordStar,  and the
+arithmetic has the syntax of the 'C' programming language.
+
+The macro language has loops, conditionals and arithmetic. G programs
+or individual commands may run from the command line,  from  an  edit
+file,  or from a "home" area at the top of the screen (interactively,
+so that the effects can be seen).  In some cases G is powerful enough
+to replace commands like "sed",  "awk", and "cut", often when used as
+a pipe-line filter.  The editor language uses a  conceptually  simple
+two-file  transcription (copy/edit) paradigm which is transparent for
+the casual screen editor user.
+
+G is designed to be as efficient as possible,  to be highly portable,
+and to enable manipulation of large files.  G has a very fast startup
+time and needs comparatively little memory.  On a decent UNIX machine
+it is quite feasible to edit a million record file. G also provides a
+more flexible way of viewing files than commands like "type", "pg" or
+"more".   Although  G  is  not  intended  to be a fully featured word
+processor,  it does have a basic paragraph formatting ability and can
+easily produce simple documents.
+
+Although G is FreeWare,  I would greatly appreciate a short e-mail if
+you   use  it  and  will  be  very  interested  in  any  comments  or
+suggestions.  Thanks!  You are also welcome  to  email  questions  or
+problems to me at the address below, but I can't guarantee an instant
+response.
+
+E-mail:  jah@ilena.demon.co.uk
+
+Currently  G  is  available for most flavours of UNIX and MSDOS/PCDOS
+for the 386 or later (8086/286 version available on request).  G  has
+been  tested on MSDOS 3.30 and EGA onwards.  It should run on earlier
+video standards,  even 40 column,  as long as the screen is  directly
+writable.   G runs fine in a DOS box from Windows 3.x,  NT,  OS/2 and
+Windows 95.  UNIX versions tested include: HP-UX 9 and 10, ICL DRS/NX
+(sparc & x86) and MPlus,  Solaris 2.x (sparc & x86), Linux 1.2.8, IBM
+AIX 3.25 and 4.1x, DG/UX (AViiON) 3.1/4.1, SCO 5, Pyramid DC/OSx, and
+UnixWare.
+
+While  G  isn't  very  customizable,   the  source is included in the
+distribution. Please forward any source changes for ports, bug fixes,
+or  modifications to the above email address so that improvements may
+be passed on to all in future releases.
+
+You may copy G as often as you wish or give it to  anyone  who  wants
+it.   Please  do  not ever sell G although you may of course charge a
+small amount of money to cover materials and handling.
+
+The  first implementation of the context editor kernel was written by
+Robert Ash and Roger McCalman at Aberystwyth University (UK) in 1981.
+
+G IS PROVIDED "AS IS" AND WITHOUT WARRANTY OF ANY KIND.  I CANNOT  BE
+HELD RESPONSIBLE FOR ANY DAMAGE OR LOSS,  CONSEQUENTIAL OR OTHERWISE,
+ARISING OUT OF THE USE OF, OR INABILITY TO USE, G.
+
+
+1.  Getting Started
+~~~~~~~~~~~~~~~~~~~
+Having just unzipped G, you can try it right away by typing:-
+
+	g g.txt
+
+To get help, press F1 (then press "return" to get each page),  to get
+out  of  G,   press  ESC  or F7.  You can move around and make simple
+alterations to the text in the usual way,  that is,   use  the  arrow
+keys, page up/down, tabs etc.  to move around, and the delete key and
+back arrow (at the top right) to remove characters.  Text  is  simply
+typed  in.  All the WordStar commands require the "control" key to be
+pressed but they are not needed for simple edits.
+
+To get into the text from the "home"  area  just  press  down  arrow.
+Don't  worry about the home area for now,  this is where the powerful
+context editor commands are given.  To exit and save the file back to
+disk, press F8.
+
+The  remainder  of  this document is the detailed G reference manual.
+It is best printed with a fixed pitch font such as Courier.
+
+
+1.1  Installation (DOS)
+~~~~~~~~~~~~~~~~~~~~~~~
+G comprises a single file "g.exe" (88426 bytes long).  There  are  no
+configuration files or environment variables to be set up. To install
+G it is simply necessary to copy g.exe to somewhere on your path.  To
+find out what your path is, type: path <return>.  You will get a list
+of directories,  Since editors tend to be frequently used  its  worth
+putting g.exe in the first directory on the path. There is no harm in
+putting it in the DOS or the WINDOWS directory.  To get  G  to  start
+really quickly, you could copy g.exe to a ram disk.  To do this place
+the following in config.sys if not already there:
+
+    DEVICE=C:\DOS\RAMDRIVE.SYS 128 /E
+
+The option /E means use "extended" memory.  The 128 means a 128k byte
+ram disk,  you could of course  make  it  bigger,   and  store  other
+commonly  used programs on it.  The ram disk is usually created as D:
+or E:. Consult the DOS manual for details.  Then edit autoexec.bat to
+copy in G on startup:
+
+    copy c:\utils\g.exe e:\
+
+This is assuming "c:\utils" is where you put G on the hard disk.  Set
+the path so that the ram disk is looked at first:
+
+    PATH E:\;C:\DOS;C:\WINDOWS;C:\UTILS etc.
+
+The DOS version of G understands  UNIX  files  and  filenames  (paths
+separated by the forward '/' character).  To save conventional memory
+the real mode (16bit) DOS version only,  has some  features  removed.
+Mostly in line mode, these are, the $ template, the IA, IB, IS, and W
+verbs,  and the line editor.  There is help only on the screen editor
+keystrokes.
+
+
+1.2  Installation (UNIX)
+~~~~~~~~~~~~~~~~~~~~~~~~
+To  install  G it is simply necessary to copy it to somewhere on your
+path (echo $PATH to give a list of directories)  and  ensure  it  has
+"execute" access (chmod +x g).
+
+To  make it available to all users,  put it in the same place as "vi"
+or "ed".  Try:  "ls -l /usr/bin/vi",  or "ls -l /bin/vi" and give  it
+similar ownership and permissions, e.g.
+
+	cp g /bin/g
+	chown bin /bin/g
+	chgrp bin /bin/g
+	chmod 555 /bin/g
+
+On systems with a UNIX base earlier than SVR4 you could chmod 1555 to
+set the "sticky" bit for fast startup.
+
+To install it just for your own use :-
+
+	cd
+	mkdir bin      /* if its not there */
+	cp g bin/g
+	echo $PATH     /* add $HOME/bin if its not there */
+
+Log out and back in again to ensure its all set up.
+
+The only other thing that must be correct is the environment variable
+$TERM.   If  you  have  been  using  vi  or other screen applications
+already, this will probably be set OK anyway and G will run fine.  Vi
+however  is monochrome only,  and while G runs happily in monochrome,
+its much nicer in colour.   Try  echo  $TERM  to  see  what  you  are
+currently  using.   If  its doc18,  or vt220,  vt100 or similar,  try
+changing to "doc18-c" or hpterm for HP/UX.  If its the console of  an
+intel machine it may be set to AT386-M,  try changing to "AT386",  or
+"console", or "ansi" for SCO. To try a new terminal type prefix the G
+command  with TERM=new-term,  E.g.  "TERM=doc18-c g fred" if it looks
+good,  set it for this session with "export TERM=doc18-c"  (ksh)  and
+then  perhaps  alter your .profile.  You should be asked the terminal
+type when you log in,  give the new value,  and it  will  become  the
+default in future.
+
+
+2.  Glossary
+~~~~~~~~~~~~
+    Shell               Command line interpreter.  On  UNIX  this  is
+			usually  'ksh',  'sh' or 'csh'.  On DOS it is
+			'command.com'.
+
+    Record              Another word for a file "line".
+
+    Old/Input file      The file that text is being copied from.
+
+    New/Output file     The file that text is being copied to.
+
+    Transcribe          Copy text from the old to the new file.
+
+    Endpoint            Command qualifier specifying when or where a
+			command should finish.
+
+    Regular Expression  An elaborate form of "wild card" notation for
+			search strings and replacements.
+
+    Primary Files       The files that G transcribes to and from.
+
+    Transient File      An  in-core temporary file used for cut/paste
+			operations (a clipboard).
+
+    Edit Files          Files  (often  called  Batch  or  Use  files)
+			containing context  editor  commands.   These
+			files have names suffixed with ".g".
+
+    ASCII               American   Standard   Code   for  Information
+			Interchange.  Standard character set  that  G
+			supports.
+
+    Verb                Context   editor   command  starting  with  a
+			letter.
+
+    Hexadecimal         Radix  16  notation  for  explicitly denoting
+			character codes.  The numbers 10  to  15  are
+			given as A - F.
+
+    EOF                 End Of File. Usually refers to the old file.
+
+    EOR                 End Of Record.
+
+
+3.  The G Command Line
+~~~~~~~~~~~~~~~~~~~~~~
+The  shell command line used to invoke G permits use as a filter,  or
+editing of a specific file.
+
+	G  filename
+		edit the file specified
+
+	G  filename  anotherfilename
+		edit from filename to anotherfilename
+
+	G  filename  -
+		edit filename to standard output
+
+	G  -  filename
+		edit standard input to filename
+
+	G
+
+	G  -  -
+		edit the standard input to the standard output
+
+If the standard input is not used for data it may instead be used for
+edit commands.
+
+The normal action is to go straight into full screen mode.
+
+G  accepts  five  command line "option" flags introduced by a hyphen.
+These are :-
+
+	-r      read-only mode. G will not allow the Input file to be
+		overwritten.
+
+	-b      binary mode. G will not alter tabs or trailing spaces
+		in  a  file.   Tabs  appear on the screen as ordinary
+		control characters (Control-I).  See  section  8  for
+		more details.
+
+	-c "initial command"
+		An  initial G context editor command.  If the command
+		doesn't start with one of the option letters (R B C S
+		or V), the option letter "C" may be omitted.  See the
+		next section for some examples.
+
+	-s number
+		Screen soft tab width (defaults to every four).
+
+	-v      Prints G version/author information and quits.
+
+Should  you wish to edit a file whose name starts with a '-',  prefix
+it with "./".
+
+G expands the ~ (tilde) character at  the  start  of  a  filename  or
+system  command even if the shell doesn't.  Tilde is substituted with
+whatever the environment variable HOME contains. This only happens if
+the ~ is just before the pathname separators '/' or '\'.
+
+DOS pathnames may be separated with the forward '/' as  well  as  the
+traditional '\'.  For example:
+
+	g /windows/system.ini    and    g \windows\system.ini
+
+are both valid DOS commands.
+
+Finally, UNIX filenames starting with ! are taken as system commands,
+G reads from the standard output of the command if its an input file,
+and  writes  to  the  standard  input of the command if its an output
+file.
+
+Here are some example command lines:-
+
+To simply edit a C program in the normal way:
+
+	g demo.c
+
+is all that is needed. To create a different version without touching
+the original (similar to "copy demo.c newdemo.c; g newdemo.c"):
+
+	g demo.c newdemo.c
+
+A very common requirement is to view program output as an alternative
+to "more":
+
+	lint *.c | g
+
+Corrections may then be made to the source files without leaving  the
+lint  listing  by  calling  G  from within itself.  Using G as a file
+viewer means you need to remember one less set of commands and it has
+more powerful features for moving around and finding things.
+
+For now don't worry about the details of each command, its the use of
+the command line that's of interest here.
+
+Here is a complete command to edit  a  named  file  by  changing  all
+occurrences of fred to bill by calling the built in macro "c":
+
+	g somefile -c ".c/fred/bill/,e"
+
+using G as a filter:
+
+	dir | g "-p7,t/ /,pe,e" >filelist
+
+Here the header (also the initial . and .. entries)  and trailer of a
+DOS  directory  listing  are silently removed before the file list is
+written out.  To count lines that are exactly two letters long:
+
+	g fred - "-(pr/^..$/,t)e,e"  |  wc -l
+
+and so on.
+
+In most cases, the G command is quoted to avoid unwanted interference
+from the shell.
+
+	g !cal this_month
+
+puts a calendar in the file this_month allowing you to edit it  first
+(using the UNIX command "cal").
+
+Very complicated commands will not usually work first time.  They may
+also be needed more than once.  In such cases,  the command  sequence
+may be placed in a file (here it is "page.g"):
+
+	cat fred.doc  |  g -upage.g  |  lp
+
+might invoke your own paginator in page.g. See the section describing
+the U verb for more details.  This mechanism may be used  to  include
+more  "standard"  macros  by  "using"  an  edit file containing macro
+definitions.  These may be defaulted with: alias g='g -umacros.g,:'.
+
+If a named file is being edited the standard input may  be  used  for
+commands:
+
+	g fred.doc - <page.g  |  lp
+
+This has the same effect as the command above started with cat.  This
+is particularly useful in UNIX shell scripts where the edit  commands
+may be given as "here" documents.
+
+	g $1 <<end_g_com
+	t20
+	(p./ / p.s t)e #
+	...
+	e
+	end_g_com
+
+
+3.1  More on the Initial Command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This invaluable feature may be used to override the default action of
+the  editor,  set up macros or even perform a complete edit.  An edit
+file may be used via the U verb in the normal way to execute  complex
+batch edits.
+
+If  the  initial  command  specifies  E  at  the  end and the edit is
+successful,  G exits to the system  rather  than  prompting  you  for
+further  edit  commands.   Unless  an  error occurs,  no messages are
+produced when G is used in this way. This is very useful for altering
+files from within shell scripts.
+
+	g fred -t20,pe,e
+
+silently truncates the file fred.  Conversely,  to delete a four line
+header from "outfile":
+
+	g outfile -p4,e
+
+There  several  more  examples  of this sort of usage in the previous
+section.
+
+When an initial command is given,  the usual automatic entry into the
+screen editor is suppressed and the editor starts in line mode.
+
+The ':' command is used to switch between screen mode and line  mode
+working, To execute some commands prior to a normal full screen edit,
+try:
+
+	g  fred  -t500,:
+
+which starts the editor at line 500.
+
+To  simply force line-mode working,  give a null initial command such
+as:
+
+	g  fred  -,     (',' is treated as a space and ignored)
+
+One use of this is to set up G as the ksh command line editor instead
+of the vi-like system that  is  the  default.   Place  the  following
+command in your ".profile" in the home directory:
+
+	export FCEDIT='g -,'
+
+You  may  now type just 'fc' to edit and re-execute previous commands
+using G's line editor. All the features of G are available, so if its
+a  big multi-line command,  use the ':' verb to flip into full screen
+mode to make the changes.
+
+4.  The Screen Editor
+~~~~~~~~~~~~~~~~~~~~~
+The screen editor is used for the vast majority of ad-hoc  edits  and
+is  the  normal  mode  of  working.  The key sequences are similar to
+WordStar  but  the  resulting  actions  sometimes  differ.   A  quick
+reference to the keystrokes is printed at the end of this chapter and
+is available by pressing F1,  or (DOS only) giving the  home  command
+"help".
+
+Full screen mode is entered automatically on entry  to  G  unless  an
+initial  command  is  given.   Normally the first page of the file is
+displayed and the cursor placed in the home area.
+
+
+4.1  Screen Format
+~~~~~~~~~~~~~~~~~~
+The  screen  is  divided  into two areas.  The top three lines of the
+screen are special and the remainder displays a portion of the file.
+
+The  "status"  line  is  at  the  top  of  the  screen  and  provides
+information about your position and files.  The information comprises
+three sections: cursor position,  file names,  and line/file lengths.
+The cursor position field looks like:
+
+	LINE nn.mm (hh)   for example:   LINE 212.33 (20)
+
+The  first  figure is the line number in the file,  the second is the
+column number within the line.  Note that within G, lines and columns
+are counted from zero.  The two digits in brackets after the line and
+column number are the hexadecimal value of the  character  under  the
+cursor.   If the cursor is beyond the end of the line these change to
+"EOR" (End Of Record),  and when the cursor is beyond the end of  the
+file "EOF" (End Of File) is displayed. When the cursor is in the home
+area the file line is displayed for the first line of the screen (the
+line context editor commands will act upon).
+
+The file names are presented in the centre as:
+
+	old_file  >GI>  new_file
+
+Old_file and new_file are the current input and output files  of  the
+editor,   the  '>'s show the direction of the edit.  If only a single
+file was given on the command line, these names are the same. The "I"
+indicates  "insert"  or  "expand"  mode,   and  changes to "O" during
+"overwrite" mode.
+
+The file and line lengths are given on the right hand side:
+
+	EOR nn EOF nnn   for example:   EOR 12 EOF 330
+
+This  indicates  that "End Of Record" is at column 12 for the current
+line (the line the cursor is positioned on) and "End Of File"  is  at
+record 330.  When the cursor is beyond the end of the file the end of
+record field is suppressed.  When the cursor is in the home area  the
+displayed  EOR  refers  to  the  first  line  of the screen (the line
+context editor commands will act upon).
+
+The command line (or "home" area) is the second line down between the
+status line and the scale line.  Context editor commands may be given
+from here with the results displayed immediately on the screen.   The
+Home  key  (or  ^QH  or  ^KH)  is used to move backwards and forwards
+between the command line and the file area.  In addition,   the  home
+area  may be left with the down arrow key which skips over the status
+line and leaves the cursor in the corresponding column of  the  first
+file line.  This is also true of the return key,  only if there is no
+text on the command line. When the cursor moves between the file area
+and the home area its last coordinates are remembered.
+
+Commands typed in on the home area may be edited just as if they were
+ordinary text lines.  Text from the file area may  be  moved  to  the
+command line for use as part of a command. In addition, commands from
+the history may be retrieved and edited to form new ones.
+
+The  "scale"  line  is  simply a ruler of column numbers to help with
+data alignment.  Any command connected with  paragraphing  shows  the
+current  margin settings on this line.  If the screen "window" in the
+file shifts sideways (while editing long lines) the scale  shows  the
+new column numbers.
+
+The  "file  area" displays a page of text from the file being edited.
+It can be thought of as a rectangular "window" into the file that may
+be  moved  backwards,   forwards,   left  and  right.   The window is
+automatically moved around as the cursor reaches a screen boundary or
+the status line.
+
+Selected text and the destinations of search operations are displayed
+in red.  This helps to verify that a complicated  Regular  Expression
+pattern has matched what you thought it would.
+
+
+4.2  Screen Commands
+~~~~~~~~~~~~~~~~~~~~
+In the description of each command,  the notation ^X means control-X.
+The "control" or "Ctrl" key should be pressed at the same time as the
+character concerned. The most common commands need one key stroke but
+there are many that involve two.  These start with ^Q,  ^K or ^O  and
+are  followed  by a second key.  This key is not shown in the form ^X
+because it may be given as X, x or ^X for convenience.
+
+To enter text in the file simply  move  the  cursor  to  the  desired
+position  and  type  away.  There are two modes of working,  "expand"
+mode,  and "overwrite" mode.  Expand mode shifts the remainder of the
+line back and forth when characters are inserted or deleted.  This is
+the normal mode and the default on entry.  Overwrite mode  is  useful
+when columnar data is to be preserved or to save typing during simple
+corrections.
+
+One important difference between G and WordStar or Vi is that G  does
+not  place  so  much  importance  on  "end of line" or "end of file".
+Should the cursor move past the end of a  line  no  action  is  taken
+(other  than  the cursor movement) until a character is inserted,  in
+which case it simply extends the line,   padding  out  the  gap  with
+spaces.  Similarly beyond end of file, the file is expanded and empty
+lines added to fill the gap.
+
+A  quick  summary  of  the  following can be found at the end of this
+section and may also be obtained from  within  the  editor  with  the
+"hw", command, or, for DOS just press F1.
+
+
+4.2.1  Single Key Commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+    1.  ^E, ^X, ^S, ^D and the arrow keys
+	are the cursor movement keys - up,   down,   left  and  right
+	respectively.
+
+    2.  ^A,  ^F, ^T and ^B
+	provide  word  move  backwards/forwards   and   word   delete
+	left/right  operations  respectively.  These keys move to the
+	start of the next word or  punctuation  either  backwards  or
+	forwards.  Words comprise the letters: A-Z, a-z, 0-9, and _ .
+	Lines will be skipped and  the  screen  shifted  sideways  as
+	needed.   Word  delete  is  a  particularly useful key.  When
+	pressed between two words it deletes all whitespace and blank
+	lines  before  the  next  word but leaves the word untouched.
+	When pressed at the start of a word it deletes the  word  and
+	all  spaces up to the next word.  Punctuation is deleted as a
+	word would be.  WordStar does not  recognise  punctuation  in
+	word  operations,   G treats punctuation as a special kind of
+	word (as does vi). ^B acts similarly to ^T but in the reverse
+	(left) direction.
+
+    3.  ^W and ^Z
+	scroll the window up and down one line.  The cursor  position
+	is not changed.
+
+    4.  ^R and ^C, or Prev/Next or Page Up/Page Down
+	move  the  file  window  up and down by one screen full.  The
+	cursor position is not changed.
+
+    5.  ^G, or DEL
+	The ^G key deletes the character under the cursor. If pressed
+	beyond the end of a line the newline is deleted and the  next
+	line  joined  on  to  the  current  line  at  that point.  In
+	overwrite mode these keys simply replace the character with a
+	space.
+
+    6.  ^H, "Rub Out" or the big left arrow above <return>.
+	move  the  cursor left and delete the character under it.  If
+	pressed at the start of a line,  the  newline  is  deleted  -
+	appending it to the line above.  In overwrite mode these keys
+	simply replace the character with a space.
+
+    7.  ^N, ^M or <return>
+	insert new lines into the text.  ^N opens a blank line  under
+	the cursor leaving the cursor position unchanged.  The return
+	key (which is the same as ^M) splits the line at  the  cursor
+	position  and leaves the cursor on the next line in the first
+	column.
+
+    8.  ^Y, ^U and ^J
+	provide line deletion and restoration.  ^Y deletes  the  line
+	under  the  cursor.  The line is saved on a stack in case the
+	key was pressed by mistake. The ^U key restores the last line
+	deleted  by  "popping"  it  off  the  top  of  the  stack and
+	inserting it under the cursor.  A convenient way  to  move  a
+	line  (or  several  lines)  is to delete it (them),  move the
+	cursor to the new position and restore it (them) with the  ^U
+	key.   The  ^J key simply saves the current line on the stack
+	without deleting it.  This can be used in a  similar  way  to
+	copy one or more lines.  ^J^U is a quick way to duplicate the
+	line under the cursor.
+
+    9.  ^I, Tab and Back-Tab
+	move the cursor to the next or previous tab position.   These
+	are "soft" tabs.  No 'tab' character is inserted in the file.
+	They are only used for alignment or rapid  left-right  cursor
+	movement.  A real tab may be inserted with ^PI if needed. The
+	tab width is determined by the command line "-s" option,  and
+	defaults to every fourth column.
+
+   10.  ^Pc
+	enters  a  control  character  into  the file.  Here 'c' is a
+	letter (upper or lower case or  a  control  character).   The
+	corresponding control character is inserted. For example, ^pg
+	would insert the bell character (control-G).
+
+   11.  ^V or Insert
+	toggle  expand/overwrite  mode.   The  editor is initially in
+	expand mode.
+
+   12.  ^L
+	moves on in the file to the next matching line.  ^L  is  used
+	after  a  find (^QF),  a "/string" home command.
+
+   13.  Home
+	toggles the cursor between the home area and the  file  area.
+	The original position is remembered when this key is pressed.
+	Same as ^QH. See also the similar ^KH.
+
+   14.  ^left arrow and ^right arrow
+	shift the window left and right in the file.  These keys  are
+	not available on all terminals.
+
+
+4.2.2  Function Keys
+~~~~~~~~~~~~~~~~~~~~
+These all duplicate common keys which should be  referred  to  for  a
+full description.  They may not be available on all systems.
+
+    1.  F1
+	displays the screen editor help text.
+
+    2.  F2, F3 and F4
+	mark the beginning (F2) and end (F3) of a word,  phrase,   or
+	block.  Retrieve with F4.  Same as ^KB,  ^KK,  and ^KC.  If a
+	block (e.g.  more than one line) is marked, the text is saved
+	in the transient file.
+
+    3.  F5 and F6
+	read and write blocks of text to and from a file.  Please see
+	descriptions of the equivalent ^KR and ^KW below for details.
+
+    4.  F7 and F8
+	abandon the edit or save the file and exit.  Same as ^KQ  and
+	^KX.   These keys prompt if the file has changed.  On DOS the
+	ESC key will exit without saving the file.
+
+    5.  F9
+	retrieve last home command.  Same as ^QK. Repeatedly pressing
+	F9 scrolls back through the command history.
+
+    6.  F10
+	save the file without leaving the editor.  Same as ^KS.  This
+	is a useful checkpoint save.  The user is prompted whever the
+	the file has been changed or not.
+
+
+4.2.3  Quick Key Commands
+~~~~~~~~~~~~~~~~~~~~~~~~~
+All  of  these  commands  are  started  with a "control-Q".  They are
+intended as short cut's or larger scale operations  than  the  single
+keys.
+
+    1.  ^QS and ^QD (or End)
+	move the cursor to the start or end of the current line.
+
+    2.  ^QE and ^QX
+	move the cursor to the top or bottom of the screen.
+
+    3.  ^QR and ^QC
+	move the cursor to the start or end of the entire file.
+
+    4.  ^Q DEL and ^QY
+	erase from the cursor position to the start  or  end  of  the
+	line.   In  both  cases if the entire line is deleted,  it is
+	saved on the stack.
+
+    5.  ^QB
+	justifies  the  paragraph from the current line downwards and
+	leaves the cursor at the start of the first  line  after  the
+	paragraph.   Since  the paragraph formatter skips blank lines
+	and lines starting with a dot  found  before  the  paragraph,
+	repeatedly  typing this command enables many paragraphs to be
+	formatted in quick succession.
+
+    6.  ^QH
+	switches between the home area  and  the  file  area  as  the
+	"Home" key does.
+
+    7.  ^QK
+	overwrites the command line with the previous command in  the
+	saved list of context editor commands.  Same as F9.
+
+    8.  ^QJ
+	prints the quick reference section (below) on the  screen  by
+	calling the "HW" (Help WordStar) context editor command.  The
+	display pauses after every section. To move on, press return.
+
+    9.  ^QQ<key>
+	repeat  the command following until the space bar is pressed.
+	Initially,  the command is repeated every 200ms but the  rate
+	may  be  altered  by  pressing  a  digit key - the larger the
+	number the slower the speed.  Press 0 (zero) and the  command
+	is repeated as fast as possible.  To be more precise, between
+	0 and 5, the rate is every digit*100ms, between 6 and 9,  the
+	rate  is  every  digit*400ms.  The latter allows more relaxed
+	browsing a file with repeated page downs  for  example.   The
+	command  following  may  be  any  other standard key sequence
+	including of course a simple character.   To  browse  a  file
+	press  ^QQ<page  down>9 which repeats the page down key every
+	few seconds).  To get down the file very quickly  indeed  try
+	^QQ<page  down>0  !  To insert a row of hyphens try ^QQ- then
+	press the 1 or even the 0 key to speed things up. ^QQ^QB will
+	format an entire file.
+
+   10.  ^QW and ^QZ
+	are  abbreviations  for  ^QQ^W0 and ^QQ^Z0 respectively which
+	start the screen scrolling up and down.
+
+   11.  ^QF
+	searches for a string. A regular expression search pattern is
+	requested.   Type  it in and press return.  Don't worry about
+	delimiters.  If  the  search  succeeds  the  window  will  be
+	positioned  such that the matched string is under the cursor.
+	The matched segment of the line will be marked in red. The ^L
+	command  may be used to find the next occurrence.  The search
+	string may be edited in the normal way but  pressing  ^U  (or
+	ESC on DOS) will abandon the command. (Use ^PU to get ^U into
+	the string).
+
+   12.  ^QA
+	requests a search string like ^QF and also a replacement.  If
+	the pattern is found,  the cursor is positioned over it,  the
+	matched text is marked in red and you are prompted to replace
+	the text with the previously given replacement.  Reply with a
+	'Y' or 'y' for yes, anything else for no.  The search is then
+	automatically repeated.  A 'Q' or ^U (or ESC on DOS) given in
+	reply will abandon the operation.
+
+   13.  ^QI
+	requests a line number and moves  to  it.   The  line  number
+	defaults to zero (the top of the file).
+
+   14.  ^QGc
+	waits for a character from the  keyboard  and  then  searches
+	forwards on the screen for it.   If "return" is typed instead
+	of a character, the cursor is placed at the first blank line.
+
+   15.  ^QV
+	this   command   attempts  to  match  parenthesis,   strings,
+	sentences,  and statements in the text.  It places the cursor
+	over the matching character.  The action taken depends on the
+	character currently under the cursor according to the table:-
+
+	character under cursor     target character      direction
+	----------------------------------------------------------
+		(                        )               forwards
+		)                        (               backwards
+		[                        ]               forwards
+		]                        [               backwards
+		{                        }               forwards
+		}                        {               backwards
+	  "   '   `   /          the same character      forwards
+	any other character         .  ;   !   ?         forwards
+
+
+4.2.4  Block Commands
+~~~~~~~~~~~~~~~~~~~~~
+    1.  ^KW and ^KA
+	write  or append a block of text to a file.  The filename and
+	an endpoint are requested.   If  no  filename  is  given  the
+	transient file is written to. The endpoint should be given as
+	described in section 5.1.  If no endpoint is given the entire
+	transient  file  is  written  out.   The  transient file will
+	usually have been created by marking a block with F2 and  F3.
+	Otherwise,   text  from  the cursor line downwards is written
+	(^KW) or appended (^KA) to the file  until  the  endpoint  is
+	reached.  When the file does not exist it is created.  If the
+	filename starts with an exclamation mark  (!),   then  it  is
+	taken  to be the pathname of a program which is then run with
+	its standard input connected to G  (UNIX  only).   The  block
+	becomes input data for the program. You could write a section
+	of 20 lines to "lp" for example.
+
+    2.  ^KR
+	requests a filename and inputs the file at the current cursor
+	position.  If no filename is given the transient file is used
+	(which  would  normally  have been created by marking a block
+	with F2 and F3). It is not possible to read in part of a file
+	from  the  screen editor,  to do this use the Merge verb from
+	the context editor.  As with ^KW a filename starting  '!'  is
+	executed with its standard output connected to G (UNIX only).
+	The output of the program is inserted below the cursor.
+
+    3.  ^K! and ^K| (UNIX only)
+	prompt you for the name of a shell command.   For  ^K!,   the
+	command  given is executed and the results (from its standard
+	output) inserted in the text at the cursor position.  This is
+	similar  to  ^KR with !filename but the screen is not cleared
+	beforehand and any error messages it produces are lost.   ^K|
+	requests  a  command  and  also  an Endpoint.  Text up to the
+	Endpoint is filtered through the command.  This  facility  is
+	particularly  useful  with commands like "sort".  The text is
+	written to the standard input of the command and deleted from
+	your  file.  Any results the command produces on the standard
+	output are then placed in the file at  the  cursor  position.
+	The  screen  is  not cleared and any standard error output is
+	discarded.  Beware of commands that don't produce any output!
+
+    4.  ^KU
+	requests a filename  which  is  assumed  to  contain  context
+	editor  commands  (an "edit" file) and executes it.  The line
+	under the cursor is the current line when the command file is
+	executed.
+
+    5.  ^KB, ^KK and ^KC  (same as F2, F3 and F4)
+	mark words,  groups of words,  or a block of lines for future
+	use. ^KB marks the start and ^KK the end. The block so marked
+	may be retrieved as many times as wished until another  block
+	is  marked.   It is also possible to mark part of the command
+	line. If the marked block spans more than one line, the block
+	is saved in the transient file, otherwise the line segment is
+	saved in an independent buffer and the transient file is  not
+	touched.   To  retrieve the saved block use ^KC or F4 and the
+	block will be inserted at the cursor position.  The new block
+	may be inserted anywhere in the file, outside the file, or on
+	the command line (single lines only).
+
+    6.  ^KQ, ^KX and ^KD
+	all exit the screen editor and/or G itself.  ^KQ (or F7,   or
+	ESC  on  DOS)  abandons  the  entire  edit and returns to the
+	operating system.  Confirmation is requested by G if the file
+	has  been changed before you throw away all your work!  It is
+	therefore safer than typing 'Q' on the command line.  ^KX (or
+	F8) is equivalent to typing 'E' on the command line, it saves
+	the file and returns to the  operating  system.   ^KD  simply
+	exits the screen editor and reverts to single line mode. This
+	is equivalent to typing ':' on the command line.  You have to
+	use ':' to return to screen mode of course.
+
+    7.  ^KS (same as F10)
+	writes out the file as if ^KX had been pressed but  does  not
+	leave  the  screen  editor.   It  is  intended  for  use as a
+	checkpoint save.
+
+    8.  ^KP
+	sends the file to the printer. Usually, the screen will clear
+	and a message from the print spooler appears.
+
+    9.  ^KZ or Clear
+	clears and redraws the screen should it get untidy  for  some
+	reason (a system message perhaps).
+
+   10.  ^KO
+	requests a filename which then replaces the old  file.   This
+	effectively restarts the edit.  If no filename is given,  the
+	previous old file is reloaded  (a  quick  way  of  discarding
+	changes). Any alterations to the previous file are lost. This
+	is useful if you misspell the filename on the  command  line,
+	it  saves  having to leave the editor and come back in.  (The
+	context editor command "O" followed by return is quicker here
+	since  you  are  already  on  the command line.) It is also a
+	quick way of re-trying a complex home command line because of
+	course the command history is retained.
+
+   11   ^KH
+	switches  between the home area and the file area as the home
+	key and ^QH do,  but when moving from the text  area  to  the
+	home area, the screen is scrolled up such that the line under
+	the cursor when ^KH was pressed  becomes  the  top  line  and
+	therefore the context editor current line.
+
+   12   ^KE
+	temporarily  leaves  the  editor  for  the operating system's
+	command line. On typing "exit" or ^D, the screen is refreshed
+	and editing continues unaffected. The same as ! <return> from
+	the command line.
+
+   13.  ^KF
+	lists  all  files  in the current directory in columns on the
+	screen.
+
+   14.  ^KL
+	requests  a  directory  name and changes the "current working
+	directory" to the one given.  Any files then written  without
+	an  absolute  pathname  will  be  created relative to the new
+	directory's position.
+
+   15.  ^K?
+	Displays in a window some statistics  about  the  file  being
+	edited.  For example:
+
+	    Lines   Words   Punct.  Cntrl.  Sent.   L.O.C   Chars.
+	    1144    3176    5313    0       92      460     26043
+
+	L.O.C (Lines Of Code) simply counts the number of  semicolons
+	and  is  of  course meaningless for a document.  "Sent." is a
+	count of the '.', '!' and '?' characters.
+
+
+4.2.5  Justification
+~~~~~~~~~~~~~~~~~~~~
+In addition to ^QB,  there are a number of  commands  connected  with
+justification and paragraph format.  After any of these commands, the
+left and right margin columns are displayed on the scale line as  '<'
+and '>' overlaid in magenta.
+
+    1.  ^OL and ^OR
+	set  the  left  and  right margins respectively.  The current
+	cursor column is taken as the new margin.
+
+    2.  ^OJ
+	switches  right  adjustment on and off during formatting.  By
+	default both left  and  right  margins  are  adjusted.   With
+	adjustment  on,   gaps  between the words are padded out with
+	spaces until the end of the last word reaches the right  hand
+	margin.   Priority  is given to ends of sentences and comma's
+	when choosing gaps to add spaces to.
+
+    3.  ^OS
+	sets line spacing during formatting.  You are asked  for  the
+	number  of  blank lines to be inserted between each text line
+	which may be between 0 (the default) and 9. One (1) therefore
+	results in "double" spacing.
+
+    4.  ^OB
+	justifies text from the cursor position to  the  end  of  the
+	paragraph.   Paragraphs  are  ended  by a blank line,  a line
+	starting with a dot '.' (text formatter control  line)  or  a
+	line  starting with a control character.  The cursor does not
+	move on in  the  file.   Overhanging  or  initially  indented
+	paragraphs are simple, since formatting starts at the current
+	cursor column.  This is the  most  commonly  used  formatting
+	command. (WordStar had this as ^B, even in non-document mode,
+	which is too easy to type by mistake,  possibly wrecking much
+	code or data).
+
+    5.  ^OC
+	centres  the  current line within the margins.  An attempt is
+	still made even if the line is wider than the margins.
+
+    6.  ^OW
+	toggle  word  wrap  when  inserting text.  Text typed after a
+	right margin is moved (the entire word) to the next line.
+
+
+4.3  Quick Reference
+~~~~~~~~~~~~~~~~~~~~
+This listing may be obtained with the  keys  F1,   ^QJ  or  the  home
+command help (16bit DOS) or "hw".
+
+	SINGLE KEY COMMANDS
+^A      Word move left              ^N      Open blank line
+^B      Word delete left            ^Pc     Enter control character c
+^C      Page down                   ^R      Page up
+^D      Cursor right                ^S      Cursor left
+^E      Cursor up                   ^T      Word delete right
+^F      Word move right             ^U      Restore deleted lines
+^G      Delete character            ^V/Insert  Overwrite/insert mode
+^H      Delete character left       ^W      Scroll up one line
+^I      Horizontal tab              ^X      Cursor down
+^J      Save current line           ^Y      Delete current line
+^L      Repeat search/replace       ^Z      Scroll down one line
+^M      Split line                  ^N      Insert line
+
+	QUICK COMMANDS
+^Q DEL  Erase to start of line      ^QA     Search and replace
+^QB     Justify and move on         ^QC     Move to end of file
+^QD/End Cursor to end of line       ^QE     Cursor to top of screen
+^QF     Search for string           ^QGc    Find character
+^QH/Home        Cursor Home         ^QI     Move to line number
+^QJ/F1  Display help text           ^QK/F9  Recall home commands
+^QQ     Repeat command              ^QR     Move to top of file
+^QS     Cursor to start of line     ^QV     Match brackets/strings
+^QW     Fast repeat scroll up       ^QX     Cursor to bot. of screen
+^QY     Erase to end of line        ^QZ     Fast repeat scroll down
+
+	BLOCK AND SAVE COMMANDS
+^KA     Append block to file        ^KB/F2  Mark start of block
+^KC/F4  Copy from marked block      ^KD     Exit SE, stay in G
+^KE     Spawn shell                 ^KF     List files
+^KH     Home and move line to top   ^KK/F3  Mark end of block
+^KL     Change directory            ^KO     Re-read oldfile
+^KP     Print file                  ^KQ/F7/ESC      Abandon edit
+^KR/F4  Read in file                ^KS/F10 Save file
+^KU     Use (execute) edit file     ^KW/F3  Write block to file
+^KX/F8  Save file and exit          ^K?     Display file statistics
+
+	JUSTIFICATION
+^OB     Justify paragraph           ^OC     Centre current line
+^OL     Set left margin             ^OR     Set right margin
+^OS     Set line spacing            ^OJ     Toggle right adjust
+^OW     Toggle word-wrap
+
+
+4.4  Home Commands
+~~~~~~~~~~~~~~~~~~
+Any context editor command may be given from the command (home) line.
+The  screen will be redrawn after the command has terminated and will
+show the results of the command.  Should  the  command  require  some
+interaction  or  screen  output,  the screen is cleared and after the
+command has finished you are prompted before the screen is refreshed.
+
+If the file position is changed by the command the new position stays
+in effect. This enables you to use the context editor for positioning
+in the file.  On the other hand if you wish to view the results of  a
+command you have to return to the current position.  A convenient way
+of doing this is with the "@" verb:
+
+	(i/    / t)/}/ @
+
+This indents a C language subroutine - on the screen. The "@" verb is
+a short hand notation for "T#{@}".
+
+When a home command is executed the first line of the  screen  window
+becomes the current line.  This line is directly below the scale line
+which is useful while formulating column commands.  On termination of
+the command, the first line is again the current line.
+
+See  section 5.8 or HS (Help Shorthand) for some useful abbreviations
+of common positioning commands.  For example,  it is possible to move
+to  a particular line number by just typing the number on the command
+line and pressing return.  Similarly, you can find a string by giving
+/<string> and pressing return.
+
+
+5.  The Context Editor
+~~~~~~~~~~~~~~~~~~~~~~
+This is the basic framework of the editor.  It provides  positioning,
+searching  and  large-scale  changes  to the file.  For most work the
+screen-editor is easier to use.  Anything repetitive however is  best
+done  with  the  context  editor.  The context editor is driven by an
+"editing language" which has verbs, loops and conditionals.  Commands
+specified  in  this  language may be given on a line by line basis by
+the user at a terminal, passed as a command line option,  or they may
+be  prepared  in advance as a "batch" program and re-used many times.
+Most usefully, they are given from the screen editor home position so
+that the results may be seen immediately.
+
+The  context  editor  maintains  two temporary files,  the 'input' or
+'old' file and the 'output' or 'new' file.  During an  edit  text  is
+copied  from  the  old  to the new file as a conceptual pointer moves
+down the old file.
+
+This "selective copy" mechanism considerably simplifies  the  editing
+process.   Only  three  basic  operations  are  needed to achieve all
+possible editing actions:-
+
+Transcription   Move text unchanged to the output file.  The text may
+		come from any position in the input file.  The effect
+		is to move forward through the file without  changing
+		anything.
+
+Positioning     Move the pointer in the input file independently from
+		the output file.  The effect of this is to  duplicate
+		or  delete  text.  If the input file pointer is moved
+		forwards,  the text passed over will  not  be  copied
+		into  the  output file when copying is later resumed.
+		This deletes the text.  On the other  hand,   if  the
+		input  file  pointer were to be moved backwards,  the
+		same  text  would  be  copied  twice   (duplication).
+		Alternatively, the pointer may be positioned anywhere
+		in the input file,  a section of text copied  to  the
+		output  file and then the input file pointer returned
+		to its original position.
+
+Insertion       Add new text into the output file that has  not  come
+		from  the  input.   It is possible to insert multiple
+		records or just a few letters in a line.
+
+These three actions are invoked by the T, P and I verbs respectively.
+For example:
+
+    t20 p20 te
+
+deletes the lines 20 - 40 from the file, and:
+
+    t.10 i/hello/
+
+inserts "hello" in the tenth column of the file at the current line.
+
+There are a number of other verbs provided to  simplify  use  of  the
+editor, but the action of all text manipulation verbs may be resolved
+to the above three.
+
+When  the  pointer gets to the end of the old file,  the roles of the
+two temporary files are switched so that data just written out is now
+read  in  again  as the new "old file",  and what was the old file is
+overwritten by the new file.  This process repeats for as many  times
+as necessary during an edit. On entry to the editor, the disk file is
+copied directly to the first temporary file (the old file).  On exit,
+the  remainder of the old file after the pointer is copied to the new
+file which is written back to disk into either the original file,  or
+the  second file if two filenames were given on the command line.  If
+the edit is abandoned, the two temporary files are simply discarded.
+
+When the T verb is used  with  an  endpoint  that  specifies  a  line
+previous to the current one it does not copy backwards! The remainder
+of the old file is copied to the new file, the roles of the files are
+switched and copying resumes up to the endpoint specified. Thus "T-1"
+actually copies the entire file bar one line.  Although this  appears
+inefficient  the  files  are  held  internally  in a purpose designed
+virtual storage file system with  shared  data  -  the  operation  is
+instantaneous since (usually) no actual data is moved.
+
+
+5.1  Command Endpoints
+~~~~~~~~~~~~~~~~~~~~~~
+All  commands,   where it is meaningful to do so,  accept a qualifier
+which specifies for how long the command  is  to  be  repeated.   For
+example,  T1 says to transcribe one line,  T5 says transcribe 5 lines
+and TF/fred/ continues until a line Finishing with the word  fred  is
+encountered.   Similarly,  L5 says list the next five lines.  In this
+case, `5` is the end-point and `L` is the command (verb). In addition
+a group of commands may have an endpoint specified. For example, ( t1
+p-1 t1 )5 duplicates the next 5 lines,  '5' is the endpoint  for  the
+loop clause.
+
+The phrase 'context editor' implies that a particular part of a  file
+is  identified  by  the  text  that  it  contains and not by the line
+number,  thus,  string searching and pattern matching are fundamental
+to the action of such an editor. In fact G also permits references to
+absolute line-numbers and relative offsets or displacements from  the
+current position.
+
+Relative  positions  and  absolute  positions  may  usually specify a
+record that is previous to the current one.  String  searches  always
+take  place in the forwards direction and terminate at the end of the
+file.  Inside a particular line a similar set of  'endpoints'  apply.
+These  are  prefixed  by a '.' to distinguish them from operations on
+entire lines.  The column endpoints are more restricted (for  example
+the  TC  operation is meaningless) but are otherwise similar,  as are
+the commands that use them.
+
+Most commands and repetition clauses accept most endpoints to specify
+for how long the command or loop is to continue.  
+
+Strings to be matched are given as a sequence of characters  enclosed
+in delimiters, for example:
+
+    /London/
+
+Here the / character is used as a delimiter.  The delimiter character
+must not appear inside the  string,   and  may  be  chosen  from  the
+following set:
+
+    / : ? $ % & + ' " ` [ < ] > =
+
+If there are many occurrences of a particular string in a file it may
+be  useful to narrow down the search by applying certain constraints.
+These are called 'qualifiers'.  They appear as one or more characters
+in  front  of  the string.  For example,  the command LF/;/ lists the
+input file until a line Finishing with a semicolon is encountered. It
+is  possible  to  invert  a  condition  so  that for example,  LNF/;/
+continues listing until a line not ended with a semicolon  is  found.
+In practice the most commonly used qualifiers are C to stop at a line
+'Containing a string' and the default (ie.  with no qualifier)  which
+is to search for a line 'starting' with the string.  
+
+These  qualifiers are easy to use and cover most requirements.  There
+is however a much more comprehensive and  flexible  pattern  matching
+mechanism  available.   The  R  qualifier  causes  the  string  to be
+interpreted as a regular expression. In this form, there are a number
+of   special   'metacharacters'  that  direct  the  search.   Regular
+expressions may also be used with the After, Before and Replace verbs
+to  provide  more complex actions than just simple 'replacement',  by
+means of yet more metacharacters in the second (replacement)  string.
+The  regular expression notation is not simple and is not recommended
+for the faint hearted. For those who understand it however, the power
+offered  can  save  a great deal of work and even make possible edits
+that would otherwise be impracticable.  Section 5.7 describes regular
+expressions  in  detail.   They  are  the same as vi's but with minor
+extensions.  
+
+Finally,  here is a list describing the action of each endpoint.   In
+the  specification  the  delimiter / is used,  but it may be replaced
+with any of the G delimiters.  The letters used may be  in  upper  or
+lower case.  Letters within square brackets are optional.  References
+to "number" mean one or more decimal digits or any numeric expression
+enclosed  in  {}  (see  section  5.6).   This list is available in an
+abbreviated form from the 'he' verb (help endpoints).
+
+E           Continue until the end of the file is reached.
+
+[+/-]number Repeat the verb,  until "number" lines have passed in the
+	    forward  or  backwards direction.  For transcription type
+	    commands,  this  may  involve  a  complete  'wrap-around'
+	    through line zero.
+
+#number     Continue executing the verb until the  line  "number"  is
+	    reached  in  the  input  file.  The first line has a line
+	    number of zero.  It is usually possible to specify a line
+	    number that is previous to the current line.
+
+Onumber     Continue  executing  the  verb until the line "number" is
+	    reached in the output file.
+
+/string/    Continue forward to a line that starts with string.
+
+S/string/   Continue   forward   to  a  line  whose  first  non-space
+	    characters are string.
+
+C/string/   Continue forward to a line containing string.
+
+F/string/   Continue forward to a line that finishes with string.
+
+R/string/   Continue  forward  to  line  that  matches  the   Regular
+	    Expression.   See  section  5.7 for a full description of
+	    this type of endpoint.
+
+*number     The verb is executed "number"  times  regardless  of  how
+	    many   records  have  passed  by.   See  the  section  on
+	    repetition.  If number is missing,  the verb is  repeated
+	    until an error condition occurs.
+
+After one of the above moves, the G pointer is always left positioned
+at the start of the line. In the case of the E end-point this will be
+a line one more than the true last line of the file.
+
+The string type endpoints may have one or more of three options added
+in any combination.
+
+These are:
+
+    X   The string is to be specified in hexadecimal notation. Upper
+	or  lower case hexadecimal digits may be used and the string
+	is delimited in the normal way.
+
+    I   This causes case to be ignored in the search.
+
+    N   This causes the sense of the search to be negated.
+
+A  similar  notation  applies within a line except that references to
+'lines' in the description above are simply read  as  'columns'.   To
+indicate a column command, the entire endpoint is prefixed with a '.'
+(dot),  for example 'e' means to end of file,  '.e' means to  end  of
+line.   The  following  differences between line and column endpoints
+should be noted: 
+
+   .S   continue forward to the next non-space character.
+
+  .-S   move backwards to the last non-space character.
+
+  C/string/  F/string/  S/string/
+	these are meaningless within lines and are not accepted.
+
+The line and character parts of these qualifiers may be combined, for
+example:
+
+    pc/fred/./fred/
+
+will  delete  text  up  to  the start of 'fred' in the next line that
+contains 'fred' and:
+
+    ( t1.{++n} i/*/ )20
+
+inserts a slanting line of asterisks in the file.
+
+Finally, the forms:
+
+    W<endpoint>
+
+    U<endpoint>
+
+may  be  used.   These  repeat  the verb or loop "while" or "until" a
+condition is true.  The verify verb is called for every line, or each
+time round the loop. To find the next line in the file longer than 80
+characters: 
+
+    tu{ .$ > 80 }
+
+
+5.2  Control of Repetition
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+By enclosing any list of G verbs in brackets () they  form  a  repeat
+clause.  The list of verbs is repeatedly executed until a terminating
+"endpoint" is reached.
+
+It is possible to nest brackets.
+
+    (  (r/xyz/abc/).e  t1  )e
+
+In  the  above  example  are  introduced  two  of  the  many possible
+conditions that can cause a repeat clause to  terminate.   Without  a
+condition it is performed once.
+
+    The ).e says to the last character of the line.
+
+    The )e says to the last line of the file.
+
+So the above example means
+
+    Replace the string "xyz" by the string "abc" as many times as  it
+    occurs until the end of the line,  then move forward one line and
+    repeat all this until the end of the file.  
+
+Please refer to section 5.1 for a list of terminating conditions.
+
+The "*number" endpoint is intended for loop clauses.   The  following
+command will repeat the clause exactly 5 times regardless of how many
+lines have passed:
+
+    ( t5 )*5
+
+moves the pointer on 25 lines, whereas
+
+    ( t5 )5
+
+would  only  move  5  lines onwards.  The number may be an expression
+enclosed in {}.  Similarly, the V (verify) verb may be used in a loop
+condition (as the 'W' endpoint) providing a "while" loop facility.
+
+    ( i/abc/ t )w{ ++n < $/2 }
+
+This is complemented with 'U', continue "until" condition is met.
+
+There may be several unconnected repeat clauses in the  same  command
+line.  For example:
+
+    (tc/,/ (r/,/, /).e  t.#0  (r/,  /, /).e  t)e
+
+will place a space after each  ','  and  then  remove  any  resulting
+double spaces throughout the source file.  This is useful for tidying
+parameter lists.
+
+Repeat clauses can be used inside macros.  Here is a macro similar to
+the UNIX "grep" command:
+
+    c grep/%1/ (pr`%1` l0 p)e f
+
+Scanning the macro definition from left to right, grep is the name of
+the macro,  the character  %  will  be  used  in  the  definition  to
+introduce substitutable arguments and there is one argument.  This is
+followed by the macro body which says 'Position the pointer at a line
+matching the argument regular expression,  print this line,  skip it,
+and repeat the operation to the end of the file.  Finally, ignore the
+repositioning with the F (Forget verb).
+
+This macro may be called by a statement of the form
+
+    .grep/^#include/
+
+which lists all included files in a C module.
+
+The macro .grep is a built in G macro;  use HM or LM to get a list of
+macros  already  defined as they are good examples of how to go about
+things in G, albeit terse and without comments.
+
+When  G verbs are enclosed in brackets recoverable errors are ignored
+Syntax errors and  failing  to  open  files  are  fatal  even  within
+brackets.  Consider the statement:
+
+    r/xyz/abc/
+
+If this fails because xyz is not in the current line an error message
+is produced, and the cursor isn't moved, whereas
+
+    (r/xyz/abc/)
+
+would not fail,  but instead would leave the cursor at the end of the
+line, having not found "xyz".  When used to change all occurrences of
+"xyz" to "abc":
+
+    (r/xyz/abc/).e
+
+the loop terminates as expected.
+
+Repeat  clauses  do  not  accept  numerical endpoints that refer to a
+previous line.
+
+
+5.3  Conditional Execution
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The editing language allows departures from the  strictly  sequential
+order  in  which instructions are obeyed only within a bracketed list
+of G verbs. As mentioned above, recoverable errors are ignored within
+a  bracketed clause.  Normally execution continues with the next verb
+in the list.  Certain instructions however return a flag to  indicate
+failure  which  the editor then uses to take alternative action.  For
+example:
+
+    ( t/xyz/ i/abc/ )e
+
+Should the search for "xyz" fail,  the T verb returns a failure code.
+The  editor  reacts  to  this by scanning forward along the verb list
+within the clause until the closing bracket is found,  upon which the
+loop  is  terminated.   The  I  verb is skipped otherwise "abc" would
+incorrectly be inserted at the end of the file.  Clearly,  "(  i/abc/
+t/zyx/  )e"  would  also  be wrong it would incorrectly insert at the
+start of the file.
+
+When the error flag is raised the editor scans forward to the end  of
+the  clause.   It  will also stop if it finds a conditional separator
+';'.  The semicolon introduces an alternative list  of  verbs  to  be
+executed should the previous one fail.  On reaching the semicolon the
+error flag is reset by G.  When a semicolon is  encountered  and  the
+error flag is not set,  G skips forwards to the end of the clause and
+iteration continues in the usual way, discarding the alternative verb
+list.
+
+A  semicolon separated sequence of verb-lists is called a conditional
+clause.
+
+    ( verb_list_1 ; verb_list_2 ; verb_list_n )
+
+If the n'th list fails, execution commences with the next one.
+
+The V verb is used to test for a specific  condition  without  taking
+any action.  It simply sets the error flag appropriately.
+
+    ( v./0/ r/0/NO/ )
+
+checks to see if there is a '0' at the current pointer position,  and
+if there is replaces it with "NO". If there isn't no action is taken.
+
+    ( v./0/ r/0/NO/ ; r/1/YES/ )
+
+checks  to  see if there is a '0' at the current pointer position and
+if there is, replaces it with "NO".  If there isn't, a '1' is assumed
+and it is replaced with "YES".
+
+    ( v./0/ r/0/NO/ ; v./1/ r/1/YES/ ; d/error: 0 or 1 expected/// )
+
+is more refined, if the character is not '0' or '1', an error message
+is displayed.
+
+Conditional clauses may themselves be nested.  If a conditional  that
+has  failed  totally  (e.g.  there was no semicolon part) is embedded
+within another  conditional,   G  will  continue  the  search  for  a
+semicolon  starting  just  after  the  closing parenthesis as if any
+normal verb had failed.
+
+Another example:
+
+    ((vc/A/; vc/B/; vc/C/) p ; t )e
+
+deletes all lines that contain A or B or C in any order.
+
+    ((vc/A/ vc/B/ vc/C/) p ; t )e
+
+deletes all lines that contain A and B and C in any order.
+
+The  semicolon  character  is  also used to denote comment lines only
+when it is the first character on the line.
+
+While  "v#50"  may  be  used to check that the editor is currently at
+line 50,  "v50" or "v{50}" do not check that 50 records have passed -
+its  meaningless.  Instead the value is compared with zero.  If it is
+zero the error flag is set, anything other than zero is success.  The
+conditional  operators  in expressions return 1 for a true condition,
+and zero on a false condition. In fact the handling of conditions and
+truth values is identical to that in C.  For example:
+
+    ( v{ # < $ - 10 } i/fred/ )
+
+Inserts "fred" only if the current line is not close to  the  end  of
+the file.
+
+    ( v{ # & 1 } i/odd/ t ; i/even/ t )e
+
+Inserts "odd" or "even" as appropriate in front of each line ('&'  is
+the  bitwise  "and"  operator - the modulus or remainder operator '%'
+could have been used instead: "# % 2" ).
+
+To force an error condition, the construct  v0  may be used.
+
+
+5.4  The G Verbs
+~~~~~~~~~~~~~~~~
+Here  is  an in-depth description of all the G editing verbs.  In the
+specifications the / delimiter is used, but it may be replaced by any
+G  delimiter.  In all cases,  there is never any gap between the verb
+letter and its argument (endpoint,  option,  or filename).   Anything
+appearing between [ and ] is optional, the [] should not be given.
+
+5.4.1  A - After string1 put string2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    A [R] delim string1 delim string2 delim
+
+The A verb is used to place a piece of text after the next occurrence
+of  a  specified  piece of text in the input line.  The search starts
+from the current cursor position.
+
+    a/flopp/y-disk/
+
+This will copy the input line until the text 'flopp' has been  copied
+and  then  insert the text 'y-disk' generating the text 'floppy-disk'
+in the output line.  The pointer is left immediately after  the  text
+'flopp' in the input line.
+
+A  second form of the command causes the strings to be interpreted as
+regular expressions:
+
+    ar/hello,/ & &/
+
+produces "hello,  hello,  hello,".  In general RE's provide increased
+flexibility  at  the  expense  of  simplicity.  See section 5.7 for a
+definition of the RE forms provided.  The  qualifier  R  is  used  to
+indicate that the strings are regular expressions.
+
+
+5.4.2  B  -  Before string1 put string2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    B [R] delim string1 delim string2 delim
+
+The B verb is  used  to  place  a  piece  of  text  before  the  next
+occurrence of a specified piece of text.
+
+    b/shore/sea/
+
+This will copy the input line up to but excluding the  text  'shore',
+then insert 'sea' into the output line. The cursor is left before the
+text 'shore' in the input line, although 'sea' has been placed in the
+output line.
+
+When  the  line  is  displayed,   the  cursor  character ( | ) is now
+positioned under the letter "s" of the text "shore".
+
+As with the  A  verb  an  R  qualifier  causes  the  two  strings  to
+interpreted as regular expressions - see section 5.7 for details.
+
+
+5.4.3  C  -  Create a new macro
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    C Macro-name/Substitution-markerNumber-of-args/Macro-body
+
+The  C verb is used to create or redefine a Macro.  The definition is
+terminated by a newline.  C must therefore be  the  last  verb  in  a
+command line.
+
+Macro-name
+
+    a name of  any  length  of  which  the  first  4  characters  are
+    significant.
+
+Substitution-marker
+
+    any character not used as itself in the macro body which acts  as
+    a signal to indicate argument substitution.
+
+Number-of-arguments
+
+    a digit in the range 0 to 9 specifying the number of arguments to
+    be picked up when the macro is called.
+
+Macro-body
+
+    any sequence of G verbs terminated by a newline.
+
+As an example,  here is a macro that will change all occurrences of a
+target string to a second string starting at the current line in  the
+file to the end of the file.  This is a pre-defined macro.
+
+    c c/#2/ (tc/#1/  (r/#1/#2/).e  t)e @
+
+This creates a macro called 'c' which accepts two arguments  and  may
+be called as follows
+
+    .c/public/private/
+
+the  above  will change all occurrences of the string "public" to the
+string "private" from the current line to the end of the file.
+
+The G verb LM may be used to display a list of the pre-defined macros
+and any others created.
+
+
+5.4.4  D  -  Display values
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The  D  verb may be used to Display text and numbers on the terminal.
+It is intended to allow user interaction and  comfort  messages  from
+within a batch edit.
+
+The verb has exactly the same syntax as the  I  (insert)  verb  below
+except that the A, B and !  options are not supported, and there is a
+new option DP which causes the editor to pause until the user has hit
+return.  Apart from that, D may be thought of as an I verb that sends
+text to the screen rather than the output file.
+
+For example:
+
+    d/About to delete fred.c//Press control-C to abort///
+    dx/07/ dp
+    !rm fred.c
+
+Dx/07/ outputs the ASCII "bell" character to wake up the user. Dc{07}
+could also have been used.
+
+Of course D, like I, may be used in a loop
+
+    (d/*/)*80
+
+outputs a row of asterisks, and
+
+    (d{x++ % 10})*80
+
+outputs a row of digits as a template.
+
+
+5.4.5  E  -  End the edit
+~~~~~~~~~~~~~~~~~~~~~~~~~
+The E verb causes the editor to complete the edit and  write  to  the
+specified  file.   Until  this verb (or the Save) verb) is used,  all
+edits performed have been performed on internal work files.  You  may
+therefore,   if  you wish,  use the Q (Quit) verb and leave your file
+unchanged.
+
+The E verb copies any lines remaining in your file to the  new  file,
+and then copies the entire new file to your specified disk file.
+
+
+5.4.6  F  -  Forget last command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The F verb undoes the effect of the previous command line. The F verb
+is able to undo the effect of all G verbs, except M(MERGE),  S(SAVE),
+U(USE),  X(Exit),  T-n and T#n where n <= current line number because
+the above verbs themselves alter the information used by F.  This  is
+also true for screen editor home area commands.
+
+Certain G verbs do not update the file position information  if  they
+appear as the first verb in a command line.  They are L,  *,  = and F
+itself.  This is to allow you to  look  ahead  in  the  file  without
+committing  yourself  to  keeping  the effect of the previous command
+line.
+
+
+5.4.7  G  -  Edit another file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    G g-command-line
+
+The G verb is identical to the G editor invocation itself. In fact it
+merely invokes the G editor as a separate task.  This is very  useful
+for  such  activities  as  processing lint output for multiple files.
+Pipe the lint output into G,  e.g.  "lint *.c | g" and  go  down  the
+listing using the G verb to edit files in error.
+
+The G verb is terminated by a newline.  G must therefore be the  last
+verb in a command line.
+
+The "grep" command also works in the same way.
+
+
+5.4.8  H  -  Help
+~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    H [option letter]
+
+The  H  verb  displays  on the screen a limited amount of information
+about G. These 'memory joggers' are not a substitute for this manual,
+they are quick references in the form of small tables.
+
+On UNIX or 32bit MSDOS, help displays the following table:
+
+    ha ... The Arithmetic subsystem
+    hd ... G Delimiters
+    he ... List the available End-points
+    hl ... Line-Editor key strokes
+    hm ... The pre-defined Macros
+    hr ... Summary of the Regular Expression syntax
+    hs ... Shorthand forms
+    hv ... Context-Editor Verbs
+    hw ... Screen-Editor key strokes
+
+After which typing "hw" lists the WordStar screen editing keys.   The
+16bit MSDOS version of G only provides help on the screen editor.
+
+
+5.4.9  I  -  Insert
+~~~~~~~~~~~~~~~~~~~
+The  I  verb  may  be  used  to insert a string at the current cursor
+position in the line as follows:
+
+    i/a string/
+
+To insert a new line at the current cursor position you  must  double
+up  the  delimiter  as below.  This causes the text up to the current
+cursor position to be written to the file,  and  the  remaining  text
+moved to the beginning of the input line.
+
+    i////
+
+To insert a string, a newline, and another string you may use:
+
+    i/now for a new line//this carries on/
+
+G  calls  the  above type of insertion a multirecord insert.  You may
+insert any number of records using this technique,  subject  only  to
+the maximum length of a G command line.
+
+The  I  verb  may  also  be  used  to insert lines before the current
+pointer position as follows, although the IA and IB verbs are usually
+used for inserting a block of lines.
+
+    i/here is line one
+    /here is line two
+    /this is left in the edit buffer/
+
+The delimiter at the start of each line is a prompt printed by G.  To
+finish a multiple line insert you must type a line that finishes with
+the delimiter.
+
+Other forms of the insert verb
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+IA, IB   -   Insert After or Before the current line.
+
+The IA verb inserts a block of  lines  after  the  current  line  and
+leaves the editor positioned at the start of the next line.
+
+The IB verb inserts a block of lines  before  the  current  line  and
+leaves the editor positioned at the start of the current line.
+
+To  identify  that it is the IA or IB verb which is requesting input,
+each outputs a special prompt A?  or B?  for each line of text. Input
+is finished when you type a null line.
+
+Both  the  IA and IB verbs return to process the rest of the verbs on
+the current command line when insertion is finished.  For example
+
+    tc/main(/  l0  ib  tc/sub1(/  l0  ib  ia
+
+will copy to a line containing "main(" list it,  and accept input  to
+be placed before it.  Next, it will copy to a line containing "sub1("
+list it, and insert lines before and after it.
+
+The  IA  and  IB  verbs  may  be  followed by a $ to produce a column
+numbered template.  You then simply need to align the insertion  that
+you type under the columns of the template.
+
+I[C]{ numerical expression }   -   Insert a number.
+
+This form  of  the  I  verb  inserts  the  result  of  the  numerical
+expression  in  the  curly  brackets  into  the  file starting at the
+current position.  Floating  point  calculations  may  be  used.   To
+line-number a file for example:
+
+    ( i{#+1} i/ / t )e
+
+This  phrase  inserts the current line number which is represented in
+the calculator as a variable named  '#',   in  front  of  every  line
+followed  by a single space.  Remember that G line numbers start from
+zero, hence the '+1'. See section 5.6 for details of arithmetic in G.
+If  the result of the expression is integer you may choose the format
+of the inserted number. For example it is possible to specify a field
+width, leading zeros, and left or right alignment. The N verb is used
+to control the format.  The opposite action to this - read  a  number
+from  the  text into a calculator variable - is achieved with a built
+in macro called ".num".
+
+The "C" option here causes a  simple  insertion  (one  byte)  of  the
+binary value resulting from the expression.  To insert the "alphabet"
+for example:
+
+    {c = 'A'} ( ic{c++} )*26
+
+Within an expression,  the variable '*' contains  the  value  of  the
+character  in  front  of  the G pointer.  To replace it,  you have to
+insert the new value and then delete the old.  For example the parity
+bit may be cleared throughout a file with:
+
+    ((ic{ * & 0x7F } p.1).e t)e    /* part of the .clear macro */
+
+or alphabetic characters converted to upper case with:
+
+    ic{ * >= 'a' && * <= 'z' ? * + ('a' - 'A') : * } p.1
+
+In practice,  case conversion is much simpler with Regular Expression
+replacement (see the .u and .l macros).
+
+I!process   -   Insert the standard output of a process.
+
+The  process may be given as a simple UNIX command,  or it may be any
+UNIX shell command line enclosed in quotes.  For example:
+
+    i!`grep "^[0-9]" fred.doc`
+
+while  editing  "fred.doc"  might  be  used  to  collect  all section
+headings into one place.
+
+    i!date
+
+inserts the current date and time.
+
+    i!"ls *.c | sort"
+
+inserts a sorted list of file names before the current line.
+
+This option is not supported on DOS.
+
+IX/string/   -   Insert a hexadecimal string.
+
+"string"  may  contain  any values.  If a newline character (0x0A) is
+inserted, the line is split and is equivalent to i////.
+
+    IF   -   insert filename (the "old" file).
+
+    ID   -   insert date and time.
+
+This  is the same as I!date except that no newline is appended and is
+much faster (and is supported on MSDOS).
+
+
+5.4.10  J  -  Join
+~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    J[0]
+
+This verb joins the next line to the end of  the  current  line  with
+exactly  one  space separating the last word in the current line from
+the first word of what was the next line.
+
+To join lines without altering spacing, the commands:
+
+    t.e p
+
+may be used instead.
+
+The  special  case  J0  is  taken  to  mean "join the current line to
+itself", that is, to duplicate it.
+
+
+5.4.11  K  -  Kill
+~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    K line-endpoint
+
+The K verb allows you to delete the current line and optionally lines
+from the input file. There is no effect on the position of the output
+file.  The cursor position is left at the start of  the  line.   This
+differs  from  the P verb only in that it does an initial T.#0.  This
+ensures that whole lines are deleted.
+
+It is not possible to  Kill  backwards.   Column  endpoints  are  not
+meaningful  and are not permitted.  `K0` is permitted but serves only
+to move the pointer to the start of the line,  no lines  are  deleted
+(equivalent to T.#0).
+
+
+5.4.12  L  -  List
+~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    L forwards-line-endpoint
+
+The  L  verb allows you to list the current line and optionally lines
+from the input file. There is no effect on the position of either the
+input or output file.
+
+To list the current line,  use `L0`.  This line may be in a partially
+edited form, in which case its current content is listed.
+
+The L verb is also used to turn on or off  a  listing  switch  for  G
+produced messages, and to display various information.
+
+None of the column end-points are supported,  and it is not  possible
+to list backwards.
+
+Syntax of L verbs for other functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LON   -   turn  system  message  listing on - it is turned off by the
+	  system when G commands are being read from  an  Edit  file,
+	  and back on again when input returns to the terminal. It is
+	  also turned off while in the Screen editor.
+
+LOFF  -   turn system message listing off.
+
+LM    -   list the definitions of all macros.
+
+LD    -   display details of all open files.
+
+LH    -   list the command history.
+
+LS    -   display statistics (words, sentences etc.) of the old file.
+
+LX    -   display  the current line in hexadecimal.  The ASCII values
+	  and offsets are also displayed.
+
+L0    -   is a special endpoint that lists the current  line  out  in
+	  its  entirety  and without the leading two spaces.  L0 does
+	  not  try  to  make  any  control  characters  in  the  line
+	  printable.  Thus "(l0 t)e" prints the complete file exactly
+	  as is.
+
+
+5.4.13  M  -  Merge from file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    M filename or M ! command
+
+The M verb permits the inclusion of text from other files before  the
+current  cursor  position.  It is possible to nest merge files to any
+depth.
+
+Each time the M verb is used,  the state of the current input file is
+saved and the specified file opened in its place.   G  positions  its
+line  pointer  at line zero of the new input file.  You may use any G
+verb to manipulate a merge file except T-n or T#n with 'n' less  than
+current line number.
+
+The XM verb is used to close the most recently opened merge file.  XM
+does not copy the lines remaining in the merge file but simply closes
+the  merge  file  and  then  restores the state of the previous input
+file.  The cursor is left in the position it was  in  before  the  XM
+command was issued, making it possible to merge individual characters
+from a file.
+
+The  E verb will cause all lines remaining in each open merge file to
+be copied to the output file in turn starting from the most  recently
+opened merged file to the original input file.
+
+The following example places 5 lines of text from file1, 7 lines from
+file2,  the remainder of the text from file1 and some input from  the
+terminal before the current line.
+
+    mfile1 t5 mfile2 t7 xm te xm ib
+
+If the filename is omitted, the transient file is merged from.  It is
+also possible to merge from the output of a command:
+
+    m!cal,te,x
+
+inserts a calendar for the current month into the file.  This is  the
+the same as the I!  verb,  but instead of inserting the entire output
+of the command,  with 'm' and 'x' you can choose to  insert  selected
+portions of it, repeat parts, or insert text part way through.
+
+It is not possible to edit a merge file with the screen editor.  This
+means in practice that all save and merge operations must be complete
+before re-entry into the screen editor.  For example:
+
+    mmain.c te xm
+
+is fine from the screen editor home area, but:
+
+    mmain.c t50
+
+alone is not, the edit will be left in line mode.
+
+
+5.4.14  N  -  Numbers
+~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    N or Nformat
+
+Listings  resulting  from  the  L verb may have line numbers down the
+left hand edge of the screen.  This feature is switched  on  and  off
+with the N verb. Line numbering is switched on by the first use of N,
+and off again by the second, that is, it acts as a toggle.
+
+The effect of the N verb is different if an argument is given.  N now
+alters format of numbers printed. It also affects the result of the I
+verb  when the result of a numeric expression is to be inserted.  The
+argument in this case is a 'C' language printf style  format  for  an
+integer field of the form:
+
+    N[-][0]digits
+
+The  number  is  normally  printed  in  a  field  <digits> wide right
+justified and space filled.  A hyphen causes left justification.   If
+the  digits  start  with  a zero leading zeros are printed instead of
+spaces.  The default is simply to print the  number  in  the  minimum
+field  width  possible.   Note  that for expressions that result in a
+floating point value there is no choice of format.
+
+    N06   Results in "000123" or "000000"
+
+    N6    Results in "   123" or "     0"
+
+    N-6   Results in "123   " or "0     "
+
+    N1    Results in "123"    or "0"
+
+    Nx    Results in "7b"     or "0"
+
+    N04X  Results in "007B"   or "0000"
+
+and so on.
+
+
+5.4.15  O  -  Restart an edit session
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    O[filename]
+
+The O verb restarts the edit with the file given as the argument. Any
+changes to the file are discarded.  If no file is given, the original
+file (or the result of the last O command) is reloaded.  In this case
+both the input and the output file names are unchanged. Otherwise the
+output file name is changed to be the same  as  the  new  input  file
+name.
+
+This verb is useful when viewing several files,   when  the  original
+file name was mistyped (saves leaving and re-entering the editor), or
+when trying a complex context edit command.   In  the  last  case  of
+course  the command history is preserved so that (in screen mode) you
+can try a command,  if it fails just type O,  and F9 to  recover  the
+command.  Edit the command in the normal way and try again.
+
+
+5.4.16  P  -  Position
+~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    P line-endpoint and/or column-endpoint
+
+The  P  verb  allows  you  to move forwards or backwards in the input
+file.  By moving forwards you delete the lines you pass over as  they
+are  not  written  to  the  output file.  By moving backwards you can
+access   the   original   lines   again   allowing   duplication   or
+re-arrangement  of lines.  The pointer is always left at the start of
+the line.  In the case of PE this is a line one past the last line of
+the file.
+
+The  P  verb  also  allows  you  to move forwards or backwards in the
+current line.  By moving forwards you delete the characters that  you
+pass  over  as  they  are  not  copied to the output line.  By moving
+backwards you can  access  the  original  characters  again  allowing
+duplication or re-arrangement of words.
+
+P  and  T are the only verbs that permit the line and column parts of
+the endpoint to be combined, for example:
+
+    ps/subroutine/  p.s
+
+which skips all lines until a line whose first  non-space  characters
+are 'subroutine' and then skips the leading spaces, may be written as
+
+    ps/subroutine/.s
+
+
+5.4.17  Q  -  Quit
+~~~~~~~~~~~~~~~~~~
+The Q verb abandons the current edit, leaving the files unchanged.
+
+Use  the  Q  verb after viewing a file or when an edit has gone badly
+wrong.  In particular,  when using G as a replacement for  "more"  or
+"pg"  at  the  end of a pipe-line use the quit verb to stop G writing
+all the text to the screen.
+
+
+5.4.18  R  -  Replace string1 with string2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    R [R] delim string1 delim string2 delim
+
+The  R verb is used to replace the next occurrence of a piece of text
+in the input  line.   The  search  starts  from  the  current  cursor
+position.
+
+    r/sin(x)/cos(x)/
+
+This will copy the input line up to the text 'sin(x)' delete  it  and
+then insert the text 'cos(x)' in its place in the output line.
+
+The  cursor  is left immediately after the text 'sin(x)' in the input
+line.
+
+The R verb also accepts the R qualifier to cause the two  strings  to
+be interpreted as regular expressions.
+
+    ls  |  g '-(rr/.*/lp & -t&/ t)e e'  |  sh
+
+This is a UNIX command to print all the files in a directory with the
+filename as the title on the cover sheet.  Ls generates the  list  of
+names  and  pipes  it  through G acting as a filter.  G converts each
+filename into an LP command with the title option  (-t)  set  to  the
+file  name.   At  the  end  of the pipeline is a shell to execute the
+resultant list of commands.
+
+Two more complicated examples of regular expressions follow:
+
+    .r/\<[a-zA-Z]*\>/\U\l&/
+
+forces all words in a file to be in lower case with an initial capital
+letter, and
+
+    rr/\([a-z]*\) *\([a-z]*\)/\2 \1/
+
+swaps adjacent words.
+
+In general, there are some edits that fall naturally into the regular
+expression  domain  and  others  that are easier with standard George
+notation.  The above two examples would  be  somewhat  tedious  using
+simple strings and P/T.
+
+
+5.4.19  S  -  Save to file
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    S option filename or S ! command
+
+The save verb provides a method of saving chunks of  text  from  your
+input file into an alternative output file.  This makes cut and paste
+type  operations  possible  without  resort   to   complicated   file
+positioning operations with P/T.
+
+The format of the save verb is
+
+    SNfilename  -  save  creating  a  New  file  or  overwriting  an
+		   existing  file.   If  no  filename is given,  the
+		   transient file is saved to.
+
+    SAfilename  -  save Appending to an existing file (if  the  file
+		   does not exist, it is created).
+
+    S           -  save to the transient file (same as SN  with  the
+		   filename omitted).
+
+    SQ          -  quit  the current save file,  delete it and leave
+		   the output file unchanged.
+
+The save verb may be used to open several different files during a  G
+edit and more than one save file may be open at the same time, nested
+to  arbitrary  depth.   The  most  recently opened one is the current
+output file.
+
+Each  invocation of the save verb saves the position and state of the
+current input and output files before the specified  output  file  is
+opened.   When  the  save  file is closed (see the XS verb) the saved
+state of the input and output files are restored.
+
+The following example copies 9 lines from the current position in the
+input file and inserts them again 20 lines further along.
+
+    s  t9  x  t20  m  te  x
+
+It is also possible to save to the standard input of a command:
+
+    s!lp t/end/ x
+
+writes  text  up  to  a line starting with "end" to the printer.  The
+command is specified in the same way as for the I and M verbs.
+
+Restrictions
+~~~~~~~~~~~~
+Neither the E verb nor transcribing to an earlier line  are  possible
+when  a  save file is open.  It is not possible to *edit* a save file
+within the screen editor.
+
+Because both the save and merge verbs save the state of the editor so
+that XS and XM can restore it, the S and XS,  and M and XM verbs must
+be used as a matched pair.  For example:
+
+    SNfil1 Mfil2 TE XM XS   is legal
+
+whereas
+
+    SNfil2 Mfil1 TE XS XM
+
+will produce an error message when the XS verb is encountered.
+
+
+5.4.20  T  -  Transcribe
+~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    T line-endpoint and/or column-endpoint
+
+The T verb allows you to copy lines from  the  input  to  the  output
+file.   This  copying  operation  is always carried out in a forwards
+direction.  You may however specify a negative  number  of  lines  to
+transcribe or an absolute line number before the current line number.
+In this case the T verb is interpreted to mean:  copy the input  file
+to  the output file,  switch files and then transcribe to the implied
+or specified line in the new input file.  The pointer is always  left
+positioned at the start of the line. In the case of TE this will be a
+line one more than the true last line of the file.
+
+The T verb also allows you to copy across characters from the current
+line.   Transcribing  to  a column number previous to the current one
+causes G to copy across all characters remaining in the  input  line,
+it  then  repositions the pointer at the start of the resulting line,
+and transcribes to the specified column.
+
+The line and character parts of the T  verb  may  be  combined,   for
+example:
+
+    t50  t.20
+
+which  copies  50  lines and then copies up to the 20th column may be
+written as
+
+    t50.20
+
+All combinations are accepted.
+
+
+5.4.21  U  -  Use edit file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    U filename or U ! command
+
+The  Use  verb enables you to execute G edit commands (which includes
+the macro creation verb "C" ) from a file.
+
+The U verb may be followed by other G verbs on the command line.  The
+G  verbs on the command line are executed after the commands from the
+file have been executed.  A use file may itself contain U verbs which
+may be nested to any depth.
+
+The G command line
+
+    Ueditfile1   Ueditfile2
+
+will read  commands  from  editfile1  and  then  read  commands  from
+editfile2 as expected.
+
+Any syntax error detected in an editfile abandons all  editfiles  and
+returns to the terminal for input, as does pressing the break key.
+
+Use or "edit" files have an  extension  ".g".   If  the  filename  is
+omitted the transient file is assumed.
+
+Finally,  here is a example of a real life edit  file  to  do  simple
+processing  of  WordStar documents for a particular printer.  It also
+takes a prototype page header with "Page %p of %t"  somewhere  in  it
+from  the  start  of  the file and introduces it at the start of each
+page (denoted by a ".pa" directive).  In  each  header  the  "%p"  is
+replaced  by the page number and "%t" is replaced by the total number
+of pages in the document.
+
+    ;
+    ;   Process simple WordStar document for an OKI laser printer.
+    ;
+    ;   Macro to process page headers
+    cpage/%0/ ix/0C1B54/ mwsp.hed tc/%p/./%p/ p.2 i{++p} t./%t/ p.2
+	      i{t} te xm ix/1B49/ t
+    ;
+    ;   Save the header in a temp file and replace with .pa in file
+    snwsp.hed t/.eh/ xs p/.eh/ p.3 i/.pa/ t#0
+    ;   Count pages
+    {t=0} (t/.pa/ {++t} t)e t#0
+    ;   Insert page throws and page headers.
+    {p=0} (t/.pa/ p.e .page t)e t#0
+    ;   Bold sequences
+    (tx/02/ (t.x/02/ p.1 ix/1B54/ t.x/02/ p.1 ix/1B49/).e t)e t#0
+    ;   Underlining
+    (tx/13/ (t.x/13/ p.1 ix/1B43/ t.x/13/ p.1 ix/1B44/).e t)e
+    ;   Final formfeed
+    ix/0C/
+    ;
+    ; delete the header temp file
+    !rm wsp.hed
+    e
+
+Like the I,  M,  and S verbs, U accepts a system command instead of a
+filename.
+
+
+5.4.22  V  -  Verify
+~~~~~~~~~~~~~~~~~~~~
+V  verb is used to check your position or data.  Within a conditional
+clause it is used to set the error flag without  taking  any  action.
+Outside of a conditional (e.g.  outside of brackets),  V generates an
+error message and aborts the command on failure and does nothing  for
+success.  It thus acts as an assertion.
+
+V  accepts most endpoints with the following meanings.  References to
+"number" mean one or more decimal digits or  any  numeric  expression
+enclosed in {}.
+
+number      the  check  returns  success  for  any  non-zero  number,
+	    failure otherwise.  This is very useful if "number" is an
+	    expression, when the all the 'C' relational operators may
+	    be used.  V0 may be used to force a failure condition.
+
+#number     success  if  the  input  file  record  number  is exactly
+	    "number".
+
+Onumber     ... the output file record number is exactly "number".
+
+/string/    ... the line starts with string.
+
+S/string/   ... the line's first non-space characters are string.
+
+C/string/   ... the line contains string.
+
+F/string/   ... the line ends with string.
+
+R/string/   ... the line matches the Regular Expression.
+
+E           ... that the editor is at EOF.
+
+The string type endpoints accept the usual options (X, I and N).  The
+column versions of these endpoints work as expected except that:
+
+.S          means check that the next character is a space.
+
+.-S         means check that the previous character is a space.
+
+
+5.4.23  W  -  Display Window around current line
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The W verb displays the current line with eight lines  of  text  from
+the  output  file  before it,  and eight lines of text from the input
+file after it.  This is useful in line mode to see the context of the
+current line.
+
+
+5.4.24  X  -  Exit Merge/Save/Use
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    X option
+
+The X verb is always used in combination with a file M, S or U.
+
+The format of the X verb is
+
+XS  -  close the currently open save file
+
+XM  -  close the currently open merge file
+
+X   -  close the most recently opened save or merge file
+
+XU  -  close the currently open use file (e.g.  "return" from an edit
+       file)
+
+XT  -  the transient file becomes the currently open save file
+       any disk file given as an argument to the original save
+       verb is untouched.
+
+XQ  -  close the currently open save file and discard its contents.
+
+X|delim command delim
+    This option feeds the saved text into the standard input  of  the
+    "command".  The same number of records are skipped in the the old
+    file (deleted).  Standard output from the command is then written
+    to  the  new file.  This has the effect of filtering text through
+    the command. The UNIX sort command is the obvious candidate here.
+    For  example:   s  t50  x|"sort -rn" sorts the next 50 records in
+    reverse numeric order. The delimiters may be omitted for a simple
+    command, for example x|sort. It is recommended that only a simple
+    T verb be used between the S and the X.  This verb is most easily
+    and  usefully  called  from the screen editor via ^K|.  X| is not
+    available on MSDOS.
+
+Trying  to  close  a file that hasn't been opened or closing files in
+the wrong order draws an explanatory error message from the editor.
+
+
+5.4.25  Y  -  Translate text
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    Y delim string1 delim string2 delim
+
+The Y verb translates one character. The character is copied from the
+old file to the new file and should  it  occur  in  string1,   it  is
+replaced with the character in the corresponding position in string2.
+
+    ((y/;:.,?/     /).e  t)e
+
+replaces punctuation with spaces in the file.
+
+
+5.5  Supplementary Commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5.5.1  .  -  Call a macro
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Synopsis:
+
+    .Macro-name/Arg1/Arg2/Arg3/------/Arg9/
+
+The . verb is used to invoke a previously defined macro command.
+
+Macro-name    a name of any length of which the  first  4  characters
+	      are significant.
+
+/Arg1...Arg9/ a possibly empty list of string arguments. If there are
+	      no arguments,  there must be  no  delimiter  after  the
+	      macro-name. The number of arguments must agree with the
+	      number specified in the definition.
+
+
+Related G verbs
+~~~~~~~~~~~~~~~
+C     -   Create or redefine a macro.
+
+LM    -   List all macros currently defined.
+
+
+5.5.2  :  -  Screen Editor
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+Colon is used to switch between the screen and single  line  mode  of
+working and vice-versa. An implicit : is assumed on invocation of the
+editor unless a edit command  (-c  option)  is  given  on  the  shell
+command line. However, it is possible to execute some commands before
+entering the screen editor:
+
+    g design.doc -t500,:
+
+starts editing at line 500 for example.
+
+
+5.5.3  !  -  Execute system command
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is a  means  of  escaping  to  the  host  operating  system  and
+executing a command there.  For example:
+
+    !mail fred
+
+might be useful in the middle of an edit.  A very common usage is  to
+invoke the editor itself.  In this case, the '!' may be omitted - see
+the G verb.  (In fact this works for any command starting with 'g'  -
+grep  being  the  obviously useful example).  In all cases command is
+taken to be the rest of the command line,  so '!' must  be  the  last
+command on the line.  If no command is given, an interactive shell is
+spawned.  Upon exit from the shell (^D or exit),   you  are  prompted
+before the screen is refreshed.
+
+
+5.5.5  @  -  Return to previous position
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is shorthand for the very commonly  used  t#{@}  sequence.   The
+editor  always  leaves the file pointer wherever it was on completion
+of the command.  If it is desired to view the results of the  command
+the  @  may  be  used as a short cut back to the position in the file
+when the command line commenced.  Although this is most commonly used
+from  the  screen editor where the results of the command line may be
+immediately displayed,  it is also used by built in  macros  such  as
+".c".  This is one of many shorthand forms described in section 5.8.
+
+
+5.5.6  $  -  Scale
+~~~~~~~~~~~~~~~~~~
+This verb has a toggle action,  use it once to switch on  the  column
+numbered  scale and a second time to turn it off.  It is only used in
+line mode. Followed by a single digit, it switches the portion of the
+line to be displayed.
+
+
+5.5.7  =, *  -  History
+~~~~~~~~~~~~~~~~~~~~~~~
+An '=' (equals) as the first and only letter on a command line causes
+the previous command line to be re-executed. A '*' (asterisk) has the
+same effect, but does a T1 (Transcribe one line) first. The new state
+is  not  remembered,  so it is possible to return all the way back to
+the edit state when the original command was given  with  the  Forget
+verb.
+
+
+5.5.8  ;  -  Comment
+~~~~~~~~~~~~~~~~~~~~
+Any  command  line  starting  with  a semicolon ';' is discarded by G
+which just goes on to read the next command.  This is very useful for
+documenting  batch  edit  files.   The  semicolon is also used as the
+conditional separator within parenthesised command lists.
+
+
+5.6  {}  -  Arithmetic
+~~~~~~~~~~~~~~~~~~~~~~
+This provides a calculator facility. The result of the expression may
+be displayed for information,  that is, used as a desk calculator, or
+be  discarded,   in  which  case  the  expression  is  used  for  its
+side-effects such as setting or incrementing variables.
+
+Expressions  are enclosed within curly braces:  "{ expression }".  If
+the closing brace is omitted,  the calculator goes  into  interactive
+mode.  In this mode, the results are displayed in several formats and
+the user may type in any number of expressions.  The calculator exits
+when a null (empty) command is given or then a closing curly brace is
+typed.
+
+When a closing brace is given and the expression fits on one  command
+line the result is computed silently.
+
+All the operators standard in the language C are available, including
+the  query  ('?'  ':')  and  comma  ','.  The operators have the same
+precedence (priority) as in C.  Parentheses  may  be  used  to  force
+evaluation  in  a  particular  order  and  may be nested to arbitrary
+depth.
+
+The  calculator  operates  on  integer  (32  bit),  and real (64 bit)
+operands.  The data type is determined from the numbers  given,   the
+usual rules for expressing numbers apply. If the data types are mixed
+all  integer  operands  are  promoted  to  real   before   execution.
+Expressions  whose  value  is  to  be  used as an endpoint and with a
+floating point result are truncated to an integer.
+
+There are 26 variables for storage of results  and  some  pre-defined
+constants.   All  variables  are  initialised to zero on entry to the
+editor but retain their values between calls to the calculator.   The
+names available are:
+
+    a ... z
+    A ... Z   user settable variables.  Case is not significant.
+
+    .         is assigned the result of the previous expression,
+	      useful for chain calculations.
+
+    #         is the current record number (in the old file).
+
+    $         is the record number of the last record in the file.
+
+    @         is the record number that was current when the command
+	      line execution started.
+
+    &         is the record number in the new or output file.
+
+    *         is  the  numerical  value  of  the  character at the G
+	      pointer.
+
+    ..        one extra variable for use within macros (see the .num
+	      macro for example).
+
+The four variables `#`,  `@`,  `&` and `$` may be prefixed with a dot
+(.) to return the current column number,  the column that was current
+when  the command line execution commenced,  the column number in the
+new file,  and finally the column number of the end of the  line  (in
+the old file).  These are useful when the result of the expression is
+to provide an intra line endpoint. The 26 named variables may be used
+to mark positions in the file for later use:
+
+    {a=#}  ...  t#{a}
+
+Numeric operands follow the rules for the C language. In addition, it
+is possible to enter numbers in Roman numerals (introduced with  '0r'
+similar to the 0x used for hexadecimal),  and binary (introduced with
+'0b').  Numbers may also be given as an  ASCII  character  in  single
+quotes  (the  standard  C  escape characters may be used) so that for
+example: 'a' + 2 gives the result 'c'.
+
+If  the  result  is of type real,  the number is displayed in the 'C'
+language "%.14g" format (14 significant figures precision), otherwise
+the  number  is displayed in as many different formats and radices as
+will fit on the output line:
+
+{  0
+==>  Bin: 00,  Oct: 0,  Dec: 0,  Hex: 00,  ASCII: NUL,  Roman: nihil
+{  2 + 2
+==>  Bin: 0100,  Oct: 4,  Dec: 4,  Hex: 04,  ASCII: EOT,  Roman: IV
+{  . + 70
+==>  Bin: 01001010,  Oct: 112,  Dec: 74,  Hex: 4A,  ASCII: 'J', Roman: LXXIV
+{  . + 1000
+==>  Bin: 010000110010,  Oct: 2062,  Dec: 1074,  Hex: 0432, Roman: MLXXIV
+{  . + 100000
+==>  Oct: 305322,  Dec: 101074,  Hex: 018AD2,  Roman: numerus negatus
+{  . + 100000000
+==>  Oct: 575665722,  Dec: 100101074,  Hex: 05F76BD2
+{  198.34
+==>  198.34
+{  . * 1000
+==>  198340
+{  . + 1e14
+==>  1.0000000019834e+014
+{ }
+
+The  16bit MSDOS version of G only supports floating point arithmetic
+if the maths co-processor hardware is present (e.g.  287, 387,  486DX
+or Pentium).
+
+
+5.7  Regular Expressions
+~~~~~~~~~~~~~~~~~~~~~~~~
+The G editor supports the "regular expression" (RE) notation; regular
+expressions are used in endpoints and in some commands (e.g.,  A,   B
+and  R)  to  specify  portions  of a line.  A regular expression (RE)
+specifies a set of character strings. A member of this set of strings
+is  said  to  be  "matched"  by  the  RE.   The RE's allowed by G are
+constructed as follows:
+
+The following "one-character" RE's match a single character:
+
+1.1   An ordinary character (not one of those discussed in 1.2 below)
+      is a one-character RE that matches itself.
+
+1.2   A  backslash  (\)  followed  by  any  special  character  is  a
+      one-character RE that matches the special character itself. The
+      special characters are:
+
+      a.   ., *, [, and \ (period, asterisk, left square bracket, and
+	   backslash,   respectively),   which  are  always  special,
+	   except  when  they appear within square brackets ([];  see
+	   1.4 below).
+
+      b.   ^  (caret  or  circumflex),   which  is  special  at   the
+	   beginning of an entire RE (see 3.1 and 3.2 below), or when
+	   it immediately follows  the  left  of  a  pair  of  square
+	   brackets ([]; see 1.4 below).
+
+      c.   $  (dollar),   which is special at the end of an entire RE
+	   (see 3.2 below).
+
+1.3   A backslash followed by  one  of  abfnrtv  represents  a  Bell,
+      Backspace,  Formfeed,  Newline,  Return,  Tab,  or Vertical Tab
+      character respectively. The sequence \xHH (backslash x followed
+      by  two  hexadecimal  digits)  is   used   to   represent   the
+      corresponding ASCII character.  Note that the Newline character
+      will not normally be found in a G record.
+
+1.4   A period (.) is a one-character RE that matches any character.
+
+1.5   A non-empty string of characters enclosed  in  square  brackets
+      ([])  is  a  one-character RE that matches any one character in
+      that string.  If, however, the first character of the string is
+      a  circumflex  (^),  the one-character RE matches any character
+      except the remaining characters in the string.  The ^ has  this
+      special  meaning  only  if  it occurs first in the string.  The
+      hyphen (-) may be used to indicate a range of consecutive ASCII
+      characters;   for  example [0-9] is equivalent to [0123456789].
+      The - loses this special meaning if it occurs first  (after  an
+      initial  ^  if  any)  or  last in the string.  The right square
+      bracket (]) does not terminate such a string  when  it  is  the
+      first  character  within it (after an initial ^ if any);  e.g.,
+      []a-f] matches either a right square bracket (]) or one of  the
+      letters  a  through  f inclusive.  The characters listed in 1.2
+      above stand for themselves within such a string of characters.
+
+The  following rules may be used to construct RE's from one-character
+RE's:
+
+2.1   A  one-character  RE  is  a  RE  that  matches   whatever   the
+      one-character RE matches.
+
+2.2   A one-character RE followed by an asterisk (*)  is  a  RE  that
+      matches  zero  or more occurrences of the one-character RE.  If
+      there is a choice,  the longest leftmost string that permits  a
+      match is chosen.
+
+2.3   A one-character RE followed by \{m\},  \{m,\},  or \{m,n\} is a
+      RE that matches a range of occurrences of the one-character RE.
+      \{m\} matches exactly m occurrences;  \{m,\} matches at least m
+      occurrences;  \{m,n\} matches any number of occurrences between
+      m and n inclusive.  Whenever a choice exists, the RE matches as
+      many occurrences as possible.
+
+2.4   The  concatenation  of  RE's  is  a   RE   that   matches   the
+      concatenation  of  the strings matched by each component of the
+      RE.
+
+2.5   A RE enclosed between the character sequences \( and \) is a RE
+      that matches whatever the unadorned RE matches.
+
+2.6   The expression \n matches the same string of characters as  was
+      matched  by an expression enclosed between \( and \) earlier in
+      the same RE. Here n is a digit; the sub-expression specified is
+      that beginning with the n'th occurrence of \( counting from the
+      left.  For example,  the expression ^\(.*\)\1$ matches  a  line
+      consisting only of two repeated appearances of the same string.
+
+A RE may be constrained to match words.
+
+3.1   \<  constrains  a  RE  to  match  the beginning of a line or to
+      follow a character that is not a digit, underscore,  or letter.
+      The   first   character  matching  the  RE  must  be  a  digit,
+      underscore, or letter.
+
+3.2   \> constrains a RE to match the end of a line or to  precede  a
+      character that is not a digit, underscore, or letter.
+
+Finally,   an  entire  RE may be constrained to match only an initial
+segment or final segment of a line (or both).
+
+4.1   A circumflex (^) at the beginning of an  entire  RE  constrains
+      that RE to match an initial segment of a line.
+
+4.2   A currency symbol ($) at the end of  an  entire  RE  constrains
+      that RE to match a final segment of a line.
+
+4.3   The  construction ^entire RE$ constrains the entire RE to match
+      the entire line.
+
+The null RE (e.g., //) is equivalent to the last RE encountered.
+
+The  commands A,  B and R require a second (replacement) string to be
+specified.  Certain characters are special in this string only if the
+R qualifier is used.  These are:
+
+4.1   An ampersand (&) appearing in the replacement  is  replaced  by
+      the  entire  string  matched  in  the  left  hand  side  of the
+      replacement.  The special meaning of & in this context  may  be
+      suppressed by preceding it by a \.
+
+4.2   As  a  more  general feature,  the characters \n,  where n is a
+      digit,  are replaced by the text matched by  the  n'th  regular
+      subexpression  of  the specified RE enclosed between \( and \).
+      When nested parenthesised subexpressions  are  present,   n  is
+      determined  by  counting  occurrences  of  \( starting from the
+      left.
+
+4.3   When the character % is the only character in the  replacement,
+      the  replacement  used in the most recent A,  B or R command is
+      used as the replacement in the current command. The % loses its
+      special meaning when it is in a replacement string of more than
+      one character or is preceded by a \.
+
+4.4   Similarly,  if the character ~ is the  only  character  in  the
+      replacement, the unexpanded replacement used in the most recent
+      A, B or R command is used for the current command.  The ~ loses
+      its  special meaning when it is in a replacement string of more
+      than one character or is preceded by a \.
+
+4.5   A backslash followed by one  of  abfnrtv0  represents  a  Bell,
+      Backspace, Formfeed, Newline, Return, Tab, Vertical Tab, or NUL
+      character respectively.  The special case \n causes the line to
+      be split, equivalent to the I//// operation.  The sequence \xHH
+      (backslash x followed by two hexadecimal  digits)  is  used  to
+      denote the corresponding ASCII character.
+
+4.6   A backslash followed by one of ULeul controls case  conversion.
+      The sequence \u converts all following alphabetic characters to
+      upper-case.  Similarly, \l converts to lower-case,  and \e ends
+      case  conversion.   To  convert just the following character to
+      upper-case, use \U similarly for \L. For example, to capitalise
+      a word, use: rr/\<[A-Za-z]*\>/\U\l&/ .
+
+An  abbreviated  list  of the RE metacharacters is available from the
+'hr' verb (Help Regular-Expressions) on UNIX and 32bit DOS.
+
+
+5.8  Shorthand Forms
+~~~~~~~~~~~~~~~~~~~~
+There are a number of abbreviations possible for  common  positioning
+operations.
+
+number          (In the screen editor only.)
+		Position  the  first  line  of the window on the line
+		"number" given.  Equivalent to:  T#number.
+
+#number         Same  as  above,   but  may  be used from the context
+		editor command line.  "number" defaults to zero.
+
++/-number       Move the window backwards or forwards in the file  by
+		number  lines.  Equivalent to:  T+/-number.  "number"
+		defaults to one.
+
+/string         Move the window forwards to the first line found that
+		matches "string".  The string is a Regular Expression
+		and is terminated by the  end  of  the  command  line
+		(thus  it  must  be  the  last  command on the line).
+		Equivalent  to  "TR/string/"  except  that  the   '/'
+		character  may  be used within the string so that for
+		example  "//return"  searches  for  the   next   line
+		containing  a  /.   Remember  also  that  a  single /
+		continues  the  search   using   the   last   Regular
+		Expression used.
+
+?string         This  is  identical  to  the "/string" command except
+		that the search starts at the beginning of the  file.
+		Equivalent to: "T#0 TR/string/".
+
+^string         Identical   to  the  "/string"  command  except  that
+		"string" is only matched at  the  start  of  a  line.
+		Equivalent to: "TR/^string/".
+
+@               Returns to the position in the file when the  command
+		started.   This  is  very useful on the screen editor
+		command line.  Equivalent to:  "T#{@}".  For example:
+		(i/  /  t)s/}/  @ indents the statements within a a C
+		block and then returns to the  starting  point.   The
+		text simply shifts across on the screen.
+
+
+5.9  Environment
+~~~~~~~~~~~~~~~~
+The G editor has the ability to remember the exact  state  of  itself
+and  your  files  before  you  execute  any  command  line.   This is
+implemented by saving the file control information  for  the  primary
+files.
+
+This  state  can  be  retrieved  by using the F (forget) verb,  which
+cancels all the changes made by a previous G command line  by  simply
+reinstating the primary file control blocks.
+
+This implementation,   although  simple  and  fast,   has  one  major
+limitation:   it  cannot  save  the state of the editor across a wrap
+round through line zero. Wrap round occurs when an attempt is made to
+transcribe  to a previous position in the file.  The remainder of the
+file is copied,  the two  primary  files  switch  roles  and  copying
+continues  up  to  the  point  specified.  When the two primary files
+switch roles,  the saved information becomes invalid and is  re-saved
+by  the editor.  This limitation is particularly important within the
+screen editor since any backward movement (scrolling etc.) involves a
+file switch.
+
+The table following explains how G classifies each command line given
+to  it by its first character,  this character determines the mode of
+the line and from this decides whether to  save  the  editor's  state
+and/or save a copy of the G command line.
+
+First character on command line
+|        Files saved
+|        |    Editor Command saved
+|        |    |    Result of command
+|        |    |    |
+;        NO   NO   Comment line
+
+$        NO   NO   Displays template followed by current line.
+
+$0 to $9 NO   NO   Displays selected portion of line
+
+2 spaces YES  NO   Calls line editor
+
+F        NO   NO   Forgets a faulty edit
+
+H        NO   NO   Displays help text
+
+RETURN   NO   NO   Advances 1 line (T1)
+
+:        YES  NO   Enters screen editor
+
+* or =   NO   NO   Executes a previously saved command
+
+E        YES  NO   End the edit and save result
+
+Q        NO   NO   Abandon the edit
+
+C        NO   YES  Macro definition, Calculator
+
+Other    YES  YES  Calls editor to execute command
+
+
+6.  The Line Editor
+~~~~~~~~~~~~~~~~~~~
+The line editor function of G  allows  you  to  insert,   delete  and
+replace  characters  in a line.  It is useful for teletypes and other
+dumb terminals, or when the terminal type is incorrect or not yet set
+up.  This feature is available during line mode working.
+
+When G prompts you for input it first displays a 76 character portion
+of the current line.  If you type a command line beginning  with  two
+spaces  G  calls  the  line  editor.  Each character that you type is
+interpreted by the line editor in the following way:
+
+-  (hyphen or minus sign)
+
+   delete the character directly above the minus sign
+
+%  (percent)
+
+   replace the character above with a space
+
+^  (caret or circumflex)
+
+   insert  all  the  characters following the ^ into the line at this
+   point (this is, before the character pointed to). If no characters
+   follow  the  ^  ,   the  line is written to the file followed by a
+   newline up to but excluding the point indicated  by  the  ^  (thus
+   splitting the line).
+
+!  (exclamation mark)
+
+   replace the  remainder  of  this  line  with  all  the  characters
+   following.  If no characters follow the !  ,  the remainder of the
+   line is simply discarded.
+
+ESC
+
+   if  the  escape character is typed before any of the above special
+   characters they temporarily loose their special  significance  and
+   behave as any other character as described below.
+
+SPACE
+
+   used for positioning.  If you space past the last character  of  a
+   line, the line will be extended.
+
+Any  other  character  will  cause line edit to replace the character
+above with the character specified.
+
+If the first and only character typed on a G command line is a digit,
+this  is  interpreted  as a request to switch portions of the current
+line. You are therefore able to line edit any part of a 760 character
+line.  If you type a digit which specifies a portion in which no text
+exists, G interprets this as a request to find the character pointer.
+
+
+6.1  The Prompt
+~~~~~~~~~~~~~~~
+When G prompts you for input it first displays a 76 character portion
+of the current line.  The following format is used
+
+    Line 27.14
+    0 The quick brown fox jumped over the lazy dog.
+    *               |
+
+The  first  line gives file and position information.  If the current
+primary files are "Merged" or "Saved" files,  details  of  these  are
+displayed  too.  The numbers following the word "Line" are the G line
+and column number.  This number starts at 0 and  is  incremented  for
+each line/column read from the file.
+
+The second line is a 76 character portion of the current  line.   The
+digit at the start of the line indicates which portion of the line is
+being displayed.  This digit is 0 for the first portion. The presence
+of  a  <  sign in column 2 indicates that the cursor is in a previous
+portion.  The presence of a > sign in column  2  indicates  that  the
+cursor is in a subsequent portion.
+
+The  third line is the command line.  Superimposed upon it may be a |
+which indicates the position of the cursor.  The | points to the next
+character that would be encountered by a G verb such as R(replace).
+
+At end of file, a slightly simpler message form is displayed.
+
+    End of file encountered following line 142.
+    EOF
+    *
+
+Again, details of Merge and Save files will be printed.
+
+
+7.  Built in Macros
+~~~~~~~~~~~~~~~~~~~
+A number of useful macros are pre-defined within the editor  and  are
+available automatically on start up.
+
+  .c/str1/str2/         Change str1 to str2 from here on (simple)
+
+  .r/RE1/RE2/           Change str1 to str2 from here on (RE)
+
+  .tpri/lines/cols/ff/  Paginated,    line-numbered  listings,   with
+			"lines" per page,  headings "cols" wide,  and
+			ff=1 formfeeds between pages or (ff=0) not.
+
+  .clean                Clear  the  parity bit from entire file,  and
+			then delete any unprintable characters
+
+  .lis/string/          List all lines containing string (case ign.)
+
+  .grep/RE/             List all lines matching RE
+
+  .u                    Convert line to upper case
+
+  .l                    Convert line to lower case
+
+  .hex                  Convert line to hexadecimal
+
+  .num/variable/        Read a number into variable from the text
+
+  .ph/command/          Delete from start of file to here
+
+  .main                 Create a template ANSI 'C' program
+
+  .tss/command/         Execute system command
+
+The  command LM (List Macros) command lists the actual definitions of
+these macros,  while the HM (Help Macros) command displays the  above
+table as a memory jogger.
+
+
+8.  Binary Data
+~~~~~~~~~~~~~~~
+G  is  designed  for  normal  ASCII  text  such  as program source or
+documents and not binary data such as compiled object code.  On  this
+basis, it does a number of unsolicited transformations to the data in
+files and in particular it interferes with tabs.  For files that  are
+mostly  text  there  are  a  number  of  facilities  for  viewing and
+manipulating control characters.
+
+
+8.1  Display
+~~~~~~~~~~~~
+Any character deemed unprintable is converted to a standard form  for
+display.   The  only  exception  to this rule is the L0 command which
+always prints the current line untouched.
+
+The  editor  supports 8 bit characters whose ordinal values may range
+from hexadecimal 00 to FF  (0  to  255).   Any  character  less  that
+hexadecimal  20  (SPACE)  or greater than 7E (TILDE) is not generally
+printable.  Such characters will  be  processed  by  the  editor  for
+display  purposes by clearing the top three bits and then setting bit
+6 to convert from the "control" character to its  equivalent  capital
+letter.  Thus for example, the ASCII "BEL" character (hexadecimal 07)
+thought of as "control G" gets displayed as 'G'. In line mode working
+these characters are indistinguishable from ordinary capital letters,
+although it is normally obvious from the context which is which.   In
+full  screen  mode  however  the  capital  letter  is  displayed in a
+different colour.
+
+Two  features  permit  the  exact  value  of  any  character  to   be
+determined.  On the status (top) line of the screen the editor always
+shows the binary value of the  character  under  the  cursor  as  two
+hexadecimal digits in brackets.  For line mode working (and of course
+on the screen editors "home"  command  line)  the  command  LX  (List
+heXadecimal)  will  print the entire current line in hexadecimal with
+printable values and offsets.
+
+
+8.2  Insertion
+~~~~~~~~~~~~~~
+The  insert  verb I has an option X which permits the string argument
+to be interpreted as hexadecimal.  All characters except the  newline
+(hexadecimal 0A) are inserted untouched.  Newlines inserted cause the
+record to be split at that point.  Ic{ expr } buts the binary  result
+of expr, truncated to 8 bits into the file.
+
+In the screen editor,  the "control P" command  may  used  to  insert
+control  characters  only  (in  the range 00 to 1F).  For example ^PG
+inserts the BEL character at the cursor position.
+
+The A, B and R verbs with the R qualifier (regular expression) accept
+arbitrary  binary  values  with  the  "\xHH"  notation  to insert the
+hexadecimal value HH or for common values, the usual notation \n, \t,
+\r etc.
+
+On the screen editor command line control P may also be used to place
+control characters in string arguments.
+
+
+8.3  Searching
+~~~~~~~~~~~~~~
+All commands that accept a string value  as  an  endpoint  will  also
+accept  an  X qualifier (like the I insert verb) which indicates that
+the string is supplied in hexadecimal notation.   Note  that  Regular
+Expressions  are  terminated  by a NUL byte which should therefore be
+avoided.
+
+On  the  screen  editor command line,  control P may be used to place
+control characters in strings to be matched.
+
+
+8.4  Transformations
+~~~~~~~~~~~~~~~~~~~~
+The following actions are taken by the editor on any file saved, even
+if no explicit edits are done.
+
+  1.  Records  longer  than 1022 (16bit DOS) or 4317 (32bit and UNIX)
+      characters long  cannot  be  handled  by  the  editor  and  are
+      truncated on input (a warning is issued).
+
+  2.  If  the final record in the file is not terminated by a newline
+      character, a newline is appended.
+
+  3.  Unless  the  -b option is used,  trailing spaces on records are
+      deleted on input only  (which  allows  deliberate  creation  of
+      files with trailing whitespace).
+
+  4.  Unless  the  -b  option is used,  tabs are expanded in order to
+      simplify searching and other operations. When a file is written
+      to disk, all leading whitespace is compressed to tabs. (This is
+      not done if the -b option is used).  The tab setting of  "every
+      8" is an industry standard and is not alterable.
+
+These actions make the editor unsuitable for pure binary data.
+
+
+8.5  Parity
+~~~~~~~~~~~
+With  future use of international variants of the ASCII character set
+in mind,  G supports  full  8  bit  working.   The  editor  does  not
+acknowledge  parity  information and will treat 7 bit characters with
+the parity bit set as normal control characters.  It is  possible  to
+clear  or  set  the  parity  bit using the arithmetic option of the I
+verb.  For example:  ic{ * & 0x7F },p.1 copies one character from the
+old  file  to  the  new  file  and  clears  the parity bit on the way
+(setting parity is more difficult!).  The  ".clear"  built  in  macro
+applies this to the entire file.
+
+
+9.  Limits
+~~~~~~~~~~
+It is not possible to edit lines whose length is  greater  than  1022
+(16bit  DOS)  or  4317 (32bit DOS and UNIX) characters.  Lines longer
+than this in the input file are truncated and a warning issued. Other
+attempts  to  create or expand lines above this limit simply cause an
+error message.
+
+The  maximum  file  size  allowed depends on the amount of memory and
+swap space available to the editor process.  The  16bit  DOS  version
+only is limited to 32767 lines of text regardless of the total space.
+The UNIX and 32bit DOS versions are limited to over 1.3e9 records.
+
+The total length of a filename path cannot be more than 256 chars.
+
+Strings  given  as  arguments  to  commands  may not be more than 256
+characters long.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Jeremy Hall, 1995    <jah@ilena.demon.co.uk>
