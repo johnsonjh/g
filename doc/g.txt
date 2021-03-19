@@ -72,7 +72,7 @@ suggestions.  Thanks!  You are also welcome  to  email  questions  or
 problems to me at the address below, but I can't guarantee an instant
 response.
 
-E-mail:  jah@ilena.demon.co.uk
+E-mail:  <jah@ilena.demon.co.uk>
 
 Currently  G  is  available for most flavours of UNIX and MSDOS/PCDOS
 for the 386 or later (8086/286 version available on request).  G  has
@@ -103,9 +103,9 @@ ARISING OUT OF THE USE OF, OR INABILITY TO USE, G.
 
 1.  Getting Started
 ~~~~~~~~~~~~~~~~~~~
-Having just unzipped G, you can try it right away by typing:-
+You can try G right away by typing:
 
-        g g.txt
+        g doc/g.txt
 
 To get help, press F1 (then press "return" to get each page),  to get
 out  of  G,   press  ESC  or F7.  You can move around and make simple
@@ -177,7 +177,7 @@ similar ownership and permissions, e.g.
 On systems with a UNIX base earlier than SVR4 you could chmod 1555 to
 set the "sticky" bit for fast startup.
 
-To install it just for your own use :-
+To install it just for your own use:
 
         cd
         mkdir bin      /* if its not there */
@@ -275,7 +275,7 @@ edit commands.
 The normal action is to go straight into full screen mode.
 
 G  accepts  five  command line "option" flags introduced by a hyphen.
-These are :-
+These are:
 
         -r      read-only mode. G will not allow the Input file to be
                 overwritten.
@@ -316,7 +316,7 @@ G reads from the standard output of the command if its an input file,
 and  writes  to  the  standard  input of the command if its an output
 file.
 
-Here are some example command lines:-
+Here are some example command lines:
 
 To simply edit a C program in the normal way:
 
@@ -786,7 +786,7 @@ keys.
         this   command   attempts  to  match  parenthesis,   strings,
         sentences,  and statements in the text.  It places the cursor
         over the matching character.  The action taken depends on the
-        character currently under the cursor according to the table:-
+        character currently under the cursor according to the table:
 
         character under cursor     target character      direction
         ----------------------------------------------------------
@@ -1080,7 +1080,7 @@ down the old file.
 
 This "selective copy" mechanism considerably simplifies  the  editing
 process.   Only  three  basic  operations  are  needed to achieve all
-possible editing actions:-
+possible editing actions:
 
 Transcription   Move text unchanged to the output file.  The text may
                 come from any position in the input file.  The effect
