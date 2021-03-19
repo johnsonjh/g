@@ -9,7 +9,7 @@ Please email questions, problems, bugs, etc. to:
 
 Instructions for compiling G on various platforms are included in the
 initial comment at the start of src/g.c. The startup code crt0.asm is
-only for use with the Watcom C/C++ 10 for MSDOS (and is optional).
+only  for use with the Watcom  C/C++ 10 for MS-DOS (and is optional).
 
 To get help, press F1 (then press "return" to get each page),  to get
 out  of  G,   press  ESC  or F7.  You can move around and make simple
