@@ -182,6 +182,7 @@
 #endif
 
 #if UNIX    /* not ANSI */
+#define caddr_t void*
 #include <sys/mman.h>
 #endif
 
