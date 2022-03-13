@@ -92,7 +92,8 @@ endif
 ifdef DEBUG
   CFLAGS  += -Wall -Wextra -DDEBUG=1 -g
 else
-  CFLAGS  += -O2 -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
+ OPTFLAGS ?= -O2
+  CFLAGS  += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
   LDFLAGS += -s
 endif
 
@@ -105,7 +106,7 @@ LDFLAGS += -lcurses
 # Files
 
 SRC = g.c
-OUT = g
+OUT = g$(OUTEXT)
 
 ###############################################################################
 # Compile
