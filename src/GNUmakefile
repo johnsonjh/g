@@ -125,8 +125,10 @@ endif
 .PHONY: clean distclean
 clean distclean:
 ifneq ($(V),1)
-	-@$(TEST) -f ./$(OUT) && $(PRINTF) '\r\t\t$(RM):\t\t%s\n' $(OUT)
+	-@$(TEST) -f ./$(OUT) && \
+		$(PRINTF) '\r\t\t$(RM):\t\t%s\n' $(OUT) || $(TRUE)
 endif
-	-@$(VERBOSE); $(TEST) -f ./$(OUT) && $(RM) ./$(OUT) || $(TRUE)
+	-@$(VERBOSE); $(TEST) -f ./$(OUT) && \
+		$(RM) ./$(OUT) || $(TRUE)
 
 ###############################################################################
