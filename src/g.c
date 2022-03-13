@@ -71,7 +71,7 @@
 # define caddr_t void *
 # ifndef __MINGW32__
 #  include <sys/mman.h>
-# endif /* ifndef __MINGW32__ */
+# endif  /* ifndef __MINGW32__ */
 #endif  /* if UNIX */
 
 /*
@@ -828,9 +828,9 @@ void napms(const unsigned long);
 /* specials for UNIX curses.h */
 # define PERFORMANCE 1
 # define CURS_PERFORMANCE
-# define NCC 8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2) */
+# define NCC         8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2) */
 # ifndef L_ctermid
-#  define L_ctermid 1  /* so curses defines SYSV and not index and bcopy */
+#  define L_ctermid  1  /* so curses defines SYSV and not index and bcopy */
 # endif  /* ifndef L_ctermid */
 
 # ifdef _HPUX_SOURCE
@@ -932,15 +932,15 @@ rgetc(void)
 
 # if COLOUR
 private
-chtype found_col = FOUND_COL,  /* matched text */
-cntrl_col = CNTRL_COL,         /* control characters */
-eof_col = EOF_COL,             /* EOF marker */
-scale_col = SCALE_COL,         /* the scale line */
-status_col = STATUS_COL,       /* the status line */
-norm_col = NORM_COL,           /* normal text */
-query_col = QUERY_COL,         /* query */
-marg_col = MARG_COL,           /* margins */
-found_ctrl = FOUND_CTRL;       /* matched binary */
+chtype found_col = FOUND_COL,    /* matched text */
+cntrl_col = CNTRL_COL,           /* control characters */
+eof_col = EOF_COL,               /* EOF marker */
+scale_col = SCALE_COL,           /* the scale line */
+status_col = STATUS_COL,         /* the status line */
+norm_col = NORM_COL,             /* normal text */
+query_col = QUERY_COL,           /* query */
+marg_col = MARG_COL,             /* margins */
+found_ctrl = FOUND_CTRL;         /* matched binary */
 # else  /* if COLOUR */
 private
 chtype found_col = M_FOUND_COL,  /* matched text */
@@ -1133,13 +1133,13 @@ near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
 near se_lcom[]   = ".tss:DIR /W:",
 # ifdef __MINGW32__
 write_only[] = "w"
-# endif /* ifdef __MINGW32__ */
+# endif  /* ifdef __MINGW32__ */
 	 ;
 # ifdef __MINGW32__
 FSTR_LIST save_dirs[] = {                    
   ".", "~", "/usr/preserve", "/tmp", NULL
 };                                                        
-# endif /* ifdef __MINGW32__ */
+# endif  /* ifdef __MINGW32__ */
 #else  /* if DOS */
 FSTR shell_var[] = "SHELL", shell_bin[] = "sh",
   se_pcom[]      = "S!\177lp -c '-tG print: %s' 1>/dev/null 2>&1\177,TE,X",
