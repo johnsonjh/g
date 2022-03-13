@@ -39,6 +39,6 @@ This is ***G***, a general purpose programmable text editor.
 
 ## Binaries
 
-* [***G***  V4.7.2 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g472.exe) - 32-bit, DPMI
-* [***G***  V4.7.1 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g471.exe) - 16-bit, real-mode
-* [***G***  V4.7.2 for Win32](https://github.com/johnsonjh/g/raw/master/bin/WIN32/g472.exe) - 32-bit, Win32
+* [***G***  V4.7.2 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g472.exe) - 32-bit, DPMI (2022-03-12)
+* [***G***  V4.7.1 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g471.exe) - 16-bit, real-mode (1995-10-20)
+* [***G***  V4.7.2 for Win32](https://github.com/johnsonjh/g/raw/master/bin/WIN32/g472.exe) - 32-bit, Win32 (2022-03-13)

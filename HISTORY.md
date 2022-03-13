@@ -41,5 +41,5 @@
   assembler. Memory moves and fill done with dword instructions where
   appropriate. Screen attributes are (unfortunately) now fixed, but screen
   updates are very fast. Sep 1995
-* Cleaned up for modern Linux and BSD system by Jeffrey H. Johnson, mid-2019
+* Cleaned up for modern Linux and BSD systems by Jeffrey H. Johnson, mid-2019
 * G 4.7.2 on GitHub, March 2021
