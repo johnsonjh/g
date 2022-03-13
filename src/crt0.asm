@@ -1,13 +1,15 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  G  --  crt0.asm
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
-;  Startup code for G editor for 16 bit real mode DOS and 386+ cpu's.
+;  Copyright (c) 1993-1995 Jeremy Hall <jah@ilena.demon.co.uk>
 ;
-;  Uses stosd etc for faster startup time and is a lot smaller than
-;  standard code.  
+;  Startup code for `G' editor for 16-bit real mode DOS and 386+ CPU's
 ;
-;  This must be assembled using:  wasm crt0 -bt=DOS -ml -2r_
+;  Should be assembled using: wasm crt0 -bt=DOS -ml -2r_
 ;
-;  Jeremy Hall.    jah@ilena.demon.co.uk
-;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
         name    cstart
 
         extrn   main_                   : far

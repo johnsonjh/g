@@ -2,8 +2,8 @@
 
 ## Reporting a Vulnerability
 
-- To report a security vulnerability in this version of G, please send email to
-  [Jeffrey H. Johnson](mailto:trnsz@pobox.com).
+- To report a security vulnerability in this version of G, please
+  send email to [Jeffrey H. Johnson](mailto:trnsz@pobox.com).
 
   - PGP-encrypted email is encouraged.
 
