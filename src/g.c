@@ -108,31 +108,31 @@ case 'D':         \
 case 'E':         \
 case 'F'
 
-#define    EOS  0x00
-#define  SPACE  0x20
+#define EOS  0x00
+#define SPACE  0x20
 #define BSLASH  0x5C
-#define  SLASH  0x2F
-#define  GRAVE  0x60
+#define SLASH  0x2F
+#define GRAVE  0x60
 #define SQUOTE  0x27
 #define DQUOTE  0x22
-#define    TAB  0x09
-#define    ESC  0x1B
-#define    DEL  0x7F
-#define  LFEED  0x0A
+#define TAB  0x09
+#define ESC  0x1B
+#define DEL  0x7F
+#define LFEED  0x0A
 
 #define CNTRL_MASK  037U
-#define  BYTE_MASK  0377U
+#define BYTE_MASK  0377U
 #define ASCII_MASK  0177U
-#define   ODD_MASK  01U
+#define ODD_MASK  01U
 
-#define    delim(c) ( g_map[c] &   01U )
-#define   comsep(c) ( g_map[c] &   02U )
-#define  isdigit(c) ( g_map[c] &  010U )
-#define  isupper(c) ( g_map[c] &  020U )
+#define delim(c) ( g_map[c] &   01U )
+#define comsep(c) ( g_map[c] &   02U )
+#define isdigit(c) ( g_map[c] &  010U )
+#define isupper(c) ( g_map[c] &  020U )
 #define se_b4key(c) ( g_map[c] &  040U )
-#define  se_jkey(c) ( g_map[c] & 0100U )
+#define se_jkey(c) ( g_map[c] & 0100U )
 #define se_b1key(c) ( g_map[c] & 0200U )
-#define   wordch(c) ( g_map[c] & ( 04U | 010U | 020U ))
+#define wordch(c) ( g_map[c] & ( 04U | 010U | 020U ))
 
 #if DOS
 # define path_sep(c) ( c == SLASH || c == BSLASH )
@@ -156,7 +156,7 @@ case 'F'
 #define toascii(c) (( c ) & ASCII_MASK )
 
 /* control character literals */
-#define   CNTRL(c) ( c & CNTRL_MASK )
+#define CNTRL(c) ( c & CNTRL_MASK )
 #define iscntrl(c) ( c < SPACE  || c >= DEL )
 #define isprint(c) ( c >= SPACE && c  < DEL )
 
@@ -166,22 +166,22 @@ case 'F'
 #define TAB_WIDTH  8
 
 #define YES        1
-#define  NO        0
+#define NO        0
 
-#define  G_OK      0
+#define G_OK      0
 #define G_FAIL     1
 
-#define   byte unsigned char
+#define byte unsigned char
 #define ushort unsigned short
-#define   word unsigned int
-#define   real double
+#define word unsigned int
+#define real double
 
 #define repeat for (;;)
-#define   elif else if
+#define elif else if
 
 #define private static
 
-#define  csc const  *const
+#define csc const  *const
 #define cssc const **const
 
 #define skip_space(s)      \
@@ -189,7 +189,7 @@ case 'F'
     ++ ( s )
 
 #define nullstr(s) ( *( s ) == EOS )
-#define    heap(t) (t *)getvec(sizeof ( t ))
+#define heap(t) (t *)getvec(sizeof ( t ))
 
 #define getbuf(len) (char *)getvec(len)
 
@@ -212,6 +212,9 @@ typedef int *stack;
 
 /* path/file names */
 #if DOS
+# if !defined(_MAX_PATH) && defined(STR_LEN)
+#  define _MAX_PATH STR_LEN
+# endif  /* if !defined(_MAX_PATH) && defined(STR_LEN) */
 typedef char FNAME[_MAX_PATH];
 #else  /* if DOS */
 typedef char FNAME[STR_LEN];
@@ -412,7 +415,9 @@ extern void  bmoverl(void *dst, const void *src, short len);
 #else  /* if ASM86 */
 
 # if DOS
-#  include <i86.h>  /* use bios.h for MSVC and Borland */
+#  ifndef __DJGPP__
+#   include <i86.h>  /* use bios.h for MSVC and Borland */
+#  endif  /* ifndef __DJGPP__ */
 # endif  /* if DOS */
 
 private
@@ -644,7 +649,7 @@ TOKEN;
 #define HEX_INV         57
 
 /* Standard files */
-#define    vdu stderr
+#define vdu stderr
 #define kbd_fd 0
 #define vdu_fd 2
 
@@ -4693,10 +4698,10 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 {
   int fd;
 
-#if DOS
+#if DOS || defined(__DJGPP__)
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
-#else  /* if DOS */
+#else  /* if DOS || defined(__DJGPP__) */
 
 # if UNIX
   off_t f_len;
@@ -4719,8 +4724,10 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   trunc_recs = 0;
 
-#if DOS
+#if DOS || defined(__DJGPP__)
+# ifndef __DJGPP__
   setmode(fd, O_BINARY);
+# endif  /* ifndef __DJGPP__ */
 
   while (( len = read(fd, p = buf + len, BLOCK_SIZE)) > 0)
     {
@@ -4751,9 +4758,9 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   return vstell(vs_u);
 
-#else  /* if DOS */
+#else  /* if DOS || defined(__DJGPP__) */
 
-# if UNIX
+# if UNIX || !defined(__DJGPP__)
   f_len = lseek(fd, (off_t)0, SEEK_END);
   if (( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0))
       != (caddr_t)-1)
@@ -4776,11 +4783,11 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
     }
 
   lseek(fd, 0, SEEK_SET);
-# endif  /* if UNIX */
+# endif  /* if UNIX || !defined(__DJGPP__) */
 
   return serial_read(vs_u, fd);
 
-#endif  /* if DOS */
+#endif  /* if DOS || defined(__DJGPP__) */
 }
 
 private
