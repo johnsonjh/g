@@ -69,7 +69,9 @@
 
 #if UNIX  /* not ANSI */
 # define caddr_t void *
-# include <sys/mman.h>
+# ifndef __MINGW32__
+#  include <sys/mman.h>
+# endif /* ifndef __MINGW32__ */
 #endif  /* if UNIX */
 
 /*
@@ -1125,10 +1127,19 @@ void Drive(const int);
   char csc near
 
 /* system specific strings */
-#if DOS
+#if DOS || defined(__MINGW32__)
 FSTR shell_bin[] = "COMMAND",     near tty_file[] = "CON",
 near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
-near se_lcom[]   = ".tss:DIR /W:";
+near se_lcom[]   = ".tss:DIR /W:",
+# ifdef __MINGW32__
+write_only[] = "w"
+# endif /* ifdef __MINGW32__ */
+	 ;
+# ifdef __MINGW32__
+FSTR_LIST save_dirs[] = {                    
+  ".", "~", "/usr/preserve", "/tmp", NULL
+};                                                        
+# endif /* ifdef __MINGW32__ */
 #else  /* if DOS */
 FSTR shell_var[] = "SHELL", shell_bin[] = "sh",
   se_pcom[]      = "S!\177lp -c '-tG print: %s' 1>/dev/null 2>&1\177,TE,X",
@@ -1136,7 +1147,7 @@ FSTR shell_var[] = "SHELL", shell_bin[] = "sh",
 FSTR_LIST save_dirs[] = {
   ".", "~", "/usr/preserve", "/tmp", NULL
 };
-#endif  /* if DOS */
+#endif  /* if DOS || defined(__MINGW32__) */
 
 /* standard file names */
 FSTR si_file[] = "stdin", near so_file[] = "stdout", near t_fname[] = "*TMP*",
@@ -4698,10 +4709,10 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 {
   int fd;
 
-#if DOS || defined(__DJGPP__)
+#if DOS || defined(__DJGPP__) || defined(__MINGW32__)
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
-#else  /* if DOS || defined(__DJGPP__) */
+#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
 
 # if UNIX
   off_t f_len;
@@ -4724,7 +4735,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   trunc_recs = 0;
 
-#if DOS || defined(__DJGPP__)
+#if DOS || defined(__DJGPP__) || defined(__MINGW32__)
 # ifndef __DJGPP__
   setmode(fd, O_BINARY);
 # endif  /* ifndef __DJGPP__ */
@@ -4758,7 +4769,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   return vstell(vs_u);
 
-#else  /* if DOS || defined(__DJGPP__) */
+#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
 
 # if UNIX || !defined(__DJGPP__)
   f_len = lseek(fd, (off_t)0, SEEK_END);
@@ -5067,9 +5078,10 @@ g_intr(int sig)
 
   signal(sig, g_intr);
 
-#if DOS
+#ifndef __MINGW32__
+# if DOS
   g_err(BREAK_KEY, empty);
-#else  /* if DOS */
+# else  /* if DOS */
   switch (sig)
     {
     case SIGQUIT:
@@ -5108,7 +5120,8 @@ g_intr(int sig)
 
   term();
   _exit(1);
-#endif  /* if DOS */
+# endif  /* if DOS */
+#endif /* ifndef __MINGW32__ */
 }
 
 /*
@@ -14468,8 +14481,9 @@ Drive(const int level)
   if (level == 0 && ( rc = setjmp(set_err)) == NO)
     {
       /* startup */
+#ifndef __MINGW32__
       signal(SIGINT, g_intr);
-#if UNIX
+# if UNIX
       signal(SIGTERM, g_intr);
       signal(SIGUSR1, g_intr);
       signal(SIGUSR2, g_intr);
@@ -14480,7 +14494,8 @@ Drive(const int level)
 
       signal(SIGPIPE, g_intr);
       signal(SIGQUIT, g_intr);
-#endif  /* if UNIX */
+# endif  /* if UNIX */
+#endif  /* ifndef __MINGW32__ */
       save_jbuf(save_err, set_err);
       if (g_init == NULL)
         {
