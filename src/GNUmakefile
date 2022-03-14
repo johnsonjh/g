@@ -72,10 +72,28 @@
 # Utilities
 
 CC      ?= cc
-RM      ?= rm -f
+GETCONF ?= getconf
 PRINTF  ?= printf
+RM      ?= rm -f
+SSTRIP  ?= sstrip
+STRIP   ?= strip
 TEST    ?= test
+TR      ?= tr
 TRUE    ?= true
+UNAME   ?= uname
+
+###############################################################################
+# Detect operating system
+
+ifndef OS
+    OS=$(shell $(UNAME) -s 2> /dev/null | \
+        $(TR) '[:upper:]' '[:lower:]' 2> /dev/null)
+endif # OS
+ifeq ($(OS),sunos)
+    OS=$(shell $(UNAME) -o 2> /dev/null | \
+        $(TR) '[:upper:]' '[:lower:]' 2> /dev/null)
+    _SUNOS = 1
+endif # sunos
 
 ###############################################################################
 # Verbose
@@ -84,7 +102,7 @@ ifdef V
   VERBOSE = set -x
 else
   VERBOSE = set +x
-endif # V
+endif # !V
 
 ###############################################################################
 # Debugging
@@ -94,7 +112,6 @@ ifdef DEBUG
 else
  OPTFLAGS ?= -Os
   CFLAGS  += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
-  LDFLAGS += -s
 endif # DEBUG
 
 ###############################################################################
@@ -116,7 +133,34 @@ endif # LGC
 ###############################################################################
 # Libraries
 
-LDFLAGS += -lcurses
+ifeq ($(OS),aix)
+  CFLAGS    += -I/opt/freeware/include
+  LDFLAGS   += -L/opt/freeware/lib
+  CURSESLIB ?= -lncurses
+else
+  CURSESLIB ?= -lcurses
+endif # aix
+LDFLAGS     += $(CURSESLIB)
+
+###############################################################################
+# Architecture
+
+ifeq ($(OS),aix)
+  MAIXBITS  ?= $(shell command -p $(GETCONF) KERNEL_BITMODE 2> /dev/null || \
+                 $(PRINTF) '%s' "32")
+  ifneq (,$(findstring gcc,$(CC))) # gcc (GNU C)
+    CFLAGS  += -maix$(MAIXBITS)
+    LDFLAGS += -maix$(MAIXBITS) -Wl,-b$(MAIXBITS)
+  endif # gcc
+  ifneq (,$(findstring clang,$(CC))) # xlclang/ibm-clang (IBM Open XL)
+    CFLAGS  += -m$(MAIXBITS)
+    LDFLAGS += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
+  endif # clang
+  ifneq (,$(findstring gxlc,$(CC))) # gxlc (IBM XL C)
+    CFLAGS  += -m$(MAIXBITS)
+    LDFLAGS += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
+  endif # gxlc
+endif # aix
 
 ###############################################################################
 # Files
@@ -139,23 +183,30 @@ endif # !V
 ###############################################################################
 # Strip
 
+ifeq ($(OS),aix)
+export OBJECT_MODE=32_64
+endif # aix
 .PHONY: strip
 strip: $(OUT)
-	-@strip     $(OUT) 2> /dev/null || $(TRUE)
-	-@strip  -s $(OUT) 2> /dev/null || $(TRUE)
-	-@strip  -R .gnu.build.attributes   \
-                 -R .note.gnu.build-id      \
-                 -R .note.gnu.property      \
-                 -R .got                    \
-                 -R .eh_frame               \
-                 -R .eh_frame_hdr           \
-                 -R .gnu.version            \
-                 -R .comment                \
-                 -R .SUNW_ctf               \
-                 -R .jcr                    \
-                 -R .note.netbsd.pax        \
-                    $(OUT) 2> /dev/null || $(TRUE)
-	-@sstrip -z $(OUT) || $(TRUE)
+ifneq ($(V),1)
+	-@$(TEST) -f ./$(OUT) && \
+		$(PRINTF) '\r\t\t$(STRIP):\t\t%s\n' $(OUT) || $(TRUE)
+endif # !V
+	-@$(VERBOSE); $(STRIP)     $(OUT) 2> /dev/null || $(TRUE)
+	-@$(VERBOSE); $(STRIP)  -s $(OUT) 2> /dev/null || $(TRUE)
+	-@$(VERBOSE); $(STRIP)  -R .gnu.build.attributes   \
+                                -R .note.gnu.build-id      \
+                                -R .note.gnu.property      \
+                                -R .got                    \
+                                -R .eh_frame               \
+                                -R .eh_frame_hdr           \
+                                -R .gnu.version            \
+                                -R .comment                \
+                                -R .SUNW_ctf               \
+                                -R .jcr                    \
+                                -R .note.netbsd.pax        \
+                                   $(OUT) 2> /dev/null || $(TRUE)
+	-@$(VERBOSE); $(SSTRIP) -z $(OUT) 2> /dev/null || $(TRUE)
 
 ###############################################################################
 # Clean
