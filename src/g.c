@@ -25,9 +25,10 @@
 # endif  /* ifdef __NetBSD__ */
 #endif  /* ifdef DOS */
 
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
+# undef _POSIX_C_SOURCE
 # define _POSIX_C_SOURCE 200809L
-#endif  /* ifdef __FreeBSD__ */
+#endif  /* if defined(__FreeBSD__) || defined(__OpenBSD__) */
 
 #undef NEVER
 
