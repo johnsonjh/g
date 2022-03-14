@@ -14935,7 +14935,9 @@ main(int i, char csc * argv)
 {
   const char *p, *files[2];
   PAGE_PTR *cp;
+  char cvstring[255];
 
+  (void)cvstring;
   i = 0;  /* scan .argtype */
   while (( p = *++argv ) != NULL)
     {
@@ -14966,7 +14968,6 @@ main(int i, char csc * argv)
 
             case 'V':  /* display version */
 #if defined(NCURSES_VERSION) || defined(PDCURSES)
-              char cvstring[255];
               sprintf(cvstring,
                       "%s using %s", VERSION_STRING, curses_version());
 # if DOS
