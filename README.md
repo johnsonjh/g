@@ -2,6 +2,8 @@
 
 ***`G`*** is a portable, general purpose, programmable text editor.
 
+## Table of Contents
+
 <!-- toc -->
 
 - [Overview](#overview)
