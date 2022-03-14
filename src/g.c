@@ -18,8 +18,12 @@
 #else  /* ifdef DOS */
 # define UNIX            1
 # define DOS             0
-# define _XOPEN_SOURCE   1
-# define _POSIX_SOURCE   1
+# ifndef _XOPEN_SOURCE
+#  define _XOPEN_SOURCE  1
+# endif  /* ifndef _XOPEN_SOURCE */
+# ifndef _POSIX_SOURCE
+#  define _POSIX_SOURCE  1
+# endif  /* ifndef _POSIX_SOURCE */
 # ifdef __NetBSD__
 #  define _NETBSD_SOURCE 1
 # endif  /* ifdef __NetBSD__ */
