@@ -16,7 +16,7 @@
 * Ported to DRS300 UNIX (DRS/NX - System V R3.0 386), March 1989
 * Kernel fully compiled with separate syntax analyser, July 1989
 * Last CDOS build, March 1989 and CDOS support removed, 1/9/1989
-* Ported to IBM PC MSDOS 3.3, Colour VGA etc, (ANSI C), January 1990
+* Ported to IBM PC MS-DOS 3.3, Colour VGA etc, (ANSI C), January 1990
 * Ported to AT&T UNIX System V R4.0 - SPARC (ANSI C), i486, May 1990
 * Ported to Sun 4 SunOS (SPARC), October 1991
 * Ported to AT&T UNIX System V R4.2 December 1992
@@ -25,7 +25,7 @@
   complete. Now compiles cleanly with C++ and ANSI C. All in Jan 1993
 * Ported to DEC VAX/VMS 5.0, Feb 1993 (incomplete)
 * Ported to Borland Turbo C with PDCurses 2.0 on DOS, Dec 1993
-* Ported to Coherant 3.2 (64K I/D, CE only)
+* Ported to Coherent 3.2 (64K I/D, CE only)
 * Ported to Pyramid (MIPS 4400), DC/OSx 1.1, Mar 1994
 * Support for non-ANSI C comilers removed, now back in a single file
 * Ported to Solaris 2.3, Mar 1994
