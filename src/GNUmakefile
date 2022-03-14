@@ -84,7 +84,7 @@ ifdef V
   VERBOSE = set -x
 else
   VERBOSE = set +x
-endif
+endif # V
 
 ###############################################################################
 # Debugging
@@ -95,7 +95,23 @@ else
  OPTFLAGS ?= -O2
   CFLAGS  += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
   LDFLAGS += -s
-endif
+endif # DEBUG
+
+###############################################################################
+# Link-time optimization and garbage collection
+
+ifdef LTO
+  CFLAGS  += -flto
+  LDFLAGS += -flto
+endif # LTO
+
+ifdef LGC
+  CFLAGS  += -ffdata-sections -ffunction-sections
+  LDFLAGS += -Wl,--gc-sections
+  ifdef DEBUG
+    LDFLAGS += -Wl,--print-gc-sections
+  endif # DEBUG
+endif # LGC
 
 ###############################################################################
 # Libraries
@@ -117,7 +133,7 @@ all: $(OUT)
 $(OUT): $(SRC)
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(CC):\t\t%s\n' $<
-endif
+endif # !V
 	@$(VERBOSE); $(CC) $(CFLAGS) $(SRC) -o $(OUT) $(LDFLAGS)
 
 ###############################################################################
@@ -128,7 +144,7 @@ clean distclean:
 ifneq ($(V),1)
 	-@$(TEST) -f ./$(OUT) && \
 		$(PRINTF) '\r\t\t$(RM):\t\t%s\n' $(OUT) || $(TRUE)
-endif
+endif # !V
 	-@$(VERBOSE); $(TEST) -f ./$(OUT) && \
 		$(RM) ./$(OUT) || $(TRUE)
 
