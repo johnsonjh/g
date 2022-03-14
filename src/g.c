@@ -445,113 +445,113 @@ wfill(void *s, const short v, int len)
     }
 }
 
-# define movelr(a, b, n)                        \
-    (void)memcpy((void *)( a ),                 \
-                 (const void *)( b ), ( n ) )
+# define movelr(a, b, n)                           \
+    memcpy((void *)( a ),                          \
+           (const void *)( b ), ( n ) )
 
-# define moverl(a, b, n)                        \
-    (void)memmove((void *)( a ),                \
-                  (const void *)( b ), ( n ) )
+# define moverl(a, b, n)                           \
+    memmove((void *)( a ),                         \
+            (const void *)( b ), ( n ) )
 
-# define movelr5(a, b)                          \
-    (void)memcpy((void *)( a ),                 \
-                 (const void *)( b ), 5)
+# define movelr5(a, b)                             \
+    memcpy((void *)( a ),                          \
+           (const void *)( b ), 5)
 
-# define mmovelr(a, b, n)                       \
-    ( memcpy((void *)( a ),                     \
-             (const void *)( b ), n),           \
+# define mmovelr(a, b, n)                          \
+    ( memcpy((void *)( a ),                        \
+             (const void *)( b ), n),              \
              (void *)((char *)( a ) + n ) )
 
-# define cwmovelr(a, b, n)                      \
-    (void)memcpy((void *)( a ),                 \
-                 (const void *)( b ), ( n ) )
+# define cwmovelr(a, b, n)                         \
+    memcpy((void *)( a ),                          \
+           (const void *)( b ), ( n ) )
 
-# define cwmmovelr(a, b, n)                     \
-    ( memcpy((void *)( a ),                     \
-             (const void *)( b ), n),           \
+# define cwmmovelr(a, b, n)                        \
+    ( memcpy((void *)( a ),                        \
+             (const void *)( b ), n),              \
              (void *)((char *)( a ) + n ) )
 
-# define mmovelr4(a, b)                         \
-    ( memcpy((void *)( a ),                     \
-             (const void *)( b ), 4),           \
+# define mmovelr4(a, b)                            \
+    ( memcpy((void *)( a ),                        \
+             (const void *)( b ), 4),              \
              (void *)((char *)( a ) + 4 ) )
 
-# define mmovelr5(a, b)                         \
-    ( memcpy((void *)( a ),                     \
-             (const void *)( b ), 5),           \
+# define mmovelr5(a, b)                            \
+    ( memcpy((void *)( a ),                        \
+             (const void *)( b ), 5),              \
              (void *)((char *)( a ) + 5 ) )
 
-# define tmovelr(a, b, n)                       \
-    if (n > 0)                                  \
-      (void)memcpy((void *)( a ),               \
-                   (const void *)( b ), n)
+# define tmovelr(a, b, n)                          \
+    if (n > 0)                                     \
+      memcpy((void *)( a ),                        \
+             (const void *)( b ), n)
 
-# define movelrz(a, b, n)                       \
-    (void)memcpy((void *)( a ),                 \
-                 (const void *)( b ), n);       \
+# define movelrz(a, b, n)                          \
+    memcpy((void *)( a ),                          \
+           (const void *)( b ), n);                \
     a[n] = EOS;
 
-# define zmovelr(a, b)                          \
-    (void)strcpy((void *)( a ),                 \
-                 (const void *)( b ) )
+# define zmovelr(a, b)                             \
+    strcpy((void *)( a ),                          \
+           (const void *)( b ) )
 
-# define mzmovelr(a, b)                         \
-    ( strcpy((void *)a,                         \
+# define mzmovelr(a, b)                            \
+    ( strcpy((void *)a,                            \
              (const void *)b), get_eos(a) )
 
-# define cmovelr(a, b)                          \
-    (void)strcat((void *)( a ),                 \
-                 (const void *)( b ) )
+# define cmovelr(a, b)                             \
+    strcat((void *)( a ),                          \
+           (const void *)( b ) )
 
-# define mcmovelr(a, b)                         \
-    ( strcat((void *)a,                         \
-             (const void *)b),                  \
+# define mcmovelr(a, b)                            \
+    ( strcat((void *)a,                            \
+             (const void *)b),                     \
       get_eos(a) )
 
-# define wmovelr(a, b, n)                       \
-    (void)memcpy((void *)( a ),                 \
-                 (const void *)( b ),           \
-                 ( n ) << 1)
+# define wmovelr(a, b, n)                          \
+    memcpy((void *)( a ),                          \
+           (const void *)( b ),                    \
+           ( n ) << 1)
 
-# define wmoverl(a, b, n)                       \
-    (void)memmove((void *)( a ),                \
-                  (const void *)( b ),          \
-                  ( n ) << 1)
+# define wmoverl(a, b, n)                          \
+    memmove((void *)( a ),                         \
+            (const void *)( b ),                   \
+            ( n ) << 1)
 
 # ifndef bzero
-#  define bzero(s, n)                           \
-     (void)memset((char *)( s ),                \
+#  define bzero(s, n)                              \
+     (void)memset((char *)( s ),                   \
                   EOS, ( n ) << 1)
 # endif  /* ifndef bzero */
 
-# define space_fill(s, n)                       \
-    (void)memset((char *)( s ),                 \
+# define space_fill(s, n)                          \
+    (void)memset((char *)( s ),                    \
                  SPACE, n)
 
-# define mspace_fill(s, n)                      \
-    ( memset((char *)s,                         \
-             SPACE, n), s + n )
+# define mspace_fill(s, n)                         \
+    ( (void)memset((char *)s,                      \
+                   SPACE, n), s + n )
 
-# define tab_fill(s)                            \
-    ( space_fill(s, TAB_WIDTH),                 \
+# define tab_fill(s)                               \
+    ( space_fill(s, TAB_WIDTH),                    \
       s + TAB_WIDTH )
 
-# define ecmp(s1, s2, n)                        \
+# define ecmp(s1, s2, n)                           \
     ( memcmp(s1, s2, n) == 0 )
 
-# define size(s)                                \
+# define size(s)                                   \
     ( strlen(s) + 1 )
 
-# define get_eos(s)                             \
+# define get_eos(s)                                \
     strchr(s, EOS)
 
-# define bmovelr                                \
+# define bmovelr                                   \
     wmovelr
 
-# define bmoverl                                \
+# define bmoverl                                   \
     wmoverl
 
-# define save_jbuf(d, s)                        \
+# define save_jbuf(d, s)                           \
     movelr(d, s, sizeof ( jmp_buf ))
 
 #endif  /* if ASM86 */
@@ -939,7 +939,7 @@ private
 int
 rgetc(void)
 {
-  refresh();
+  (void)refresh();
   return getch();
 }
 # else  /* ifndef ACS_HLINE */
@@ -1149,17 +1149,17 @@ typedef enum
 #define se_sync() file_move(-START_OF_PAGE)
 
 #if UNIX  /* for smooth scrolling */
-# define se_insertln()    \
-  {                       \
-    idlok(stdscr, YES);   \
-    insertln();           \
-    ++idlpending;         \
+# define se_insertln()         \
+  {                            \
+    (void)idlok(stdscr, YES);  \
+    (void)insertln();          \
+    ++idlpending;              \
   }
-# define se_deleteln()    \
-  {                       \
-    idlok(stdscr, YES);   \
-    deleteln();           \
-    ++idlpending;         \
+# define se_deleteln()         \
+  {                            \
+    (void)idlok(stdscr, YES);  \
+    (void)deleteln();          \
+    ++idlpending;              \
   }
 #else  /* if UNIX */
 # define se_insertln() insertln()
@@ -2079,7 +2079,7 @@ tabex(byte *b2, const byte *b1, int len)
       col += ( gap = p - b1 );
       if (col > maxlen)
         {
-          movelr(b2, b1, maxlen - ( col - gap ));
+          (void)movelr(b2, b1, maxlen - ( col - gap ));
           col = maxlen;
           len = 0;
           break;
@@ -2111,7 +2111,7 @@ tabex(byte *b2, const byte *b1, int len)
       ++trunc_recs;
     }
 
-  cwmovelr(b2, b1, len);
+  (void)cwmovelr(b2, b1, len);
 
   return len + ( b2 - start );
 }
@@ -2136,7 +2136,7 @@ ltabex(char *b2, const byte *b1, int len)
         }
     }
 
-  cwmovelr(b2, b1, len);
+  (void)cwmovelr(b2, b1, len);
 
   return len + ( b2 - start );
 }
@@ -2282,7 +2282,7 @@ extend_list(UNIT *const fp)
   const int old_end = fp->list_end + 1;
   PAGE_PTR *const new_pt = get_pt(old_end + PPP);
 
-  bmovelr(new_pt, fp->list, old_end * PP_SIZE >> B_SIZE);
+  (void)bmovelr(new_pt, fp->list, old_end * PP_SIZE >> B_SIZE);
   bzero(new_pt + old_end, PP_SIZE * ( PPP >> B_SIZE ));
   free_pt(fp);
   fp->list = new_pt;
@@ -2336,7 +2336,7 @@ unlink_page(UNIT *const fp, PAGE_PTR *const cp, const word offset)
 
   fp->rec_start = ( cp->base = get_page()) + offset;
   clear_link(fp->link_u, cp);
-  cwmovelr(cp->base, link_base, offset);
+  (void)cwmovelr(cp->base, link_base, offset);
 }
 
 /*
@@ -2488,7 +2488,7 @@ vsputrec(UNIT *const fp, const char *record, word len)
 
   if (bin_mode)
     {
-      movelr(p, record, len);
+      (void)movelr(p, record, len);
     }
   else
     {  /* compress initial space */
@@ -2508,7 +2508,7 @@ vsputrec(UNIT *const fp, const char *record, word len)
           len -= i;
           *p++ = TAB;
         }
-      cwmovelr(p, record, len);
+      (void)cwmovelr(p, record, len);
       len += p - start;
     }
 
@@ -2600,7 +2600,7 @@ vsload(UNIT *const fp, char csc record, word len)
 
   if (bin_mode)
     {
-      movelr(buf + 3, record, len);
+      (void)movelr(buf + 3, record, len);
     }
   else
     {
@@ -2716,7 +2716,7 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
 
       /* move segment */
       len = rs1 - irs1;
-      cwmovelr(rs2, irs1, len);
+      (void)cwmovelr(rs2, irs1, len);
       /* next new file page */
       cp2->rec = rec2 += ( rec1 - irec1 );
       cp2->end_pos = (ushort)( offset2 + len );
@@ -2799,7 +2799,8 @@ vscopy(UNIT *const fp2, UNIT *const fp1, const word end_rec)
               unlink_page(fp2, cp2, offset1);
             }
 
-          cwmovelr(fp2->rec_start, fp1->rec_start, cp1->end_pos - offset1);
+          (void)cwmovelr(
+                  fp2->rec_start, fp1->rec_start, cp1->end_pos - offset1);
           cp2->end_pos = cp1->end_pos;
         }
 
@@ -2898,7 +2899,7 @@ save_all(SAVE_AREA *const save)
           save->in_rec = getbuf(save->in_rec_len = i_eor);
         }
 
-      movelr(save->in_rec, i_buff, i_eor);
+      (void)movelr(save->in_rec, i_buff, i_eor);
     }
 
   if (e_col > 0)
@@ -2913,7 +2914,7 @@ save_all(SAVE_AREA *const save)
           save->out_rec = getbuf(save->out_rec_len = e_col);
         }
 
-      movelr(save->out_rec, e_buff, e_col);
+      (void)movelr(save->out_rec, e_buff, e_col);
     }
 }
 
@@ -2992,7 +2993,7 @@ init_line(void)
   e_col = 0;
   g_eof = NO;
   g_rec = o_rec = -1;
-  fill_buff();
+  (void)fill_buff();
   save_all(&g_save);
 }
 
@@ -3027,7 +3028,7 @@ vsprimary(void)
 
   pg = out_u->list_end = in_u->list_end;
   out_u->list = get_pt(++pg);
-  bmovelr(out_u->list, in_u->list, pg * PP_SIZE >> B_SIZE);
+  (void)bmovelr(out_u->list, in_u->list, pg * PP_SIZE >> B_SIZE);
 
   init_line();
 }
@@ -3240,12 +3241,12 @@ err_print(char *const err_text, const int code, const char *ptr)
 
   if (code == FILE_ERROR && errno != 0)
     {
-      sprintf(err_text, "%s - %s.", mess, strerror(errno));
+      (void)sprintf(err_text, "%s - %s.", mess, strerror(errno));
       errno = 0;
     }
   else
     {
-      sprintf(err_text, "%s.", mess);
+      (void)sprintf(err_text, "%s.", mess);
     }
 
   if (ptr == NULL && com_stack_ptr->prog != NULL)
@@ -3285,7 +3286,7 @@ g_err(const int code, char csc ptr)
 
   while (c_list != NULL)
     {
-      sprintf(
+      (void)sprintf(
         get_eos(buf),
         "\nCalled from edit file %s (line %d)",
         c_list->name,
@@ -4167,7 +4168,7 @@ get_com(char *str, char csc c_prompt)
           g_err(COMM_TOO_LONG, NULL);
         }
 
-      movelrz(str, p, len);
+      (void)movelrz(str, p, len);
       if (lon)
         {
           say(str);
@@ -4178,7 +4179,7 @@ get_com(char *str, char csc c_prompt)
 
   if (g_init != NULL)
     {
-      zmovelr(str, g_init);
+      (void)zmovelr(str, g_init);
       g_init = NULL;
       return NO;
     }
@@ -4223,7 +4224,7 @@ gdss(char *const buf, int *const buf_len, char cssc ptr)
       g_err(S_STR_LEN, str);
     }
 
-  movelrz(buf, str, len);
+  (void)movelrz(buf, str, len);
   *buf_len = len;
   if (*p == EOS)
     {
@@ -4265,7 +4266,7 @@ altr_line(int col, const int comm)
           g_err(LINE_TOO_LONG, NULL);
         }
 
-      movelr(e_buff + e_col, i_buff + i_col, col);
+      (void)movelr(e_buff + e_col, i_buff + i_col, col);
       e_col += col;
     }
 
@@ -4287,7 +4288,7 @@ get_end(void)
       g_err(LINE_TOO_LONG, NULL);
     }
 
-  movelr(e_buff + e_col, i_buff + i_col, i_len);
+  (void)movelr(e_buff + e_col, i_buff + i_col, i_len);
   e_col += i_len;
   i_col = i_eor;
 }
@@ -4364,7 +4365,7 @@ n_print(char csc line, int len, const int arrowed)
     }
 
   p = mcmovelr(buf, arrowed ? ">>" : "  ");
-  movelrz(p, line, len);
+  (void)movelrz(p, line, len);
   printable(p, len);
   say(buf);
 }
@@ -4733,7 +4734,7 @@ serial_read(UNIT *const vs_u, const int fd)
                   len = E_BUFF_LEN + 1;
                 }
 
-              movelr(buf, start, len);
+              (void)movelr(buf, start, len);
               break;
             }
 
@@ -4746,7 +4747,7 @@ serial_read(UNIT *const vs_u, const int fd)
       vsload(vs_u, buf, (int)( p - buf ));
     }
 
-  close(fd);
+  (void)close(fd);
 
   return vstell(vs_u);
 }
@@ -4789,7 +4790,7 @@ Proc_to_mem(UNIT *const vs_u, char csc comm)
     {
       trunc_recs = 0;
 
-      serial_read(vs_u, fileno(fp));
+      (void)serial_read(vs_u, fileno(fp));
 
       rc = pclose(fp);
     }
@@ -4848,7 +4849,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
                   len = E_BUFF_LEN + 1;
                 }
 
-              cwmovelr(buf, start, len);
+              (void)cwmovelr(buf, start, len);
               break;
             }
 
@@ -4861,7 +4862,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
       vsload(vs_u, buf, (int)( p - buf ));
     }
 
-  close(fd);
+  (void)close(fd);
 
   return vstell(vs_u);
 
@@ -4874,7 +4875,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
     {
       const char *start = f_p, *p, *const last = start + f_len;
       int len;
-      close(fd);
+      (void)close(fd);
       while (( len = last - start ) > 0)
         {
           if (( p = memchr(start, LFEED, len)) == NULL)
@@ -4885,11 +4886,11 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
           vsload(vs_u, start, (int)( p - start ));
           start = p + 1;
         }
-      munmap(f_p, f_len);
+      (void)munmap(f_p, f_len);
       return vstell(vs_u);
     }
 
-  lseek(fd, 0, SEEK_SET);
+  (void)lseek(fd, 0, SEEK_SET);
 # endif  /* if UNIX || !defined(__DJGPP__) */
 
   return serial_read(vs_u, fd);
@@ -4974,7 +4975,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
         }
     }
 
-  close(fd);
+  (void)close(fd);
 
   return vstell(vs_u);
 }
@@ -4996,7 +4997,7 @@ push_line(stack **const line_stack, char csc text, const int len)
   short *const start = (short *)( p + 1 );
 
   *start = (short)len;
-  movelr(start + 1, text, len);
+  (void)movelr(start + 1, text, len);
   *p = (stack)( *line_stack );
   *line_stack = p;
 
@@ -5020,7 +5021,7 @@ pop_line(stack **const line_stack, char *const line)
 
   p = (stack *)( *top );
   start = (short *)( top + 1 );
-  movelr(line, start + 1, *start);
+  (void)movelr(line, start + 1, *start);
   rlsevec(top);
   *line_stack = p;
 
@@ -5067,7 +5068,7 @@ buf_to_file(const int com)
           pop_line(&in_stack, e_buff);
           out_buff();
         }
-      fill_buff();
+      (void)fill_buff();
     }
 }
 
@@ -5130,20 +5131,20 @@ save_work(char *const mess)
     }
 
   lon = 0;
-  wrapround();
+  (void)wrapround();
 
   if (vssizeof(in_u) == 0)
     {
-      cmovelr(mess, "No data to save.\n");
+      (void)cmovelr(mess, "No data to save.\n");
       return;
     }
 
   for (i = 0; save_dirs[i] != NULL; ++i)
     {
-      zmovelr(mzmovelr(filename, save_dirs[i]), "/g.hup");
+      (void)zmovelr(mzmovelr(filename, save_dirs[i]), "/g.hup");
       if (( recs = Mem_to_disk(in_u, filename, 'N')) != EOF)
         {
-          sprintf(
+          (void)sprintf(
             get_eos(mess),
             "%d line%s saved to \"%s\"\n",
             recs,
@@ -5155,7 +5156,7 @@ save_work(char *const mess)
       vsrewind(in_u);
     }
 
-  cmovelr(mess, "Unable to save data.\n");
+  (void)cmovelr(mess, "Unable to save data.\n");
 }
 
 #endif  /* if UNIX */
@@ -5172,7 +5173,7 @@ g_intr(int sig)
   string mess;
 #endif  /* if UNIX */
 
-  signal(sig, g_intr);
+  (void)signal(sig, g_intr);
 
 #ifndef __MINGW32__
 # if DOS
@@ -5212,12 +5213,12 @@ g_intr(int sig)
     case SIGHUP:
       reason = "comms failure";
     }
-  sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
+  (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
   save_work(mess);
   if (( fp = popen("exec mail $LOGNAME", write_only)) != NULL)
     {
-      fprintf(fp, "\n%s", mess);
-      pclose(fp);
+      (void)fprintf(fp, "\n%s", mess);
+      (void)pclose(fp);
     }
 
   term();
@@ -6342,7 +6343,7 @@ parse(TOKEN *const retval, TOKEN *tok, const int endp)
           continue;
 
         case COMMA:
-          clear_stack(dstack, ostack);
+          (void)clear_stack(dstack, ostack);
           dstack = ostack = NULL;
           continue;
 
@@ -6529,7 +6530,7 @@ print_val(void)
   putstr("==>  ");
   if (last_result->fp)
     {
-      sprintf(oline, m_real, last_result->opval.r);
+      (void)sprintf(oline, m_real, last_result->opval.r);
     }
   else
     {
@@ -6537,20 +6538,21 @@ print_val(void)
       p = mzmovelr(rstr, ",  Roman: ");
       if (val == 0)
         {
-          zmovelr(p, "nihil");
+          (void)zmovelr(p, "nihil");
         }
 
-      elif(val > 0 && val <= MAXROM) zmovelr(p, itor(val));
+      elif(val > 0 && val <= MAXROM)
+          (void)zmovelr(p, itor(val));
       elif(val < 0 && val >= -MAXROM)
-      zmovelr(mcmovelr(p, "negativus "), itor(-val));
+      (void)zmovelr(mcmovelr(p, "negativus "), itor(-val));
       else
         {
-          zmovelr(p, "numerus negatus");
+          (void)zmovelr(p, "numerus negatus");
         }
 
       if (isascii(val))
         {
-          zmovelr(mzmovelr(astr, ",  Ascii: "), itoc(val));
+          (void)zmovelr(mzmovelr(astr, ",  Ascii: "), itoc(val));
         }
       else
         {
@@ -6580,7 +6582,7 @@ print_val(void)
 
       if (len > 74)
         {
-          sprintf(oline, "Oct: %lo,  Dec: %ld,  Hex: %s",
+          (void)sprintf(oline, "Oct: %lo,  Dec: %ld,  Hex: %s",
                   val,
                   val,
                   itoh(val));
@@ -6612,7 +6614,7 @@ Calc(TOKEN *expr)
         {
           if (ptr != NULL)
             {
-              parse(last_result, ptr, END_EXP);
+              (void)parse(last_result, ptr, END_EXP);
               if (lon)
                 {
                   print_val();
@@ -6641,7 +6643,7 @@ private
 TOKEN *
 Evaluate(TOKEN csc expr, const int e_type)
 {
-  parse(last_result, (TOKEN *)expr, END_EXP);
+  (void)parse(last_result, (TOKEN *)expr, END_EXP);
   if (e_type == C_ENDP && last_result->fp)
     {
       last_result->opval.i = (long)last_result->opval.r;
@@ -6664,7 +6666,7 @@ print_size(const int recs)
     }
   else
     {
-      fprintf(vdu, " - %d line%s.\n", recs, plural(recs));
+      (void)fprintf(vdu, " - %d line%s.\n", recs, plural(recs));
     }
 }
 
@@ -6672,7 +6674,7 @@ private
 void
 print_i_size(char csc ftype, char csc file, UNIT csc fp)
 {
-  fprintf(vdu, ps_name, ftype, equal1(file, '-') ? si_file : file);
+  (void)fprintf(vdu, ps_name, ftype, equal1(file, '-') ? si_file : file);
   print_size(vssizeof(fp));
 }
 
@@ -6680,7 +6682,7 @@ private
 void
 print_o_size(char csc ftype, char csc file, UNIT csc fp)
 {
-  fprintf(vdu, ps_name, ftype, equal1(file, '-') ? so_file : file);
+  (void)fprintf(vdu, ps_name, ftype, equal1(file, '-') ? so_file : file);
   print_size(vstell(fp));
 }
 
@@ -6813,7 +6815,7 @@ new_input_file(VERB csc opts, FILE_LIST **const f_stack, UNIT **const vs_u)
     }
 
   list->next  = fptr;
-  zmovelr(list->name, fn);
+  (void)zmovelr(list->name, fn);
   list->trans = (byte)temp_file;
   list->old_u = *vs_u;  /* Save old unit number */
   *vs_u = temp_u;
@@ -6864,7 +6866,7 @@ Xit(VERB csc opts)
 
     case 'T':
       f_list->trans = YES;
-      zmovelr(f_list->name, t_fname);
+      (void)zmovelr(f_list->name, t_fname);
       /* fallthrough */
 
     case 'Q':
@@ -6905,9 +6907,9 @@ Xit(VERB csc opts)
       if (mode == '|')
         {
           c_out = dup(1), save_fd_in = fd_in_terminal;
-          close(1);
+          (void)close(1);
           fd_in_terminal = open(t_fname, O_RDWR | O_CREAT | O_TRUNC, 0644);
-          unlink(t_fname);
+          (void)unlink(t_fname);
           recs = Mem_to_proc(out_u, opts->o1.s);
           f_list->trans = NO;
           break;
@@ -6986,8 +6988,8 @@ Xit(VERB csc opts)
             }
         }
 
-      dup2(c_out, 1);
-      close(c_out);
+      (void)dup2(c_out, 1);
+      (void)close(c_out);
       fd_in_terminal = save_fd_in;
       if (recs == EOF)
         {
@@ -7032,7 +7034,7 @@ Save(VERB csc opts)
 
       sptr->disp = (char)mode;
       sptr->trans = (byte)temp_file;
-      zmovelr(sptr->name, temp_file ? t_fname : opts->o1.s);
+      (void)zmovelr(sptr->name, temp_file ? t_fname : opts->o1.s);
       save_all(&sptr->save);
       sptr->old_u = out_u;
       out_u = vsopen();
@@ -7063,7 +7065,7 @@ Merge(VERB csc opts)
   save_all(&g_save);
   g_eof = NO;
   g_rec = -1;
-  fill_buff();
+  (void)fill_buff();
 }
 
 /*
@@ -7092,7 +7094,7 @@ strhex(char *s, word len)
 
   if (len & ODD_MASK)
     {
-      moverl(s + 1, s, ++len);
+      (void)moverl(s + 1, s, ++len);
       *s = '0';
     }
 
@@ -7148,7 +7150,7 @@ short_num(char *t, const char *p)
       break;
 
     case '@':
-      strcpy(t, "T#{@}");
+      (void)strcpy(t, "T#{@}");
     }
 
   return p;
@@ -7177,7 +7179,7 @@ short_str(char *t, const char *p)
       --p;
     }
 
-  sprintf(t, se_fcom1, p);
+  (void)sprintf(t, se_fcom1, p);
 }
 
 /*
@@ -7390,11 +7392,14 @@ get_name(char cssc ptr, char *name)
   switch (*p)
     {
     case GRAVE:
+      /* fallthrough */
     case SQUOTE:
+      /* fallthrough */
     case DQUOTE:
+      /* fallthrough */
     case DEL:
       ++p;
-      gdss(name, &i, &p);
+      (void)gdss(name, &i, &p);
       break;
 
     default:
@@ -7626,7 +7631,7 @@ parse_I(const char *p, VERB *const opts)
         }
       while ( *p == c2 );
       opts->o1.v = (int)( p - dp );
-      movelrz(opts->o1.s, dp, opts->o1.v);
+      (void)movelrz(opts->o1.s, dp, opts->o1.v);
     }
 
   return p;
@@ -7704,17 +7709,17 @@ Create(const char *s)
   /* add macro to front of the list */
   m = heap(MACRO);
   m->next = mac_list;
-  zmovelr(m->name, name);
+  (void)zmovelr(m->name, name);
   m->par_sub = subs_ch;
   m->nargs = (byte)arg_count;
   m->text = (const char *)getvec(size(s));
-  zmovelr((char *)m->text, s);
+  (void)zmovelr((char *)m->text, s);
 
   /* Note predefined macros are in read/only core, so
    * you cannot just simply replace existing ptr. */
   if (c_list == NULL && get_macro(name) != NULL)
     {
-      sprintf(name, "Warning: macro \"%s\" redefined", m->name);
+      (void)sprintf(name, "Warning: macro \"%s\" redefined", m->name);
       inform(name);
     }
 
@@ -7806,7 +7811,7 @@ dotcallmac(char *const text, const char *p)
     }
   else
     {
-      zmovelr(text, c_ptr);
+      (void)zmovelr(text, c_ptr);
     }
 
   return p;
@@ -7953,7 +7958,7 @@ comp:
 #if UNIX
       if (c2 == '|')
         {
-          get_name(&p, opts->o1.s);
+          (void)get_name(&p, opts->o1.s);
         }
 
 #endif  /* if UNIX */
@@ -8036,7 +8041,7 @@ comp:
         }
 
 copy_com:
-      zmovelr(opts->o1.s, p);
+      (void)zmovelr(opts->o1.s, p);
       p = get_eos(p);
       break;
 
@@ -8165,10 +8170,10 @@ init_screen(void)
   char **p, **last;
   int lines;
 
-  initscr();
-  nonl();
-  noecho();
-  keypad(stdscr, YES);
+  (void)initscr();
+  (void)nonl();
+  (void)noecho();
+  (void)keypad(stdscr, YES);
 
 #if DOS
   lines = LINES;
@@ -8176,15 +8181,15 @@ init_screen(void)
 # if COLOUR
   if (start_color() == OK)
     {
-      init_pair(1, COLOR_WHITE,   COLOR_RED);     /* matched text */
-      init_pair(2, COLOR_WHITE,   COLOR_BLUE);    /* control characters */
-      init_pair(3, COLOR_WHITE,   COLOR_BLACK);   /* EOF marker */
-      init_pair(4, COLOR_YELLOW,  COLOR_BLACK);   /* the scale line */
-      init_pair(5, COLOR_CYAN,    COLOR_BLACK);   /* the status line */
-      init_pair(6, COLOR_GREEN,   COLOR_BLACK);   /* normal text */
-      init_pair(7, COLOR_RED,     COLOR_BLACK);   /* query */
-      init_pair(8, COLOR_MAGENTA, COLOR_BLACK);   /* margins */
-      init_pair(9, COLOR_BLUE,    COLOR_RED);     /* matched binary */
+      (void)init_pair(1, COLOR_WHITE,   COLOR_RED);    /* matched text */
+      (void)init_pair(2, COLOR_WHITE,   COLOR_BLUE);   /* control characters */
+      (void)init_pair(3, COLOR_WHITE,   COLOR_BLACK);  /* EOF marker */
+      (void)init_pair(4, COLOR_YELLOW,  COLOR_BLACK);  /* the scale line */
+      (void)init_pair(5, COLOR_CYAN,    COLOR_BLACK);  /* the status line */
+      (void)init_pair(6, COLOR_GREEN,   COLOR_BLACK);  /* normal text */
+      (void)init_pair(7, COLOR_RED,     COLOR_BLACK);  /* query */
+      (void)init_pair(8, COLOR_MAGENTA, COLOR_BLACK);  /* margins */
+      (void)init_pair(9, COLOR_BLUE,    COLOR_RED);    /* matched binary */
     }
   else
     {
@@ -8242,7 +8247,7 @@ set_eor(const int line, const int nsize)
     {
       char *const temp = s_buf[line];
       s_buf[line] = getbuf(s_eor[line] = (short)( nsize + L_LEN ));
-      movelr(s_buf[line], temp, asize);
+      (void)movelr(s_buf[line], temp, asize);
       rlsevec(temp);
     }
 
@@ -8265,7 +8270,7 @@ next_line(const int line)
 
   if (in_stack != NULL)
     {
-      set_eor(line, pop_length(in_stack));
+      (void)set_eor(line, pop_length(in_stack));
       pop_line(&in_stack, s_buf[line]);
     }
   else
@@ -8279,8 +8284,8 @@ next_line(const int line)
         }
 
       len = ltabex(e_buff, p, len);
-      set_eor(line, len);
-      movelr(s_buf[line], e_buff, len);
+      (void)set_eor(line, len);
+      (void)movelr(s_buf[line], e_buff, len);
     }
 
   return YES;
@@ -8306,8 +8311,8 @@ file_to_buf(const int com)
     case SE_ENTER:
       if (!g_eof)
         {
-          set_eor(line, i_eor);
-          movelr(s_buf[line++], i_buff, i_eor);
+          (void)set_eor(line, i_eor);
+          (void)movelr(s_buf[line++], i_buff, i_eor);
         }
     }
 
@@ -8334,7 +8339,7 @@ move_to(int line)
 {
   if (line <= g_rec || g_rec <= o_rec && o_rec >= line)
     {
-      wrapround();
+      (void)wrapround();
     }
 
   if (vssizeof(in_u) > 0)
@@ -8490,7 +8495,7 @@ deleteln(void)
 {
   chtype *const curs_y = v_base + curs_row * COLS;
 
-  bmovelr(curs_y, curs_y + COLS, ( last_line - curs_row ) * B_COLS);
+  (void)bmovelr(curs_y, curs_y + COLS, ( last_line - curs_row ) * B_COLS);
 }
 
 private
@@ -8499,7 +8504,7 @@ insertln(void)
 {
   chtype *const curs_y = v_base + curs_row * COLS;
 
-  bmoverl(curs_y + COLS, curs_y, ( last_line - curs_row ) * B_COLS);
+  (void)bmoverl(curs_y + COLS, curs_y, ( last_line - curs_row ) * B_COLS);
   scr_fill(curs_y, B_COLS);
 }
 
@@ -8509,7 +8514,7 @@ curs_chins(void)
 {
   chtype *const p = v_base + curs_row * COLS + curs_col;
 
-  wmoverl(p + 1, p, last_col - curs_col);
+  (void)wmoverl(p + 1, p, last_col - curs_col);
 }
 
 private
@@ -8685,10 +8690,10 @@ private
 void
 put_seq(const char *s, int n, chtype attr)
 {
-  attrset(attr);
+  (void)attrset(attr);
   while (n--)
     {
-      put_byte(*s++);
+      (void)put_byte(*s++);
     }
 }
 
@@ -8696,19 +8701,19 @@ private
 void
 cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
 {
-  attrset(attr_print);
+  (void)attrset(attr_print);
   while (n--)
     {
       const chtype c = *s++;
       if (isprint(c))
         {
-          put_byte(c);
+          (void)put_byte(c);
         }
       else
         {
-          attrset(attr_cntrl);
-          put_byte(toprint(c));
-          attrset(attr_print);
+          (void)attrset(attr_cntrl);
+          (void)put_byte(toprint(c));
+          (void)attrset(attr_print);
         }
     }
 }
@@ -8731,7 +8736,7 @@ put_text(const char *s, int len, int rem)
 
   if (len < rem)
     {
-      clrtoeol();
+      (void)clrtoeol();
     }
 }
 
@@ -8782,10 +8787,10 @@ disp_eof(const int r)
 #if ASM86
   put_seq(v_base + r * COLS, eof_mess, 11, eof_col, COLS);
 #else  /* if ASM86 */
-  move(r, 0);
+  (void)move(r, 0);
   put_seq(eof_mess, 11, eof_col);
-  attrset(norm_col);
-  clrtoeol();
+  (void)attrset(norm_col);
+  (void)clrtoeol();
 #endif  /* if ASM86 */
 }
 
@@ -8821,7 +8826,7 @@ disp_template(void)
   char *p = scale;
   char csc last = p + COLS;
 
-  memset(p, '.', COLS);
+  (void)memset(p, '.', COLS);
   for (i = 5; i < COLS; i += 10)
     {
       p[i] = '+';
@@ -8830,12 +8835,12 @@ disp_template(void)
   for (i = offset; p < last; i += 10, p += 10)
     {
       len = sprintf(buf, "%d", i / 10);
-      movelr(p, buf, len);
+      (void)movelr(p, buf, len);
     }
 
-  move(TEMPLATE_LINE, 0);
+  (void)move(TEMPLATE_LINE, 0);
   put_seq(scale, COLS, scale_col);
-  attrset(norm_col);
+  (void)attrset(norm_col);
 #endif  /* if ASM86 */
 }
 
@@ -8853,7 +8858,7 @@ disp_rest(void)
   chtype *const start = v_base + row * COLS + col;
   put_text(start, BUF(f_col), eor[row] - f_col, COLS - col);
 #else  /* if ASM86 */
-  move(row, col);
+  (void)move(row, col);
   put_text(BUF(f_col), eor[row] - f_col, COLS - col);
 #endif  /* if ASM86 */
 }
@@ -8870,7 +8875,7 @@ disp_line(void)
   chtype *const start = v_base + row * COLS;
   put_text(start, BUF(offset), eor[row] - offset, COLS);
 #else  /* if ASM86 */
-  move(row, 0);
+  (void)move(row, 0);
   put_text(BUF(offset), eor[row] - offset, COLS);
 #endif  /* if ASM86 */
 }
@@ -8890,7 +8895,7 @@ disp_matched_text(const int m_row, const int m_col, int m_len)
       chtype *const start = v_base + m_row * COLS + m_col;
       put_matched(start, s_buf[m_row] + m_col + offset, m_len);
 #else  /* if ASM86 */
-      move(m_row, m_col);
+      (void)move(m_row, m_col);
       cput_seq(s_buf[m_row] + m_col + offset, m_len, found_col, found_ctrl);
 #endif  /* if ASM86 */
     }
@@ -8938,7 +8943,7 @@ disp_home(void)
     eor[COMMAND_LINE] - offset,
     COLS);
 #else  /* if ASM86 */
-  move(COMMAND_LINE, 0);
+  (void)move(COMMAND_LINE, 0);
   put_text(s_buf[COMMAND_LINE] + offset, eor[COMMAND_LINE] - offset, COLS);
 #endif  /* if ASM86 */
 }
@@ -8963,7 +8968,7 @@ disp_text(void)
 #else  /* if ASM86 */
   for (i = FIRST_LINE; i < LINES && eor[i] != EOF; ++i)
     {
-      move(i, 0);
+      (void)move(i, 0);
       put_text(s_buf[i] + offset, eor[i] - offset, COLS);
     }
 
@@ -8976,8 +8981,8 @@ disp_text(void)
 #else  /* if ASM86 */
       while (++i < LINES)
         {
-          move(i, 0);
-          clrtoeol();
+          (void)move(i, 0);
+          (void)clrtoeol();
         }
 #endif  /* if ASM86 */
     }
@@ -8997,7 +9002,7 @@ del_seg(const int end_col)
   char *const p = BUF(first_col);
 
   /* Adjust buffer */
-  movelr(p, p + gap, eor[row] - end_col);
+  (void)movelr(p, p + gap, eor[row] - end_col);
   eor[row] -= gap;
 
   /* Adjust screen */
@@ -9049,7 +9054,7 @@ status(void)
 #if ASM86
   put_status(v_base + 5, buf, len);
 #else  /* if ASM86 */
-  move(STATUS_LINE, 5);
+  (void)move(STATUS_LINE, 5);
   put_seq(buf, len, status_col);
 #endif  /* if ASM86 */
 
@@ -9067,7 +9072,7 @@ status(void)
 #if ASM86
       put_status(v_base + eof_start, buf, len);
 #else  /* if ASM86 */
-      move(STATUS_LINE, eof_start);
+      (void)move(STATUS_LINE, eof_start);
       put_seq(buf, len, status_col);
 #endif  /* if ASM86 */
     }
@@ -9079,7 +9084,7 @@ status(void)
 #if ASM86
       put_status(v_base + new_eor, buf, len);
 #else  /* if ASM86 */
-      move(STATUS_LINE, new_eor);
+      (void)move(STATUS_LINE, new_eor);
       put_seq(buf, len, status_col);
 #endif  /* if ASM86 */
     }
@@ -9096,16 +9101,16 @@ status(void)
 #else  /* if DOS */
   if (len > 0)
     {
-      move(STATUS_LINE, eor_start);
+      (void)move(STATUS_LINE, eor_start);
       while (len--)
         {
-          put_byte(SPACE);
+          (void)put_byte(SPACE);
         }
     }
 
   eor_start = new_eor;
-  mv_put_byte(STATUS_LINE, h_inc, expand ? 'I' : 'O');
-  attrset(norm_col);
+  (void)mv_put_byte(STATUS_LINE, h_inc, expand ? 'I' : 'O');
+  (void)attrset(norm_col);
 #endif  /* if DOS */
 }
 
@@ -9130,7 +9135,7 @@ init(void)
   char *const mid = buf + h_inc + 4;
   const char *p, *last;
   space_fill(buf, COLS);
-  movelr(buf, "LINE", 4);
+  (void)movelr(buf, "LINE", 4);
 #endif  /* if ASM86 */
   se_save_eof = -1;
 
@@ -9150,7 +9155,7 @@ init(void)
       len = 15;
     }
 
-  put_status(mid - 8 - len, p, len);
+  (void)put_status(mid - 8 - len, p, len);
 
   p = last = get_eos(out_fname);
   while (p > out_fname && !path_sep(p[-1]))
@@ -9167,12 +9172,12 @@ init(void)
       len = 15;
     }
 
-  put_status(mid, p, len);
+  (void)put_status(mid, p, len);
 
-  put_status(mid - 6, ">GI>", 4);
+  (void)put_status(mid - 6, ">GI>", 4);
 
 #if ASM86 == 0
-  move(STATUS_LINE, 0);
+  (void)move(STATUS_LINE, 0);
   put_seq(buf, COLS, status_col);
 #endif  /* if ASM86 == 0 */
 
@@ -9181,7 +9186,7 @@ init(void)
   disp_home();
   disp_template();
   disp_text();
-  move(row, col);
+  (void)move(row, col);
   redisplay = NO;
 }
 
@@ -9218,14 +9223,15 @@ home_command(const int disp, const int s_start)
   int rc = 0;
 
   buf_to_file(SE_LEAVE);
-  move_to(s_start);
+  (void)move_to(s_start);
 
   lon = disp == D_SE_HOME;
 
-  noraw();
+  (void)noraw();
+  
   if (setjmp(set_err))
     {
-      move_to(sop);
+      (void)move_to(sop);
       rc = 1;
     }
   else
@@ -9233,7 +9239,7 @@ home_command(const int disp, const int s_start)
       Drive(disp);
     }
 
-  raw();
+  (void)raw();
 
   save_jbuf(set_err, save_err);
 
@@ -9311,11 +9317,11 @@ run_command(char csc com, const int f_rec, const int s_rec)
 
   if (s_rec)
     {
-      sprintf(cline, "%s,T#%d", com, START_OF_PAGE);
+      (void)sprintf(cline, "%s,T#%d", com, START_OF_PAGE);
     }
   else
     {
-      sprintf(cline, "%s,T%d", com, -CURSOR_ROW);
+      (void)sprintf(cline, "%s,T%d", com, -CURSOR_ROW);
     }
 
   cmd_buf = cline;
@@ -9361,7 +9367,9 @@ hand_quick(int *const value)
       return A_DEL_REST;
 
     case 'A':  /* ^QA  Search for string and replace */
+      /* fallthrough */
     case 'F':  /* ^QF  Search for string */
+      /* fallthrough */
     case 'I':  /* ^QI  Move to line number */
       return A_SEARCH;
 
@@ -9496,18 +9504,23 @@ get_seq(int *const value)
       return A_W_LEFT;
 
     case CNTRL('C'):  /* ^C  Page down */
+      /* fallthrough */
     case KEY_NPAGE:
+      /* fallthrough */
 #ifdef KEY_NEXT
     case KEY_NEXT:
+      /* fallthrough */
 #endif  /* ifdef KEY_NEXT */
       *value = NEXT_PAGE;
       return A_FILE_MOVE;
 
     case CNTRL('D'):  /* ^D  Cursor right */
+      /* fallthrough */
     case KEY_RIGHT:
       return A_C_RIGHT;
 
     case CNTRL('E'):  /* ^E  Cursor up */
+      /* fallthrough */
     case KEY_UP:
       return A_C_UP;
 
@@ -9516,14 +9529,18 @@ get_seq(int *const value)
       return A_W_RIGHT;
 
     case CNTRL('G'):  /* ^G  Char delete right */
+      /* fallthrough */
     case KEY_DC:
+      /* fallthrough */
     case DEL:
       *value = RIGHT;
       return A_DEL_C;
 
     case CNTRL('H'):  /* ^H  BS as char delete left */
+      /* fallthrough */
 #ifdef KEY_BACKSPACE
     case KEY_BACKSPACE:
+      /* fallthrough */
 #endif  /* ifdef KEY_BACKSPACE */
       *value = LEFT;
       return A_DEL_C;
@@ -9543,26 +9560,34 @@ get_seq(int *const value)
       return A_CHARACTER;
 
     case CNTRL('M'):  /* ^M  RETURN (split line) */
+      /* fallthrough */
 #ifdef KEY_ENTER
     case KEY_ENTER:
+      /* fallthrough */
 #endif  /* ifdef KEY_ENTER */
       return A_C_RETURN;
 
     case CNTRL('N'):  /* ^N  Open blank line */
+      /* fallthrough */
 #ifdef KEY_IL
     case KEY_IL:
+      /* fallthrough */
 #endif  /* ifdef KEY_IL */
       return A_OPEN_LINE;
 
     case CNTRL('R'):  /* ^R  Page up */
+      /* fallthrough */
     case KEY_PPAGE:
+      /* fallthrough */
 #ifdef KEY_PREVIOUS
     case KEY_PREVIOUS:
+      /* fallthrough */
 #endif  /* ifdef KEY_PREVIOUS */
       *value = PREV_PAGE;
       return A_FILE_MOVE;
 
     case CNTRL('S'):  /* ^S  Cursor left */
+      /* fallthrough */
     case KEY_LEFT:
       return A_C_LEFT;
 
@@ -9574,6 +9599,7 @@ get_seq(int *const value)
       return A_REST_LINE;
 
     case CNTRL('V'):  /* ^V  Toggle expand mode */
+      /* fallthrough */
     case KEY_IC:
       return A_EXP_MODE;
 
@@ -9582,10 +9608,12 @@ get_seq(int *const value)
       return A_FILE_MOVE;
 
     case CNTRL('X'):  /* ^X  Cursor down */
+      /* fallthrough */
     case KEY_DOWN:
       return A_C_DOWN;
 
     case CNTRL('Y'):  /* ^Y  Line delete */
+      /* fallthrough */
 #ifdef KEY_DL
     case KEY_DL:
 #endif  /* ifdef KEY_DL */
@@ -9597,12 +9625,15 @@ get_seq(int *const value)
 
 #ifdef KEY_END
     case KEY_END:  /* Cursor to end of line */
+      /* fallthrough */
 #endif  /* ifdef KEY_END */
 #ifdef KEY_C1
     case KEY_C1:
+      /* fallthrough */
 #endif  /* ifdef KEY_C1 */
 #ifdef KEY_LL
     case KEY_LL:
+      /* fallthrough */
 #endif  /* ifdef KEY_LL */
       return A_C_EOL;
 
@@ -9635,6 +9666,7 @@ get_seq(int *const value)
       return A_RWX_FILE;
 
     case KEY_F(7):  /* ^KQ  Exit GE without saving file */
+      /* fallthrough */
 #if DOS
     case ESC:
 #endif  /* if DOS */
@@ -9706,11 +9738,13 @@ scroll_up(const int line)
   const short e = s_eor[line];
   const int dist = last_line - line;
 
-  move(line, 0);
+  (void)move(line, 0);
   se_deleteln();
-  bmovelr(&s_buf[line], &s_buf[line + 1], dist * ( sizeof ( char * ) >> B_SIZE ));
-  wmovelr(&s_eor[line], &s_eor[line + 1], dist);
-  wmovelr(&eor[line], &eor[line + 1], dist);
+  (void)bmovelr(
+          &s_buf[line], &s_buf[line + 1],
+          dist * ( sizeof ( char * ) >> B_SIZE ));
+  (void)wmovelr(&s_eor[line], &s_eor[line + 1], dist);
+  (void)wmovelr(&eor[line], &eor[line + 1], dist);
   s_buf[last_line] = p;
   s_eor[last_line] = e;
 }
@@ -9728,9 +9762,11 @@ scroll_down(const int line)
   const int dist = last_line - line;
 
   se_insertln();
-  bmoverl(&s_buf[line + 1], &s_buf[line], dist * ( sizeof ( char * ) >> B_SIZE ));
-  wmoverl(&s_eor[line + 1], &s_eor[line], dist);
-  wmoverl(&eor[line + 1], &eor[line], dist);
+  (void)bmoverl(
+          &s_buf[line + 1], &s_buf[line],
+          dist * ( sizeof ( char * ) >> B_SIZE ));
+  (void)wmoverl(&s_eor[line + 1], &s_eor[line], dist);
+  (void)wmoverl(&eor[line + 1], &eor[line], dist);
   s_buf[line] = p;
   s_eor[line] = e;
 }
@@ -9807,30 +9843,30 @@ file_move(int value)
     {
     case NEXT_LINE:
       scroll_up(FIRST_LINE);
-      next_line(last_line);
+      (void)next_line(last_line);
       disp_row(last_line);
       return;
 
     case PREV_LINE:
-      move_to(sop - 1);
-      move(FIRST_LINE, 0);
+      (void)move_to(sop - 1);
+      (void)move(FIRST_LINE, 0);
       se_insertln();
       break;
 
     case PREV_PAGE:
-      move_to(sop - text_lines);  /* Text lines - 2 in future */
+      (void)move_to(sop - text_lines);  /* Text lines - 2 in future */
       break;
 
     case MOVE_TOF:
-      wrapround();
+      (void)wrapround();
       break;
 
     case MOVE_EOF:
-      move_to(vssizeof(in_u) - ( LINES - MATCH_LINE ));
+      (void)move_to(vssizeof(in_u) - ( LINES - MATCH_LINE ));
       break;
 
     case MOVE_ABS:
-      move_to(dest);
+      (void)move_to(dest);
     }
 
   file_to_buf(value);
@@ -9951,7 +9987,7 @@ del_line(void)
     }
 
   scroll_up(row);
-  next_line(last_line);
+  (void)next_line(last_line);
   disp_row(last_line);
 }
 
@@ -9974,7 +10010,7 @@ se_join(const int del)
 
   if (row == last_line)
     {
-      next_line(TEMPLATE_LINE);
+      (void)next_line(TEMPLATE_LINE);
       nrow = TEMPLATE_LINE;
     }
 
@@ -9995,7 +10031,7 @@ se_join(const int del)
 
   if (j_col == 0 && bs == nbs)
     {
-      del_line();
+      (void)del_line();
       return NO;
     }
 
@@ -10015,15 +10051,15 @@ se_join(const int del)
       space_fill(bs + o_eor, j_col - o_eor);
     }
 
-  movelr(bs + j_col, nbs, len);
+  (void)movelr(bs + j_col, nbs, len);
 
   disp_rest();
-  refresh();
+  (void)refresh();
 
   if (nrow != TEMPLATE_LINE)
     {
       ++row;
-      del_line();
+      (void)del_line();
       --row;
     }
 
@@ -10182,7 +10218,7 @@ find_backwards(char csc target, const int del)
     c_eol();
     if (del)
       {
-        se_join(NO);
+        (void)se_join(NO);
       }
   }
 
@@ -10231,8 +10267,11 @@ find_char(const int value)
   switch (target)
     {
     case '\'':
+      /* fallthrough */
     case '"':
+      /* fallthrough */
     case '`':
+      /* fallthrough */
     case '/':
       find_str[1] = EOS;
       while (find_forwards(find_str, NO) != EOF)
@@ -10245,19 +10284,25 @@ find_char(const int value)
       return;
 
     default:
-      find_forwards(endsent, NO);
+      (void)find_forwards(endsent, NO);
       return;
 
     case '(':
+      /* fallthrough */
     case '{':
+      /* fallthrough */
     case '[':
+      /* fallthrough */
     case '<':
       find_str[1] = xlat(target, bra_start, (const byte *)bra_end);
       break;
 
     case ')':
+      /* fallthrough */
     case '}':
+      /* fallthrough */
     case ']':
+      /* fallthrough */
     case '>':
       find_str[1] = xlat(target, bra_end, (const byte *)bra_start);
       forwards = NO;
@@ -10314,12 +10359,12 @@ save_std(void)
 
   if (( save_fd_0 = dup(0)) != -1)
     {
-      dup2(null_fd, 0);
+      (void)dup2(null_fd, 0);
     }
 
   if (( save_fd_2 = dup(2)) != -1)
     {
-      dup2(null_fd, 2);
+      (void)dup2(null_fd, 2);
     }
 
   ++std_saved;
@@ -10331,10 +10376,10 @@ restore_std(void)
 {
   if (std_saved)
     {
-      dup2(save_fd_0, 0);
-      close(save_fd_0);
-      dup2(save_fd_2, 2);
-      close(save_fd_2);
+      (void)dup2(save_fd_0, 0);
+      (void)close(save_fd_0);
+      (void)dup2(save_fd_2, 2);
+      (void)close(save_fd_2);
       std_saved = NO;
     }
 }
@@ -10354,10 +10399,10 @@ term(void)
       return;
     }
 
-  erase();
-  refresh();
+  (void)erase();
+  (void)refresh();
   fscreen = NO;
-  endwin();
+  (void)endwin();
   lon = redisplay = SE_WAIT;
 }
 
@@ -10425,34 +10470,34 @@ wmessage(const char *text)
   begx = ( COLS  - cols  ) / 2;
   begy = ( LINES - lines ) / 2;
 
-  attrset(cntrl_col);
+  (void)attrset(cntrl_col);
 
   ymax = lines - 1, xmax = cols - 1;
 
   for (i = 1; i <= xmax - 1; ++i)
     {
-      mv_put_byte(begy, i + begx, ACS_HLINE);
-      mv_put_byte(ymax + begy, i + begx, ACS_HLINE);
+      (void)mv_put_byte(begy, i + begx, ACS_HLINE);
+      (void)mv_put_byte(ymax + begy, i + begx, ACS_HLINE);
     }
 
   for (i = 1; i <= ymax - 1; ++i)
     {
-      mv_put_byte(i + begy, begx, ACS_VLINE);
-      mv_put_byte(i + begy, xmax + begx, ACS_VLINE);
+      (void)mv_put_byte(i + begy, begx, ACS_VLINE);
+      (void)mv_put_byte(i + begy, xmax + begx, ACS_VLINE);
     }
 
-  mv_put_byte(begy, begx, ACS_ULCORNER);
-  mv_put_byte(begy, xmax + begx, ACS_URCORNER);
-  mv_put_byte(ymax + begy, begx, ACS_LLCORNER);
-  mv_put_byte(ymax + begy, xmax + begx, ACS_LRCORNER);
+  (void)mv_put_byte(begy, begx, ACS_ULCORNER);
+  (void)mv_put_byte(begy, xmax + begx, ACS_URCORNER);
+  (void)mv_put_byte(ymax + begy, begx, ACS_LLCORNER);
+  (void)mv_put_byte(ymax + begy, xmax + begx, ACS_LRCORNER);
 
   for (i = 1; i < lines - 1; ++i)
     {
       int j;
-      move(begy + i, begx + 1);
+      (void)move(begy + i, begx + 1);
       for (j = 0; j < cols - 2; ++j)
         {
-          put_byte(SPACE);
+          (void)put_byte(SPACE);
         }
     }
 
@@ -10463,22 +10508,22 @@ wmessage(const char *text)
           p = get_eos(start);
         }
 
-      move(i + begy, 4 + begx);
+      (void)move(i + begy, 4 + begx);
       while (start < p)
         {
-          put_byte(*start++);
+          (void)put_byte(*start++);
         }
     }
 
-  move(i + 1 + begy, 4 + begx);
+  (void)move(i + 1 + begy, 4 + begx);
   for (p = se_hit + 2; *p; ++p)
     {
-      put_byte(*p);
+      (void)put_byte(*p);
     }
 
   (void)rgetc();
 
-  attrset(norm_col);
+  (void)attrset(norm_col);
 }
 
 private
@@ -10499,7 +10544,7 @@ inform(char csc mess)
 {
   if (fscreen)
     {
-      raw();
+      (void)raw();
 #if UNIX
       restore_std();
 #endif  /* if UNIX */
@@ -10585,14 +10630,14 @@ set_eof(void)
       eor[i] = 0;
     }
 
-  move(i + 1, 0);
-  clrtoeol();
+  (void)move(i + 1, 0);
+  (void)clrtoeol();
   if (row < last_line)
     {
       disp_eof(row + 1);
     }
 
-  move(row, col);
+  (void)move(row, col);
 }
 
 /*
@@ -10689,8 +10734,8 @@ block(const int value)
         {
           if (row != COMMAND_LINE)
             {
-              sprintf(com, "T#%d, m te x", c_line);
-              run_command(com, -c_line, YES);
+              (void)sprintf(com, "T#%d, m te x", c_line);
+              (void)run_command(com, -c_line, YES);
             }
 
           return;
@@ -10713,10 +10758,10 @@ block(const int value)
         }
       else
         {
-          moverl(a + save_len, a, c_eor - b_col);
+          (void)moverl(a + save_len, a, c_eor - b_col);
         }
 
-      movelr(a, save_buf, save_len);
+      (void)movelr(a, save_buf, save_len);
       disp_rest();
       return;
     }
@@ -10733,8 +10778,8 @@ block(const int value)
       save_len = end_rec - start_rec;
       block_mode = YES;
 
-      sprintf(com, "T#%d S T#%d X", start_rec, end_rec);
-      run_command(com, -c_line, YES);
+      (void)sprintf(com, "T#%d S T#%d X", start_rec, end_rec);
+      (void)run_command(com, -c_line, YES);
 
       if (start_rec < sop)
         {
@@ -10769,8 +10814,8 @@ block(const int value)
 
 #else  /* if DOS */
             {
-              attrset(found_col);
-              mv_put_byte(start, 0, SPACE);
+              (void)attrset(found_col);
+              (void)mv_put_byte(start, 0, SPACE);
             }
 #endif  /* if DOS */
         }
@@ -10798,12 +10843,12 @@ block(const int value)
 
   if (end_col > c_eor)
     {
-      set_eor(row, end_col);
+      (void)set_eor(row, end_col);
       eor[row] = (short)c_eor;
       space_fill(BUF(c_eor), end_col - c_eor);
     }
 
-  movelr(save_buf, BUF(start_col), save_len);
+  (void)movelr(save_buf, BUF(start_col), save_len);
 
   len = start_col - offset;
   if (len > 0)
@@ -10882,12 +10927,12 @@ centre(void)
   if (dif > 0)
     {
       ls = BUF(f_char);
-      moverl(ls + dif, ls, len);
+      (void)moverl(ls + dif, ls, len);
       space_fill(ls, dif);
     }
   else
     {
-      movelr(ls + dif, ls, len);
+      (void)movelr(ls + dif, ls, len);
     }
 
   /* redisplay the current line */
@@ -10906,7 +10951,7 @@ disp_margins(void)
 
   disp_template();
 #if DOS == 0
-  attrset(marg_col);
+  (void)attrset(marg_col);
 #endif  /* if DOS == 0 */
   m = l_margin - offset;
   if (m >= 0 && m < COLS)
@@ -10914,7 +10959,7 @@ disp_margins(void)
 #if DOS
       t_base[m] = '<' | marg_col;
 #else  /* if DOS */
-      mv_put_byte(TEMPLATE_LINE, m, '<');
+      (void)mv_put_byte(TEMPLATE_LINE, m, '<');
 #endif  /* if DOS */
     }
 
@@ -10924,7 +10969,7 @@ disp_margins(void)
 #if DOS
       t_base[m] = '>' | marg_col;
 #else  /* if DOS */
-      mv_put_byte(TEMPLATE_LINE, m, '>');
+      (void)mv_put_byte(TEMPLATE_LINE, m, '>');
 #endif  /* if DOS */
     }
 }
@@ -10967,8 +11012,8 @@ open_line(void)
       if (row == last_line)
         {
           push_line(&in_stack, BUF(0), eor[row]);
-          move(row, 0);
-          clrtoeol();
+          (void)move(row, 0);
+          (void)clrtoeol();
         }
       else
         {
@@ -11014,8 +11059,8 @@ split_line(const int margin)
   elif(s_col == 0) open_line();
   else
     {
-      clrtoeol();
-      refresh();
+      (void)clrtoeol();
+      (void)refresh();
       if (row == last_line)
         {
           push_line(&in_stack, text, len);
@@ -11027,10 +11072,10 @@ split_line(const int margin)
               push_line(&in_stack, s_buf[last_line], eor[last_line]);
             }
 
-          move(n_row, 0);
+          (void)move(n_row, 0);
           scroll_down(n_row);
-          set_eor(n_row, len + margin);
-          movelr(mspace_fill(s_buf[n_row], margin), text, len);
+          (void)set_eor(n_row, len + margin);
+          (void)movelr(mspace_fill(s_buf[n_row], margin), text, len);
           disp_row(n_row);
         }
 
@@ -11069,8 +11114,8 @@ wrap_text(void)
       --we;
     }
   set_col(++we);
-  move(row, we);
-  movelr(bs + we, bs + ws, eor[row] - ws);
+  (void)move(row, we);
+  (void)movelr(bs + we, bs + ws, eor[row] - ws);
   eor[row] -= ws - we;
   split_line(l_margin);
 }
@@ -11117,8 +11162,8 @@ character(const int value)
 
     /* adjust buffer */
     bs = BUF(b_col);
-    moverl(bs + 1, bs, c_eor - b_col);
-    insch(SPACE);
+    (void)moverl(bs + 1, bs, c_eor - b_col);
+    (void)insch(SPACE);
   }
 
   *BUF(b_col) = (char)value;
@@ -11145,13 +11190,13 @@ character(const int value)
 #else  /* if DOS */
   if (isprint(value))
     {
-      put_byte((chtype)value);
+      (void)put_byte((chtype)value);
     }
   else
     {
-      attrset(cntrl_col);
-      put_byte(toprint(value));
-      attrset(norm_col);
+      (void)attrset(cntrl_col);
+      (void)put_byte(toprint(value));
+      (void)attrset(norm_col);
     }
 
 #endif  /* if DOS */
@@ -11191,7 +11236,7 @@ del_c(const int value)
       c_left();
       if (c_line > FILE_LINE)
         {
-          se_join(NO);
+          (void)se_join(NO);
           return;
         }
 
@@ -11205,7 +11250,7 @@ del_c(const int value)
     {
       if (value == RIGHT)
         {
-          se_join(NO);
+          (void)se_join(NO);
         }
 
       return;
@@ -11221,7 +11266,7 @@ del_c(const int value)
 #if DOS
       v_base[row * COLS + col] = norm_space;
 #else  /* if DOS */
-      mv_put_byte(row, col, SPACE);
+      (void)mv_put_byte(row, col, SPACE);
 #endif  /* if DOS */
     }
 }
@@ -11240,7 +11285,7 @@ rest_line(void)
     }
 
   open_line();
-  set_eor(row, pop_length(del_stack));
+  (void)set_eor(row, pop_length(del_stack));
   pop_line(&del_stack, BUF(0));
   disp_line();
 }
@@ -11350,10 +11395,10 @@ c_return(void)
           return;
         }
 
-      set_eor(COMMAND_LINE, t_len + 1);
+      (void)set_eor(COMMAND_LINE, t_len + 1);
       p[len] = EOS;
       cmd_buf = p;
-      home_command(D_SE_HOME, START_OF_PAGE);
+      (void)home_command(D_SE_HOME, START_OF_PAGE);
       eor[COMMAND_LINE] = 0;
       disp_line();
       hist_ptr = hist_top;
@@ -11379,8 +11424,8 @@ recall_comm(void)
       short len = *start;
       hist_ptr = (stack *)( *hist_ptr );
       row = COMMAND_LINE;
-      set_eor(COMMAND_LINE, len);
-      movelr(s_buf[COMMAND_LINE], start + 1, len);
+      (void)set_eor(COMMAND_LINE, len);
+      (void)movelr(s_buf[COMMAND_LINE], start + 1, len);
       disp_line();
       set_col(len);
     }
@@ -11403,7 +11448,7 @@ read_string(Q_MODE qtype)
 
   repeat
   {
-    move(COMMAND_LINE, col);
+    (void)move(COMMAND_LINE, col);
     fun = get_seq(&value);
 
     switch (fun)
@@ -11423,7 +11468,7 @@ read_string(Q_MODE qtype)
         return G_FAIL;
 
       case A_DEL_LINE:  /* Delete from end of prompt */
-        move(COMMAND_LINE, col = c_col);
+        (void)move(COMMAND_LINE, col = c_col);
         del_rest(RIGHT);
         continue;
 
@@ -11511,10 +11556,10 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
 #if ASM86
   put_seq(v_base + COLS, prompt, p_len, query_col, COLS);
 #else  /* if ASM86 */
-  move(COMMAND_LINE, 0);
+  (void)move(COMMAND_LINE, 0);
   put_seq(prompt, p_len, query_col);
-  attrset(norm_col);
-  clrtoeol();
+  (void)attrset(norm_col);
+  (void)clrtoeol();
 #endif  /* if ASM86 */
 
   s_buf[COMMAND_LINE] = t_buf;
@@ -11559,7 +11604,7 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
               --col;
             }
           col -= p_len;
-          movelrz(buf, t_buf + p_len, col);
+          (void)movelrz(buf, t_buf + p_len, col);
           if (qtype == Q_YORN)
             {
               if (u_star(buf) == 'Y')
@@ -11592,9 +11637,10 @@ se_justify(const int value)
     {
     /* justify paragraph */
     case 'B':
+      /* fallthrough */
     case 'Q':
-      sprintf(buf, "T.%d JP", col > eor[row] ? eor[row] : col);
-      run_command(buf, 0, value == 'B');
+      (void)sprintf(buf, "T.%d JP", col > eor[row] ? eor[row] : col);
+      (void)run_command(buf, 0, value == 'B');
       break;
 
     /* set left margin */
@@ -11737,7 +11783,7 @@ search(const int value)
           return;
         }
 
-      sprintf(find_com, se_fcom1, buf);
+      (void)sprintf(find_com, se_fcom1, buf);
       break;
 
     case 'A':  /* Search and Replace */
@@ -11751,8 +11797,8 @@ search(const int value)
           return;
         }
 
-      sprintf(find_com, se_fcom1, buf);
-      sprintf(rep_com, "RR\177%s\177%s\177", buf, rhs);
+      (void)sprintf(find_com, se_fcom1, buf);
+      (void)sprintf(rep_com, "RR\177%s\177%s\177", buf, rhs);
       ++iter;
       break;
 
@@ -11764,7 +11810,7 @@ search(const int value)
           nextl = 1;
         }
 
-      movelr5(find_com, "TR//");
+      (void)movelr5(find_com, "TR//");
     }
 
   if (row == COMMAND_LINE)
@@ -11784,7 +11830,7 @@ search(const int value)
 
       if (rc == G_OK)
         {
-          run_command(rep_com, 0, NO);
+          (void)run_command(rep_com, 0, NO);
         }
 
       nextl = 1;
@@ -11823,7 +11869,7 @@ exit_editor(const int value)
       /* fallthrough */
 
     case 'X':  /* Exit, saving file */
-      sprintf(
+      (void)sprintf(
         com,
         "Save %sfile and exit (y/n) ?",
         prim_changed ? empty : se_fin1);
@@ -11833,23 +11879,24 @@ exit_editor(const int value)
         }
 
       cmd_buf = "e";
-      home_command(D_SE_HOME, START_OF_PAGE);
+      (void)home_command(D_SE_HOME, START_OF_PAGE);
       break;
 
     case 'D':  /* Return to context editor */
       cmd_buf = let_col;
-      home_command(D_SE_HOME, fl);
+      (void)home_command(D_SE_HOME, fl);
       /* fallthrough */
 
     case 'S':  /* Save the file and return */
-      sprintf(com, "Save %sfile (y/n) ?", prim_changed ? empty : se_fin1);
+      (void)sprintf(
+              com, "Save %sfile (y/n) ?", prim_changed ? empty : se_fin1);
       if (query(com, com, Q_YORN))
         {
           return;
         }
 
-      sprintf(com, "SN\177%s\177,TE,X", out_fname);
-      run_command(com, -fl, YES);
+      (void)sprintf(com, "SN\177%s\177,TE,X", out_fname);
+      (void)run_command(com, -fl, YES);
       prim_changed = NO;
     }
 }
@@ -11875,10 +11922,11 @@ rwx_file(const int value)
           return;
         }
 
-      sprintf(com, "M\177%s\177,TE,X", fname);
+      (void)sprintf(com, "M\177%s\177,TE,X", fname);
       break;
 
     case '!':  /* Read from command */
+      /* fallthrough */
     case '|':  /* Filter through command */
 #if UNIX
       if (query("Command:", fname, Q_EDIT) == EOF)
@@ -11888,7 +11936,7 @@ rwx_file(const int value)
 
       if (value == '!')
         {
-          sprintf(com, "I!\177%s\177", fname);
+          (void)sprintf(com, "I!\177%s\177", fname);
         }
       else
         {
@@ -11897,7 +11945,7 @@ rwx_file(const int value)
               return;
             }
 
-          sprintf(com, "S,T%s,X|\177%s\177", nlines, fname);
+          (void)sprintf(com, "S,T%s,X|\177%s\177", nlines, fname);
         }
 
       *fname = '!';
@@ -11936,13 +11984,13 @@ make_com:
               return;
             }
 
-          sprintf(com, "S%c\177%s\177,M,TE,X,X", optc, fname);
+          (void)sprintf(com, "S%c\177%s\177,M,TE,X,X", optc, fname);
         }
-
-      elif(nullstr(fname)) sprintf(com, "S%c,T%s,X", optc, nlines);
+      elif(nullstr(fname))
+          (void)sprintf(com, "S%c,T%s,X", optc, nlines);
       else
         {
-          sprintf(com, "S%c\177%s\177,T%s,X", optc, fname, nlines);
+          (void)sprintf(com, "S%c\177%s\177,T%s,X", optc, fname, nlines);
         }
       break;
 
@@ -11952,7 +12000,7 @@ make_com:
           return;
         }
 
-      sprintf(com, "U\177%s\177", fname);
+      (void)sprintf(com, "U\177%s\177", fname);
       sop = NO;
       break;
 
@@ -11962,7 +12010,7 @@ make_com:
           return;
         }
 
-      sprintf(com, "O\177%s\177", fname);
+      (void)sprintf(com, "O\177%s\177", fname);
       if (row == COMMAND_LINE)
         {
           text_row = FIRST_LINE;
@@ -11981,11 +12029,11 @@ make_com:
       save_std();  /* discard stderr & stdin */
     }
 
-  run_command(com, 0, sop);
+  (void)run_command(com, 0, sop);
 
   restore_std();
 #else  /* if UNIX */
-  run_command(com, 0, sop);
+  (void)run_command(com, 0, sop);
 #endif  /* if UNIX */
 }
 
@@ -12045,7 +12093,7 @@ word_count(void)
         }
     }
 
-  sprintf(res, f_wc, rc, wc, pc, nc, sc, lc, cc + rc);
+  (void)sprintf(res, f_wc, rc, wc, pc, nc, sc, lc, cc + rc);
   inform(res);
 }
 
@@ -12068,7 +12116,7 @@ misc_ops(const int value)
       break;
 
     case 'P':  /* Print the file */
-      sprintf(buf, se_pcom, in_fname);
+      (void)sprintf(buf, se_pcom, in_fname);
       com = buf;
       start = -HFILE_LINE;
       break;
@@ -12096,7 +12144,7 @@ misc_ops(const int value)
       com = se_lcom;
     }
 
-  run_command(com, start, YES);
+  (void)run_command(com, start, YES);
 }
 
 /*
@@ -12149,13 +12197,13 @@ se_loop(int value)
         }
 
 #if UNIX
-      refresh();
+      (void)refresh();
 #else  /* if UNIX */
       bios_gotoxy((byte)curs_row, (byte)curs_col);
 #endif  /* if UNIX */
       if (speed > 0)
         {
-          napms(speed * 100);
+          (void)napms(speed * 100);
         }
     }
 
@@ -12266,7 +12314,7 @@ d_home:
       break;
 
     case A_W_LEFT:
-      find_backwards(NULL, value);
+      (void)find_backwards(NULL, value);
       break;
 
     case A_C_RIGHT:
@@ -12274,7 +12322,7 @@ d_home:
       break;
 
     case A_W_RIGHT:
-      find_forwards(NULL, value);
+      (void)find_forwards(NULL, value);
       break;
 
     case A_H_TAB:
@@ -12297,14 +12345,14 @@ d_home:
       yank();
       if (row == COMMAND_LINE)
         {
-          move(COMMAND_LINE, 0);
-          clrtoeol();
+          (void)move(COMMAND_LINE, 0);
+          (void)clrtoeol();
           eor[COMMAND_LINE] = 0;
           set_col(0);
         }
       else
         {
-          del_line();
+          (void)del_line();
         }
 
       break;
@@ -12331,7 +12379,7 @@ d_home:
       break;
 
     case A_COMMAND:
-      run_command(let_col, 0, NO);
+      (void)run_command(let_col, 0, NO);
       break;
 
     case A_REPEAT:
@@ -12353,7 +12401,7 @@ d_home:
       disp_text();
     }
 
-  move(row, col);
+  (void)move(row, col);
 }
 
 /*
@@ -12386,10 +12434,10 @@ Screen_ed(void)
 
   if (setjmp(se_err))
     {
-      move(row, col);
+      (void)move(row, col);
     }
 
-  raw();
+  (void)raw();
 
   if (trunc_recs)
     {
@@ -12403,7 +12451,7 @@ Screen_ed(void)
 #if UNIX
     if (idlpending)
       {
-        idlok(stdscr, NO);
+        (void)idlok(stdscr, NO);
         idlpending = NO;
       }
 
@@ -12479,7 +12527,7 @@ make_line(char *const buf)
       i_len = E_BUFF_LEN - e_col;
     }
 
-  movelr(mmovelr(buf, e_buff, e_col), i_buff + i_col, i_len);
+  (void)movelr(mmovelr(buf, e_buff, e_col), i_buff + i_col, i_len);
   return e_col + i_len;
 }
 
@@ -12505,7 +12553,7 @@ hex_print(void)
 
   for (first = buf, rec_end = buf + len; first < rec_end; first += 16)
     {
-      fprintf(vdu, "%5d  |  ", (int)( first - buf ));
+      (void)fprintf(vdu, "%5d  |  ", (int)( first - buf ));
       if (( last = first + 16 ) > rec_end)
         {
           last = rec_end;
@@ -12513,7 +12561,7 @@ hex_print(void)
 
       for (p = first; p < last; ++p)
         {
-          fprintf(vdu, "%02X ", *(byte *)p);
+          (void)fprintf(vdu, "%02X ", *(byte *)p);
         }
 
       for (p = first; p < last; ++p)
@@ -12525,7 +12573,8 @@ hex_print(void)
         }
 
       seg_len = last - first;
-      fprintf(vdu, "%*c|  %.*s", 1 + ( 16 - seg_len ) * 3, SPACE, seg_len, first);
+      (void)fprintf(vdu,
+              "%*c|  %.*s", 1 + ( 16 - seg_len ) * 3, SPACE, seg_len, first);
       new_line();
     }
 
@@ -12605,7 +12654,7 @@ alter_end(int last, const int comm)
           g_rec = last - 1;
         }
 
-      fill_buff();
+      (void)fill_buff();
       break;
 
     case 'K':
@@ -12633,7 +12682,7 @@ alter_end(int last, const int comm)
 
       vsseek(in_u, last);
       g_rec = last - 1;
-      fill_buff();
+      (void)fill_buff();
       break;
 
     case 'L':
@@ -12722,7 +12771,7 @@ printline(char *ptr)
 
   if (g_eof)
     {
-      strcpy(ptr, "*\r");
+      (void)strcpy(ptr, "*\r");
     }
   else
     {
@@ -12734,7 +12783,7 @@ printline(char *ptr)
         }
 
       printable(buf + sec, len);
-      movelr(p = mmovelr(ptr + 1, buf + sec, len), "\n*\r", 4);
+      (void)movelr(p = mmovelr(ptr + 1, buf + sec, len), "\n*\r", 4);
       if (e_col < sec)
         {
           c = '<';
@@ -12744,7 +12793,7 @@ printline(char *ptr)
       else
         {
           c = SPACE;
-          sprintf(p, "\n*%*c|\r", e_col - sec + 1, SPACE);
+          (void)sprintf(p, "\n*%*c|\r", e_col - sec + 1, SPACE);
         }
       *ptr = c;
     }
@@ -12779,7 +12828,7 @@ hist_recall(char *const comm)
     }
 
   start = (short *)( hist_top + 1 );
-  movelr(comm, start + 1, *start);
+  (void)movelr(comm, start + 1, *start);
   return *start;
 }
 
@@ -12796,7 +12845,7 @@ do_ins(char csc str, const int len)
       g_err(LINE_TOO_LONG, NULL);
     }
 
-  movelr(e_buff + e_col, str, len);  /* append string */
+  (void)movelr(e_buff + e_col, str, len);  /* append string */
   e_col += len;
 }
 
@@ -12876,7 +12925,7 @@ block_insert(const word ch, const word header)
 
   if (ch == 'A')
     {
-      add_line('T');
+      (void)add_line('T');
     }
   else
     {
@@ -13051,7 +13100,7 @@ PT(VERB csc opts)
       const int endc = ( opt & OP_UNTIL ) == 0;
       while (Verify(opts) != endc && !g_eof)
         {
-          add_line(comm);
+          (void)add_line(comm);
         }
       return G_OK;
     }
@@ -13142,7 +13191,7 @@ do_recs:
 
           if (( val <= g_rec || g_rec == -1 ) && comm != 'P')
             {
-              wrapround();
+              (void)wrapround();
             }
 
           if (g_rec >= 0)
@@ -13286,7 +13335,7 @@ pad(char csc c_type)
           && ( c_type == NULL ? !isspace(p[-1])
                            : strchr(c_type, p[-1]) != NULL ))
         {
-          moverl(p + 1, p, ec++ - p);
+          (void)moverl(p + 1, p, ec++ - p);
         }
     }
 
@@ -13554,7 +13603,7 @@ Join(VERB csc opts)
           g_err(LINE_TOO_LONG, NULL);
         }
 
-      movelr(ec, sp, len);
+      (void)movelr(ec, sp, len);
     }
 
   return G_OK;
@@ -13620,8 +13669,8 @@ Insert(VERB csc opts)
       return;
 
     case 'D':
-      time(&tm);
-      movelrz(ss1, ctime(&tm), DATE_LEN);
+      (void)time(&tm);
+      (void)movelrz(ss1, ctime(&tm), DATE_LEN);
       ins(disp, ss1, -1);
       return;
 
@@ -13745,9 +13794,9 @@ Exit(void)
   term();
   if (lon)
     {
-      fprintf(vdu, ps_name, ft_in, in_fname);
+      (void)fprintf(vdu, ps_name, ft_in, in_fname);
       print_size(infile_recs);
-      fprintf(vdu, ps_name, ft_out, out_fname);
+      (void)fprintf(vdu, ps_name, ft_out, out_fname);
       print_size(vstell(out_u));
 #if UNIX
       say("Edit Finished.");
@@ -13843,7 +13892,7 @@ Numbers(VERB csc opts)
   else
     {
       ++l_numbers;
-      sprintf(n_format, "%%%.*sl%c", opts->o1.v, opts->o1.s, opts->o2.v);
+      (void)sprintf(n_format, "%%%.*sl%c", opts->o1.v, opts->o1.s, opts->o2.v);
     }
 }
 
@@ -13951,7 +14000,7 @@ List(VERB csc opts)
       for (p = hist_top; p != NULL; p = (stack *)( *p ))
         {
           short csc start = (short *)( p + 1 );
-          fprintf(vdu, "%.*s\n", *start, (char *)( start + 1 ));
+          (void)fprintf(vdu, "%.*s\n", *start, (char *)( start + 1 ));
         }
 
       break;
@@ -13959,7 +14008,7 @@ List(VERB csc opts)
     case 'M':
       for (macptr = mac_list; macptr != NULL; macptr = macptr->next)
         {
-          fprintf(
+          (void)fprintf(
             vdu,
             "%s/%c%d/ %s\n",
             macptr->name,
@@ -13996,14 +14045,14 @@ List(VERB csc opts)
         {
           if (f_list != NULL && f_list->disp == 'M')
             {
-              fprintf(vdu, pt_list, ft_merge, f_list->name);
+              (void)fprintf(vdu, pt_list, ft_merge, f_list->name);
             }
           else
             {
-              fprintf(vdu, pt_list, ft_in, in_fname);
+              (void)fprintf(vdu, pt_list, ft_in, in_fname);
             }
 
-          fprintf(vdu, ", starting at line %d\n", g_rec);
+          (void)fprintf(vdu, ", starting at line %d\n", g_rec);
         }
 
       n_print(buf, len, YES);
@@ -14020,14 +14069,14 @@ List(VERB csc opts)
             {
               if (f_list != NULL && f_list->disp == 'M')
                 {
-                  fprintf(vdu, "End of merge file %s", f_list->name);
+                  (void)fprintf(vdu, "End of merge file %s", f_list->name);
                 }
               else
                 {
-                  fprintf(vdu, "End of input file %s", in_fname);
+                  (void)fprintf(vdu, "End of input file %s", in_fname);
                 }
 
-              fprintf(vdu, ", last line = %d\n", g_rec - 1);
+              (void)fprintf(vdu, ", last line = %d\n", g_rec - 1);
             }
 
           new_line();
@@ -14092,7 +14141,7 @@ Oldfile(VERB csc opts)
     {
       rlsevec(old_new);
       out_fname = in_fname = old_new = getbuf(size(nf));
-      zmovelr(old_new, nf);
+      (void)zmovelr(old_new, nf);
     }
 
   i_mode = o_mode = 'N';
@@ -14575,7 +14624,7 @@ Line_ed(char *ptr)
         /* adjust pointer */
         h_eor -= n;
         /* adjust buffer */
-        movelr(h_ptr, h_ptr + n, (int)( h_eor - h_ptr ));
+        (void)movelr(h_ptr, h_ptr + n, (int)( h_eor - h_ptr ));
         continue;
 
       case '^':
@@ -14590,7 +14639,7 @@ Line_ed(char *ptr)
             e_col = h_ptr - e_buff;
             h_eor -= e_col;
             out_buff();
-            movelr(e_buff, h_ptr, (int)( h_eor - e_buff ));
+            (void)movelr(e_buff, h_ptr, (int)( h_eor - e_buff ));
             buff_sec = 0;
             break;
           }
@@ -14602,8 +14651,8 @@ Line_ed(char *ptr)
           }
         else
           {
-            moverl(h_ptr + len, h_ptr, (int)( h_eor - h_ptr ));
-            movelr(h_ptr, ptr, len);
+            (void)moverl(h_ptr + len, h_ptr, (int)( h_eor - h_ptr ));
+            (void)movelr(h_ptr, ptr, len);
             h_eor += len;
           }
 
@@ -14663,18 +14712,18 @@ Drive(const int level)
     {
       /* startup */
 #ifndef __MINGW32__
-      signal(SIGINT, g_intr);
+      (void)signal(SIGINT, g_intr);
 # if UNIX
-      signal(SIGTERM, g_intr);
-      signal(SIGUSR1, g_intr);
-      signal(SIGUSR2, g_intr);
+      (void)signal(SIGTERM, g_intr);
+      (void)signal(SIGUSR1, g_intr);
+      (void)signal(SIGUSR2, g_intr);
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
-          signal(SIGHUP, SIG_IGN);
+          (void)signal(SIGHUP, SIG_IGN);
         }
 
-      signal(SIGPIPE, g_intr);
-      signal(SIGQUIT, g_intr);
+      (void)signal(SIGPIPE, g_intr);
+      (void)signal(SIGQUIT, g_intr);
 # endif  /* if UNIX */
 #endif  /* ifndef __MINGW32__ */
       save_jbuf(save_err, set_err);
@@ -14719,7 +14768,7 @@ Drive(const int level)
             break;
           }
 
-        zmovelr(comm, cmd_buf);
+        (void)zmovelr(comm, cmd_buf);
       }
     else
       {
@@ -14736,7 +14785,7 @@ Drive(const int level)
     switch (*comm)
       {
       case '*':
-        add_line('T');
+        (void)add_line('T');
         /* fallthrough */
 
       case '=':
@@ -14759,7 +14808,7 @@ Drive(const int level)
                 ;
               }
 
-            zmovelr(comm, s);
+            (void)zmovelr(comm, s);
           }
       }
 
@@ -14800,7 +14849,8 @@ Drive(const int level)
             continue;
 
           case EOS:
-            /* null string defined as t1 */ add_line('T');
+            /* null string defined as t1 */
+            (void)add_line('T');
             continue;
           }
       }
@@ -14830,7 +14880,7 @@ Drive(const int level)
             save_all(&g_save);
           }
 
-        George(com_stack_ptr->prog);
+        (void)George(com_stack_ptr->prog);
       }
   }
 
@@ -14942,7 +14992,7 @@ main(int i, char csc * argv)
   if (!i)
     {
       fd_in_terminal = dup(0);
-      close(0);
+      (void)close(0);
       if (open(tty_file, O_RDONLY) == -1)
         {
           g_err(FILE_ERROR, tty_file);
@@ -14958,7 +15008,7 @@ main(int i, char csc * argv)
     {
       out_fname = so_file;
       fd_out_terminal = dup(1);
-      close(1);
+      (void)close(1);
       if (open(tty_file, O_WRONLY) == -1)
         {
           g_err(FILE_ERROR, tty_file);
