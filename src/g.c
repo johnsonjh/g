@@ -1272,7 +1272,7 @@ near no_file[] = "*NEW*";
 /* strings used more than once */
 FSTR se_find[]  = "Find:", near let_s[] = "s",
 near se_ep[]    = "End point:", near se_fin1[] = "(unchanged) ",
-near se_fcom1[] = "TR\177%s\177", near se_hit[] = "\r\n[Continue] ",
+near se_fcom1[] = "TR\177%s\177", near se_hit[] = "\r\n[Enter to Continue] ",
 near let_col[]  = ":", near empty[] = "", near endsent[] = ".!?;",
 near ft_out[]   = "Output", near bra_start[] = "({[<",
 near bra_end[]  = ")}]>", near hextrans[] = "0123456789ABCDEF",
@@ -1280,7 +1280,7 @@ near ft_merge[] = "Merge", near esc_symb[] = "VANTBFR0",
 near c_rom[]    = "IXCMZVLDWixcmzvldw", near line_pos[] = "Line %d.%d",
 near ft_in[]    = "Input", near pt_list[] = "\nListing from %s file %s",
 near ps_name[]  = "%s file: %s", near m_real[] = "%.14g",
-near eof_mess[] = "*** EOF ***";
+near eof_mess[] = "************ EOF ************";
 
 /* format of details line */
 FSTR f_wc[] = "Lines   Words   Punct.  Cntrl.  Sent.   L.O.C   Chars.\n\
@@ -8204,6 +8204,10 @@ init_screen(void)
   (void)noecho();
   (void)keypad(stdscr, YES);
 
+#if defined(IMMEDOK)
+  (void)immedok(stdscr, YES);
+#endif  /* if defined(IMMEDOK) */
+
 #if DOS
   lines = LINES;
 #else  /* if DOS */
@@ -8806,7 +8810,7 @@ set_col(int new_col)
 }
 
 /*
- *  Display the *** EOF *** marker.
+ *  Display the ********* EOF ********* marker.
  */
 
 private
@@ -8814,10 +8818,10 @@ void
 disp_eof(const int r)
 {
 #if ASM86
-  put_seq(v_base + r * COLS, eof_mess, 11, eof_col, COLS);
+  put_seq(v_base + r * COLS, eof_mess, 29, eof_col, COLS);
 #else  /* if ASM86 */
   (void)move(r, 0);
-  put_seq(eof_mess, 11, eof_col);
+  put_seq(eof_mess, 29, eof_col);
   (void)attrset(norm_col);
   (void)clrtoeol();
 #endif  /* if ASM86 */
@@ -13948,7 +13952,7 @@ Window(void)
 
   if (start == 0)
     {
-      say("*** TOF ***");
+      say("********* TOF *********");
     }
 
   t_out.eof_rec = last;
@@ -13965,7 +13969,7 @@ Window(void)
   ++g_rec;
   if (g_eof)
     {
-      n_print(eof_mess, 11, YES);
+      n_print(eof_mess, 29, YES);
     }
   else
     {
