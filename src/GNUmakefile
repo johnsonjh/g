@@ -160,6 +160,7 @@ ifeq ($(OS),aix)
     CFLAGS  += -m$(MAIXBITS)
     LDFLAGS += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
   endif # gxlc
+  STRARGS  = -X$(MAIXBITS)
 endif # aix
 
 ###############################################################################
@@ -183,28 +184,25 @@ endif # !V
 ###############################################################################
 # Strip
 
-ifeq ($(OS),aix)
-export OBJECT_MODE=32_64
-endif # aix
 .PHONY: strip
 strip: $(OUT)
 ifneq ($(V),1)
 	-@$(TEST) -f ./$(OUT) && \
 		$(PRINTF) '\r\t\t$(STRIP):\t\t%s\n' $(OUT) || $(TRUE)
 endif # !V
-	-@$(VERBOSE); $(STRIP)     $(OUT) 2> /dev/null || $(TRUE)
-	-@$(VERBOSE); $(STRIP)  -s $(OUT) 2> /dev/null || $(TRUE)
-	-@$(VERBOSE); $(STRIP)  -R .gnu.build.attributes   \
-                                -R .note.gnu.build-id      \
-                                -R .note.gnu.property      \
-                                -R .got                    \
-                                -R .eh_frame               \
-                                -R .eh_frame_hdr           \
-                                -R .gnu.version            \
-                                -R .comment                \
-                                -R .SUNW_ctf               \
-                                -R .jcr                    \
-                                -R .note.netbsd.pax        \
+	-@$(VERBOSE); $(STRIP) $(STRARGS)    $(OUT) 2> /dev/null || $(TRUE)
+	-@$(VERBOSE); $(STRIP) $(STRARGS) -s $(OUT) 2> /dev/null || $(TRUE)
+	-@$(VERBOSE); $(STRIP) $(STRARGS) -R .gnu.build.attributes   \
+                                          -R .note.gnu.build-id      \
+                                          -R .note.gnu.property      \
+                                          -R .got                    \
+                                          -R .eh_frame               \
+                                          -R .eh_frame_hdr           \
+                                          -R .gnu.version            \
+                                          -R .comment                \
+                                          -R .SUNW_ctf               \
+                                          -R .jcr                    \
+                                          -R .note.netbsd.pax        \
                                    $(OUT) 2> /dev/null || $(TRUE)
 	-@$(VERBOSE); $(SSTRIP) -z $(OUT) 2> /dev/null || $(TRUE)
 
