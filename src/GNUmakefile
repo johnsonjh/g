@@ -108,10 +108,13 @@ endif # !V
 # Debugging
 
 ifdef DEBUG
-  CFLAGS  += -Wall -Wextra -DDEBUG=1 -g
+  CFLAGS     += -Wall -Wextra -DDEBUG=1 -g
 else
- OPTFLAGS ?= -Os
-  CFLAGS  += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
+  ifeq ($(_SUNOS),1)
+    OPTFLAGS ?= -O
+  endif # _SUNOS
+  OPTFLAGS   ?= -Os
+  CFLAGS     += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
 endif # DEBUG
 
 ###############################################################################
