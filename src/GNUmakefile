@@ -101,13 +101,13 @@ endif # DEBUG
 # Link-time optimization and garbage collection
 
 ifdef LTO
-  CFLAGS  += -flto
-  LDFLAGS += -flto
+  CFLAGS    += -flto
+  LDFLAGS   += -flto
 endif # LTO
 
 ifdef LGC
-  CFLAGS  += -ffdata-sections -ffunction-sections
-  LDFLAGS += -Wl,--gc-sections
+  CFLAGS    += -fdata-sections -ffunction-sections
+  LDFLAGS   += -Wl,--gc-sections
   ifdef DEBUG
     LDFLAGS += -Wl,--print-gc-sections
   endif # DEBUG
