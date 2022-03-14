@@ -57,6 +57,12 @@
 # define B_COLS COLS
 #endif  /* if ASM86 */
 
+#ifdef _AIX
+# pragma alloca
+# undef _ALL_SOURCE
+# define _ALL_SOURCE
+#endif  /* ifdef _AIX */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
@@ -70,12 +76,6 @@
 #if DOS
 # include <direct.h>
 #endif  /* if DOS */
-
-#ifdef _AIX
-# pragma alloca
-# undef _ALL_SOURCE
-# define _ALL_SOURCE
-#endif  /* ifdef _AIX */
 
 #if UNIX  /* not ANSI */
 # ifndef caddr_t
