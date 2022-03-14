@@ -2,6 +2,18 @@
 
 ***`G`*** is a portable, general purpose, programmable text editor.
 
+<!-- toc -->
+
+- [Overview](#overview)
+- [Features](#features)
+- [Compilation](#compilation)
+  * [Modern](#modern)
+  * [Legacy](#legacy)
+- [Roadmap](#roadmap)
+- [Binaries](#binaries)
+
+<!-- tocstop -->
+
 ## Overview
 
 * ***`G`*** is a general purpose programmable text editor with a
