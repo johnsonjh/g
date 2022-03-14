@@ -71,6 +71,12 @@
 # include <direct.h>
 #endif  /* if DOS */
 
+#ifdef _AIX
+# pragma alloca
+# undef _ALL_SOURCE
+# define _ALL_SOURCE
+#endif  /* ifdef _AIX */
+
 #if UNIX  /* not ANSI */
 # ifndef caddr_t
 #  define caddr_t void *
@@ -605,7 +611,9 @@ typedef struct _unit
 
 #define PPB 8                        /* Pages per allocation unit */
 #define PP_SIZE sizeof ( PAGE_PTR )  /* should be 10/12 bytes */
-#define PAGE_SIZE ( PP_SIZE * PPP )  /* Data page size */
+#ifndef PAGE_SIZE
+# define PAGE_SIZE ( PP_SIZE * PPP )  /* Data page size */
+#endif  /* ifndef PAGE_SIZE */
 #define PBLOCK        ( PPP * PPB )  /* Sizeof allocation unit */
 
 /* Max length of text line */
