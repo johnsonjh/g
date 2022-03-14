@@ -137,6 +137,27 @@ endif # !V
 	@$(VERBOSE); $(CC) $(CFLAGS) $(SRC) -o $(OUT) $(LDFLAGS)
 
 ###############################################################################
+# Strip
+
+.PHONY: strip
+strip: $(OUT)
+	-@strip     $(OUT) 2> /dev/null || $(TRUE)
+	-@strip  -s $(OUT) 2> /dev/null || $(TRUE)
+	-@strip  -R .gnu.build.attributes   \
+                 -R .note.gnu.build-id      \
+                 -R .note.gnu.property      \
+                 -R .got                    \
+                 -R .eh_frame               \
+                 -R .eh_frame_hdr           \
+                 -R .gnu.version            \
+                 -R .comment                \
+                 -R .SUNW_ctf               \
+                 -R .jcr                    \
+                 -R .note.netbsd.pax        \
+                    $(OUT) 2> /dev/null || $(TRUE)
+	-@sstrip -z $(OUT) || $(TRUE)
+
+###############################################################################
 # Clean
 
 .PHONY: clean distclean
