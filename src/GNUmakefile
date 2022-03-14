@@ -92,7 +92,7 @@ endif # V
 ifdef DEBUG
   CFLAGS  += -Wall -Wextra -DDEBUG=1 -g
 else
- OPTFLAGS ?= -O2
+ OPTFLAGS ?= -Os
   CFLAGS  += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
   LDFLAGS += -s
 endif # DEBUG
