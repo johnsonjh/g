@@ -61,8 +61,8 @@
   work.
 
 * The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
-  or later) is available. **GNU** **Make** is helpful, but not required to
-  build ***`G`***.
+  or later) is available. **GNU** **Make** is helpful, but is not required
+  to build ***`G`***.
 
 ### Legacy
 
@@ -76,6 +76,16 @@
 * The [`GNUmakefile`](https://github.com/johnsonjh/g/blob/master/src/GNUmakefile)
   contains information relevant to building ***`G`*** on many of these older
   systems.
+
+## Roadmap
+
+Future plans for ***`G`***:
+ * Overhauled documentation
+ * Improved online help viewer
+ * New Windows port with console support
+ * VGA mode support for DOS port
+ * Dynamic resizing
+ * UTF-8 / multibyte support
 
 ## Binaries
 
