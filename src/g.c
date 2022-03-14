@@ -184,19 +184,19 @@ case 'F'
 #define tolower(c) ( isupper(c) ? c + ( 'a' - 'A' ) : c )
 
 /* Standard one treats Formfeed etc as space too */
-#define isspace(c) (( c ) == SPACE )
+#define isspace(c) ( ( c ) == SPACE )
 
 /* "punctuation" includes control characters here */
-#define punctch(c) ( !( wordch(c) || isspace(c)))
+#define punctch(c) ( !( wordch(c) || isspace(c) ) )
 
 /* determine if char is valid ASCII */
-#define isascii(c) ( !(( c ) & ~ASCII_MASK ))
+#define isascii(c) ( !( ( c ) & ~ASCII_MASK ) )
 
 /* convert char to ASCII 7 bit */
-#define toascii(c) (( c ) & ASCII_MASK )
+#define toascii(c) ( ( c ) & ASCII_MASK )
 
 /* control character literals */
-#define CNTRL(c) ( c & CNTRL_MASK )
+#define CNTRL(c)   ( c & CNTRL_MASK )
 #define iscntrl(c) ( c < SPACE  || c >= DEL )
 #define isprint(c) ( c >= SPACE && c  < DEL )
 
@@ -211,28 +211,26 @@ case 'F'
 #define G_OK       0
 #define G_FAIL     1
 
-#define byte unsigned char
+#define byte   unsigned char
 #define ushort unsigned short
-#define word unsigned int
-#define real double
+#define word   unsigned int
+#define real   double
 
 #define repeat for (;;)
-#define elif else if
+#define elif   else if
 
 #define private static
 
-#define csc const  *const
+#define csc  const  *const
 #define cssc const **const
 
 #define skip_space(s)      \
   while (isspace(*( s )))  \
     ++ ( s )
 
-#define nullstr(s) ( *( s ) == EOS )
-#define heap(t) (t *)getvec(sizeof ( t ))
-
-#define getbuf(len) (char *)getvec(len)
-
+#define nullstr(s)    ( *( s ) == EOS )
+#define heap(t)       ( t *)getvec(sizeof ( t ) )
+#define getbuf(len)   (char *)getvec(len)
 #define equal(s1, s2) ( strcmp(s1, s2) == 0 )
 
 #if DOS
@@ -265,33 +263,33 @@ typedef char FNAME[STR_LEN];
 
 #if ASM86
 /* smaller or faster versions of standard functions */
-extern void  wfill(void *start, short val, int len);
-extern void  cwmovelr(void *dst, const void *src, short len);
-extern void  movelr(void *dst, const void *src, short len);
-extern char *mmovelr(void *dst, const void *src, short len);
-extern byte *cwmmovelr(void *dst, const void *src, short len);
-extern void  tmovelr(void *dst, const void *src, short len);
-extern void  movelrz(void *dst, const void *src, short len);
-extern void  cmovelr(void *dst, const void *src);
-extern char *mcmovelr(void *dst, const void *src);
-extern void  zmovelr(void *dst, const void *src);
-extern char *mzmovelr(void *dst, const void *src);
-extern void  wmovelr(void *dst, const void *src, short len);
-extern void  bmovelr(void *dst, const void *src, short len);
-extern void  wmoverl(void *dst, const void *src, short len);
-extern void  moverl(void *dst, const void *src, short len);
-extern void  space_fill(void *start, short len);
-extern byte *mspace_fill(void *start, short len);
-extern void  bzero(void *start, short len);
-extern int   ecmp(const void *s1, const void *s2, ushort n);
-extern int   size(const void *s);
-extern char *get_eos(const char *s);
-extern char *tab_fill(void *start);
-extern char *mmovelr4(void *dst, const void *src);
-extern void  movelr5(void *dst, const void *src);
-extern char *mmovelr5(void *dst, const void *src);
-extern void  bios_wait(void);
-extern void  bmoverl(void *dst, const void *src, short len);
+extern void  space_fill(  void *start,    short len);
+extern byte *mspace_fill( void *start,    short len);
+extern void  bzero(       void *start,    short len);
+extern void  wfill(       void *start,    short val,         int len);
+extern void  cwmovelr(    void *dst,      const void *src, short len);
+extern void  movelr(      void *dst,      const void *src, short len);
+extern char *mmovelr(     void *dst,      const void *src, short len);
+extern byte *cwmmovelr(   void *dst,      const void *src, short len);
+extern void  tmovelr(     void *dst,      const void *src, short len);
+extern void  movelrz(     void *dst,      const void *src, short len);
+extern void  wmovelr(     void *dst,      const void *src, short len);
+extern void  bmovelr(     void *dst,      const void *src, short len);
+extern void  wmoverl(     void *dst,      const void *src, short len);
+extern void  bmoverl(     void *dst,      const void *src, short len);
+extern void  moverl(      void *dst,      const void *src, short len);
+extern void  cmovelr(     void *dst,      const void *src);
+extern char *mcmovelr(    void *dst,      const void *src);
+extern void  zmovelr(     void *dst,      const void *src);
+extern char *mzmovelr(    void *dst,      const void *src);
+extern char *mmovelr4(    void *dst,      const void *src);
+extern void  movelr5(     void *dst,      const void *src);
+extern char *mmovelr5(    void *dst,      const void *src);
+extern int   ecmp(        const void *s1, const void *s2,  ushort n);
+extern int   size(        const void *s);
+extern char *get_eos(     const char *s);
+extern char *tab_fill(    void *start);
+extern void  bios_wait(   void   );
 
 # pragma aux bios_wait =     \
   "xor ah,ah"                \
@@ -1022,58 +1020,58 @@ rgetc(void)
 
 #else  /* if DOS */
 /* colour */
-# define FOUND_COL COLOR_PAIR(1)   /* matched text */
-# define CNTRL_COL COLOR_PAIR(2)   /* control characters */
-# define EOF_COL COLOR_PAIR(3)     /* EOF marker */
-# define SCALE_COL COLOR_PAIR(4)   /* the scale line */
+# define FOUND_COL  COLOR_PAIR(1)  /* matched text */
+# define CNTRL_COL  COLOR_PAIR(2)  /* control characters */
+# define EOF_COL    COLOR_PAIR(3)  /* EOF marker */
+# define SCALE_COL  COLOR_PAIR(4)  /* the scale line */
 # define STATUS_COL COLOR_PAIR(5)  /* the status line */
-# define NORM_COL COLOR_PAIR(6)    /* normal text */
-# define QUERY_COL COLOR_PAIR(7)   /* query */
-# define MARG_COL COLOR_PAIR(8)    /* margins */
+# define NORM_COL   COLOR_PAIR(6)  /* normal text */
+# define QUERY_COL  COLOR_PAIR(7)  /* query */
+# define MARG_COL   COLOR_PAIR(8)  /* margins */
 # define FOUND_CTRL COLOR_PAIR(9)  /* matched binary */
 
 /* monochrome */
 # ifndef A_NORMAL
 #  define A_NORMAL 0
 # endif  /* ifndef A_NORMAL */
-# define M_FOUND_COL A_REVERSE   /* matched text */
-# define M_CNTRL_COL A_REVERSE   /* control characters */
-# define M_EOF_COL A_BOLD        /* EOF marker */
-# define M_SCALE_COL A_NORMAL    /* the scale line */
-# define M_STATUS_COL A_NORMAL   /* the status line */
-# define M_NORM_COL A_NORMAL     /* normal text */
-# define M_QUERY_COL A_BOLD      /* query */
-# define M_MARG_COL A_BOLD       /* margins */
-# define M_FOUND_CTRL A_REVERSE  /* matched binary */
+# define M_FOUND_COL  A_REVERSE    /* matched text */
+# define M_CNTRL_COL  A_REVERSE    /* control characters */
+# define M_EOF_COL    A_BOLD       /* EOF marker */
+# define M_SCALE_COL  A_NORMAL     /* the scale line */
+# define M_STATUS_COL A_NORMAL     /* the status line */
+# define M_NORM_COL   A_NORMAL     /* normal text */
+# define M_QUERY_COL  A_BOLD       /* query */
+# define M_MARG_COL   A_BOLD       /* margins */
+# define M_FOUND_CTRL A_REVERSE    /* matched binary */
 
 # if COLOUR
 private
-chtype found_col = FOUND_COL,    /* matched text */
-cntrl_col = CNTRL_COL,           /* control characters */
-eof_col = EOF_COL,               /* EOF marker */
-scale_col = SCALE_COL,           /* the scale line */
-status_col = STATUS_COL,         /* the status line */
-norm_col = NORM_COL,             /* normal text */
-query_col = QUERY_COL,           /* query */
-marg_col = MARG_COL,             /* margins */
-found_ctrl = FOUND_CTRL;         /* matched binary */
+chtype found_col = FOUND_COL,      /* matched text */
+cntrl_col        = CNTRL_COL,      /* control characters */
+eof_col          = EOF_COL,        /* EOF marker */
+scale_col        = SCALE_COL,      /* the scale line */
+status_col       = STATUS_COL,     /* the status line */
+norm_col         = NORM_COL,       /* normal text */
+query_col        = QUERY_COL,      /* query */
+marg_col         = MARG_COL,       /* margins */
+found_ctrl       = FOUND_CTRL;     /* matched binary */
 # else  /* if COLOUR */
 private
-chtype found_col = M_FOUND_COL,  /* matched text */
-  cntrl_col = M_CNTRL_COL,       /* control characters */
-  eof_col = M_EOF_COL,           /* EOF marker */
-  scale_col = M_SCALE_COL,       /* the scale line */
-  status_col = M_STATUS_COL,     /* the status line */
-  norm_col = M_NORM_COL,         /* normal text */
-  query_col = M_QUERY_COL,       /* query */
-  marg_col = M_MARG_COL,         /* margins */
-  found_ctrl = M_FOUND_CTRL;     /* matched binary */
+chtype found_col = M_FOUND_COL,    /* matched text */
+  cntrl_col      = M_CNTRL_COL,    /* control characters */
+  eof_col        = M_EOF_COL,      /* EOF marker */
+  scale_col      = M_SCALE_COL,    /* the scale line */
+  status_col     = M_STATUS_COL,   /* the status line */
+  norm_col       = M_NORM_COL,     /* normal text */
+  query_col      = M_QUERY_COL,    /* query */
+  marg_col       = M_MARG_COL,     /* margins */
+  found_ctrl     = M_FOUND_CTRL;   /* matched binary */
 # endif  /* if COLOUR */
 
 #endif  /* if DOS */
 
 /* directions for deletes etc */
-#define LEFT 1
+#define LEFT  1
 #define RIGHT 2
 
 /* current screen line */
@@ -1083,9 +1081,9 @@ chtype found_col = M_FOUND_COL,  /* matched text */
 #define START_OF_PAGE ( o_rec + 1 )
 
 /* current file position */
-#define FILE_LINE ( START_OF_PAGE + row - FIRST_LINE )
+#define FILE_LINE  ( START_OF_PAGE + row - FIRST_LINE )
 #define HFILE_LINE ( START_OF_PAGE + CURSOR_ROW )
-#define FILE_COL ( col + offset )
+#define FILE_COL   ( col + offset )
 
 /* address of cursor in screen buffer */
 #define BUF(c) ( &s_buf[row][c] )
@@ -1223,24 +1221,26 @@ private
 void Drive(const int);
 
 #ifdef __WATCOMC__
-# pragma aux main aborts;
-# pragma aux Quit aborts;
-# pragma aux Exit aborts;
-# pragma aux g_err aborts;
-# pragma aux g_intr aborts;
+# pragma aux main     aborts;
+# pragma aux Quit     aborts;
+# pragma aux Exit     aborts;
+# pragma aux g_err    aborts;
+# pragma aux g_intr   aborts;
 # pragma aux se_error aborts;
-# pragma aux _exit aborts;
+# pragma aux _exit    aborts;
 #endif  /* ifdef __WATCOMC__ */
 
 #define FBSTR       \
   private           \
   const byte near
+
 #define FSTR        \
   private           \
   const char near
+
 #define FSTR_LIST   \
   private           \
-  char csc near
+  char  csc  near
 
 /* system specific strings */
 #if DOS || defined(__MINGW32__)
