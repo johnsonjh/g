@@ -1253,7 +1253,7 @@ near se_lcom[]   = ".tss:DIR /W:",
 # ifdef __MINGW32__
 write_only[] = "w"
 # endif  /* ifdef __MINGW32__ */
-	 ;
+;
 # ifdef __MINGW32__
 FSTR_LIST save_dirs[] = {                    
   ".", "~", "/usr/preserve", "/tmp", NULL
