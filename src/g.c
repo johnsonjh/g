@@ -439,44 +439,114 @@ wfill(void *s, const short v, int len)
     }
 }
 
-# define movelr(a, b, n) (void)memcpy((void *)( a ), (const void *)( b ), ( n ))
-# define moverl(a, b, n)                                                       \
-  (void)memmove((void *)( a ), (const void *)( b ), ( n ))
-# define movelr5(a, b) (void)memcpy((void *)( a ), (const void *)( b ), 5)
-# define mmovelr(a, b, n)                                                      \
-  ( memcpy((void *)( a ), (const void *)( b ), n), (void *)((char *)( a ) + n ))
-# define cwmovelr(a, b, n)                                                     \
-  (void)memcpy((void *)( a ), (const void *)( b ), ( n ))
-# define cwmmovelr(a, b, n)                                                    \
-  ( memcpy((void *)( a ), (const void *)( b ), n), (void *)((char *)( a ) + n ))
-# define mmovelr4(a, b)                                                        \
-  ( memcpy((void *)( a ), (const void *)( b ), 4), (void *)((char *)( a ) + 4 ))
-# define mmovelr5(a, b)                                                        \
-  ( memcpy((void *)( a ), (const void *)( b ), 5), (void *)((char *)( a ) + 5 ))
-# define tmovelr(a, b, n)                                                      \
-  if (n > 0)                                                                   \
-    (void)memcpy((void *)( a ), (const void *)( b ), n)
-# define movelrz(a, b, n)                                                      \
-  (void)memcpy((void *)( a ), (const void *)( b ), n);                         \
-  a[n] = EOS;
-# define zmovelr(a, b) (void)strcpy((void *)( a ), (const void *)( b ))
-# define mzmovelr(a, b) ( strcpy((void *)a, (const void *)b), get_eos(a))
-# define cmovelr(a, b) (void)strcat((void *)( a ), (const void *)( b ))
-# define mcmovelr(a, b) ( strcat((void *)a, (const void *)b), get_eos(a))
-# define wmovelr(a, b, n)                                                      \
-  (void)memcpy((void *)( a ), (const void *)( b ), ( n ) << 1)
-# define wmoverl(a, b, n)                                                      \
-  (void)memmove((void *)( a ), (const void *)( b ), ( n ) << 1)
-# define bzero(s, n) (void)memset((char *)( s ), EOS, ( n ) << 1)
-# define space_fill(s, n) (void)memset((char *)( s ), SPACE, n)
-# define mspace_fill(s, n) ( memset((char *)s, SPACE, n), s + n )
-# define tab_fill(s) ( space_fill(s, TAB_WIDTH), s + TAB_WIDTH )
-# define ecmp(s1, s2, n) ( memcmp(s1, s2, n) == 0 )
-# define size(s) ( strlen(s) + 1 )
-# define get_eos(s) strchr(s, EOS)
-# define bmovelr wmovelr
-# define bmoverl wmoverl
-# define save_jbuf(d, s) movelr(d, s, sizeof ( jmp_buf ))
+# define movelr(a, b, n)                        \
+    (void)memcpy((void *)( a ),                 \
+                 (const void *)( b ), ( n ) )
+
+# define moverl(a, b, n)                        \
+    (void)memmove((void *)( a ),                \
+                  (const void *)( b ), ( n ) )
+
+# define movelr5(a, b)                          \
+    (void)memcpy((void *)( a ),                 \
+                 (const void *)( b ), 5)
+
+# define mmovelr(a, b, n)                       \
+    ( memcpy((void *)( a ),                     \
+             (const void *)( b ), n),           \
+             (void *)((char *)( a ) + n ) )
+
+# define cwmovelr(a, b, n)                      \
+    (void)memcpy((void *)( a ),                 \
+                 (const void *)( b ), ( n ) )
+
+# define cwmmovelr(a, b, n)                     \
+    ( memcpy((void *)( a ),                     \
+             (const void *)( b ), n),           \
+             (void *)((char *)( a ) + n ) )
+
+# define mmovelr4(a, b)                         \
+    ( memcpy((void *)( a ),                     \
+             (const void *)( b ), 4),           \
+             (void *)((char *)( a ) + 4 ) )
+
+# define mmovelr5(a, b)                         \
+    ( memcpy((void *)( a ),                     \
+             (const void *)( b ), 5),           \
+             (void *)((char *)( a ) + 5 ) )
+
+# define tmovelr(a, b, n)                       \
+    if (n > 0)                                  \
+      (void)memcpy((void *)( a ),               \
+                   (const void *)( b ), n)
+
+# define movelrz(a, b, n)                       \
+    (void)memcpy((void *)( a ),                 \
+                 (const void *)( b ), n);       \
+    a[n] = EOS;
+
+# define zmovelr(a, b)                          \
+    (void)strcpy((void *)( a ),                 \
+                 (const void *)( b ) )
+
+# define mzmovelr(a, b)                         \
+    ( strcpy((void *)a,                         \
+             (const void *)b), get_eos(a) )
+
+# define cmovelr(a, b)                          \
+    (void)strcat((void *)( a ),                 \
+                 (const void *)( b ) )
+
+# define mcmovelr(a, b)                         \
+    ( strcat((void *)a,                         \
+             (const void *)b),                  \
+      get_eos(a) )
+
+# define wmovelr(a, b, n)                       \
+    (void)memcpy((void *)( a ),                 \
+                 (const void *)( b ),           \
+                 ( n ) << 1)
+
+# define wmoverl(a, b, n)                       \
+    (void)memmove((void *)( a ),                \
+                  (const void *)( b ),          \
+                  ( n ) << 1)
+
+# ifndef bzero
+#  define bzero(s, n)                           \
+     (void)memset((char *)( s ),                \
+                  EOS, ( n ) << 1)
+# endif  /* ifndef bzero */
+
+# define space_fill(s, n)                       \
+    (void)memset((char *)( s ),                 \
+                 SPACE, n)
+
+# define mspace_fill(s, n)                      \
+    ( memset((char *)s,                         \
+             SPACE, n), s + n )
+
+# define tab_fill(s)                            \
+    ( space_fill(s, TAB_WIDTH),                 \
+      s + TAB_WIDTH )
+
+# define ecmp(s1, s2, n)                        \
+    ( memcmp(s1, s2, n) == 0 )
+
+# define size(s)                                \
+    ( strlen(s) + 1 )
+
+# define get_eos(s)                             \
+    strchr(s, EOS)
+
+# define bmovelr                                \
+    wmovelr
+
+# define bmoverl                                \
+    wmoverl
+
+# define save_jbuf(d, s)                        \
+    movelr(d, s, sizeof ( jmp_buf ))
 
 #endif  /* if ASM86 */
 
@@ -763,7 +833,7 @@ typedef struct _verb_list
 # define bios_byte(offs) ( *((byte *)offs ))
 # define bios_word(offs) ( *((ushort *)offs ))
 
-typedef ushort chtype;  /* 8-bit attr + 8-bit char */
+typedef ushort chtype;       /* 8-bit attr + 8-bit char */
 
 private
 word near LINES, near COLS;  /* terminal width/height */
@@ -779,6 +849,8 @@ word near LINES, near COLS;  /* terminal width/height */
  *  Function and Keypad Key Definitions.
  */
 
+# define ERR             0     /* general error flag */
+
 # define KEY_DOWN   0x5000     /* Down arrow key */
 # define KEY_UP     0x4800     /* Up arrow key */
 # define KEY_LEFT   0x4B00     /* Left arrow key */
@@ -793,40 +865,44 @@ word near LINES, near COLS;  /* terminal width/height */
 # define KEY_SLEFT  0x7300     /* shifted left arrow key */
 # define KEY_SRIGHT 0x7400     /* shifted right arrow */
 # define KEY_F0     0x3A00     /* 10 function keys */
-# define KEY_F(n) (( 0x3A + ( n )) << 8 )
-
-# define ERR 0  /* general error flag */
+# define KEY_F(n) ( ( 0x3A + ( n )) << 8 )
 
 private
 void clrtoeol(void);
+
 private
 void deleteln(void);
+
 private
 ushort curs_getc(void);
+
 private
 void insertln(void);
+
 private
 void initscr(void);
+
 private
 void curs_chins(void);
+
 private
 void napms(const unsigned long);
 
 # define init_pair(a, b, c)  /* Empty */
-# define endwin() bios_gotoxy((byte)( LINES - 2 ), 0)
+# define endwin()            bios_gotoxy((byte)( LINES - 2 ), 0)
 # define raw()               /* Empty */
 # define noraw()             /* Empty */
 # define attrset(a)          /* Empty */
 # define refresh()           /* Empty */
-# define move(y, x) ( curs_row = ( y ), curs_col = ( x ))
-# define rgetc() curs_getc()
-# define getch() curs_getc()
-# define insch(c) curs_chins()
+# define move(y, x)          (curs_row = ( y ), curs_col = ( x ))
+# define rgetc()             curs_getc()
+# define getch()             curs_getc()
+# define insch(c)            curs_chins()
 # define keypad(w, flag)     /* Empty */
 # define nonl()              /* Empty */
 # define noecho()            /* Empty */
-# define kbd_check(c) ( c = _bios_keybrd(_KEYBRD_READY) ? rgetc() : ERR )
-# define erase() berase(v_base, LINES * B_COLS)
+# define kbd_check(c)        (c = _bios_keybrd(_KEYBRD_READY) ? rgetc() : ERR)
+# define erase()             berase(v_base, LINES * B_COLS)
 
 #else  /* if DOS */
 
@@ -846,12 +922,12 @@ void napms(const unsigned long);
 
 /* specials for AIX */
 # ifndef ACS_HLINE
-#  define ACS_HLINE    '-'
-#  define ACS_VLINE    '|'
-#  define ACS_ULCORNER '+'
-#  define ACS_URCORNER '+'
-#  define ACS_LLCORNER '+'
-#  define ACS_LRCORNER '+'
+#  define ACS_HLINE      '-'
+#  define ACS_VLINE      '|'
+#  define ACS_ULCORNER   '+'
+#  define ACS_URCORNER   '+'
+#  define ACS_LLCORNER   '+'
+#  define ACS_LRCORNER   '+'
 #  define wtimeout(w, t) (( w )->_nodelay = ( t ))
 private
 int
