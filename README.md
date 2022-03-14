@@ -89,6 +89,6 @@ Future plans for ***`G`***:
 
 ## Binaries
 
-* [***`G`***  V4.7.2 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g472.exe), 32‑bit, DPMI (2022‑03‑12)
-* [***`G`***  V4.7.1 for DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g471.exe), 16‑bit, real-mode (1995‑10‑20)
-* [***`G`***  V4.7.2 for Win32](https://github.com/johnsonjh/g/raw/master/bin/WIN32/g472.exe), 32‑bit, Win32 (2022‑03‑12)
+* [***`G`***  V4.7.2 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g472.exe), DPMI (2022‑03‑12)
+* [***`G`***  V4.7.1 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g471.exe), Real-mode (1995‑10‑20)
+* [***`G`***  V4.7.2 for Win32](https://github.com/johnsonjh/g/raw/master/bin/WIN32/g472.exe), 32-bit (2022‑03‑12)
