@@ -25,6 +25,10 @@
 # endif  /* ifdef __NetBSD__ */
 #endif  /* ifdef DOS */
 
+#ifdef __FreeBSD__
+# define _POSIX_C_SOURCE 200809L
+#endif  /* ifdef __FreeBSD__ */
+
 #undef NEVER
 
 #ifndef TINY_G
