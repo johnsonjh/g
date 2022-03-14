@@ -68,6 +68,15 @@
 # define _ALL_SOURCE
 #endif  /* ifdef _AIX */
 
+#if ( ( ( defined(__SVR4) || defined(__svr4__) ) && \
+        ( defined(sun) || defined(__sun) || defined(__sun__) ) ) || \
+          defined(__illumos__) || defined(__solaris__) )
+# define _ISO_CTYPE_ISO_H 1
+# define _CTYPE_H         1
+#endif  /* ( ( ( defined(__SVR4) || defined(__svr4__) ) &&
+               ( defined(sun) || defined(__sun) || defined(__sun__) ) ) ||
+                 defined(__illumos__) || defined(__solaris__) ) */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
