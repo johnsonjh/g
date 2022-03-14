@@ -13,12 +13,15 @@
  */
 
 #ifdef DOS
-# define UNIX           0
+# define UNIX            0
 #else  /* ifdef DOS */
-# define UNIX           1
-# define DOS            0
-# define _XOPEN_SOURCE  1
-# define _POSIX_SOURCE  1
+# define UNIX            1
+# define DOS             0
+# define _XOPEN_SOURCE   1
+# define _POSIX_SOURCE   1
+# ifdef __NetBSD__
+#  define _NETBSD_SOURCE 1
+# endif  /* ifdef __NetBSD__ */
 #endif  /* ifdef DOS */
 
 #undef NEVER
@@ -68,7 +71,9 @@
 #endif  /* if DOS */
 
 #if UNIX  /* not ANSI */
-# define caddr_t void *
+# ifndef caddr_t
+#  define caddr_t void *
+# endif  /* ifndef caddr_t */
 # ifndef __MINGW32__
 #  include <sys/mman.h>
 # endif  /* ifndef __MINGW32__ */
@@ -110,31 +115,31 @@ case 'D':         \
 case 'E':         \
 case 'F'
 
-#define EOS  0x00
-#define SPACE  0x20
+#define EOS     0x00
+#define SPACE   0x20
 #define BSLASH  0x5C
-#define SLASH  0x2F
-#define GRAVE  0x60
+#define SLASH   0x2F
+#define GRAVE   0x60
 #define SQUOTE  0x27
 #define DQUOTE  0x22
-#define TAB  0x09
-#define ESC  0x1B
-#define DEL  0x7F
-#define LFEED  0x0A
+#define TAB     0x09
+#define ESC     0x1B
+#define DEL     0x7F
+#define LFEED   0x0A
 
-#define CNTRL_MASK  037U
-#define BYTE_MASK  0377U
+#define CNTRL_MASK   037U
+#define BYTE_MASK   0377U
 #define ASCII_MASK  0177U
-#define ODD_MASK  01U
+#define ODD_MASK      01U
 
-#define delim(c) ( g_map[c] &   01U )
-#define comsep(c) ( g_map[c] &   02U )
-#define isdigit(c) ( g_map[c] &  010U )
-#define isupper(c) ( g_map[c] &  020U )
+#define delim(c)    ( g_map[c] &   01U )
+#define comsep(c)   ( g_map[c] &   02U )
+#define isdigit(c)  ( g_map[c] &  010U )
+#define isupper(c)  ( g_map[c] &  020U )
 #define se_b4key(c) ( g_map[c] &  040U )
-#define se_jkey(c) ( g_map[c] & 0100U )
+#define se_jkey(c)  ( g_map[c] & 0100U )
 #define se_b1key(c) ( g_map[c] & 0200U )
-#define wordch(c) ( g_map[c] & ( 04U | 010U | 020U ))
+#define wordch(c)   ( g_map[c] & ( 04U | 010U | 020U ))
 
 #if DOS
 # define path_sep(c) ( c == SLASH || c == BSLASH )
@@ -168,9 +173,9 @@ case 'F'
 #define TAB_WIDTH  8
 
 #define YES        1
-#define NO        0
+#define NO         0
 
-#define G_OK      0
+#define G_OK       0
 #define G_FAIL     1
 
 #define byte unsigned char
@@ -651,7 +656,7 @@ TOKEN;
 #define HEX_INV         57
 
 /* Standard files */
-#define vdu stderr
+#define vdu    stderr
 #define kbd_fd 0
 #define vdu_fd 2
 
