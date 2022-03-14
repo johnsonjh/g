@@ -13,6 +13,9 @@
  * ***************************************************************************
  */
 
+#undef VERSION_STRING
+#define VERSION_STRING     "G 4.7.3-dev (2022-03-14)"
+
 #ifdef DOS
 # define UNIX              0
 #else  /* ifdef DOS */
@@ -3088,6 +3091,7 @@ vsreload(void)
 }
 
 #ifdef DEBUG
+# define IMMEDOK
 # include <assert.h>
 
 /* check integrity of primary files */
@@ -14961,12 +14965,24 @@ main(int i, char csc * argv)
               continue;
 
             case 'V':  /* display version */
-#if DOS
+#if defined(NCURSES_VERSION) || defined(PDCURSES)
+              char cvstring[255];
+              sprintf(cvstring,
+                      "%s using %s", VERSION_STRING, curses_version());
+# if DOS
               putstr(
-#else  /* if DOS */
+# else  /* if DOS */
               say(
-#endif  /* if DOS */
-                "G 4.7.2 (2022-03-12)");
+# endif  /* if DOS */
+                cvstring);
+#else  /* if defined(NCURSES_VERSION) || defined(PDCURSES) */
+# if DOS
+              putstr(
+# else  /* if DOS */
+              say(
+# endif  /* if DOS */
+                VERSION_STRING);
+#endif  /* if defined(NCURSES_VERSION) || defined(PDCURSES) */
               _exit(0);
 
             case 'C':  /* initial command */
