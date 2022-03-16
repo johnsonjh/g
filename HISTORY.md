@@ -42,4 +42,4 @@
   appropriate. Screen attributes are (unfortunately) now fixed, but screen
   updates are very fast. Sep 1995
 * Cleaned up for modern Linux and BSD systems by Jeffrey H. Johnson, mid-2019
-* G 4.7.2 on GitHub, March 2021
+* G 4.7.2 and 4.7.3 on GitHub, March 2021

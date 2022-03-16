@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "G 4.7.3-dev (2022-03-14)"
+#define VERSION_STRING     "G 4.7.3 (2022-03-16)"
 
 #ifdef DOS
 # define UNIX              0
@@ -1249,9 +1249,9 @@ void Drive(const int);
 #if DOS || defined(__MINGW32__)
 FSTR shell_bin[] = "COMMAND",     near tty_file[] = "CON",
 near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
-near se_lcom[]   = ".tss:DIR /W:",
+near se_lcom[]   = ".tss:DIR /W:"
 # ifdef __MINGW32__
-write_only[] = "w"
+,write_only[] = "w"
 # endif  /* ifdef __MINGW32__ */
 ;
 # ifdef __MINGW32__
@@ -8204,13 +8204,13 @@ init_screen(void)
   int lines;
 
   (void)initscr();
-  (void)nonl();
-  (void)noecho();
-  (void)keypad(stdscr, YES);
+  nonl();
+  noecho();
+  keypad(stdscr, YES);
 
-#if defined(IMMEDOK)
+#if defined(IMMEDOK) && !defined(__WATCOMC__)
   (void)immedok(stdscr, YES);
-#endif  /* if defined(IMMEDOK) */
+#endif  /* if defined(IMMEDOK) && !defined(__WATCOMC__) */
 
 #if DOS
   lines = LINES;
@@ -8399,15 +8399,15 @@ move_to(int line)
 private
 short curs_row, curs_col;
 
-# if TINY_G
+# if TINY_G && !defined(WCL386)
 private
 chtype *near v_base = (chtype *)0xb8000000;
 #  define call_bios int86  /* need _int86 for MSVC, OK for Borland */
-# else  /* if TINY_G */
+# else  /* if TINY_G && !defined(WCL386) */
 private
 chtype *v_base = (chtype *)0xb8000;
 #  define call_bios int386
-# endif  /* if TINY_G */
+# endif  /* if TINY_G && !defined(WCL386) */
 private
 chtype *near h_base, *near t_base;
 
@@ -8826,7 +8826,7 @@ disp_eof(const int r)
 #else  /* if ASM86 */
   (void)move(r, 0);
   put_seq(eof_mess, 29, eof_col);
-  (void)attrset(norm_col);
+  attrset(norm_col);
   (void)clrtoeol();
 #endif  /* if ASM86 */
 }
@@ -8877,7 +8877,7 @@ disp_template(void)
 
   (void)move(TEMPLATE_LINE, 0);
   put_seq(scale, COLS, scale_col);
-  (void)attrset(norm_col);
+  attrset(norm_col);
 #endif  /* if ASM86 */
 }
 
@@ -9264,7 +9264,7 @@ home_command(const int disp, const int s_start)
 
   lon = disp == D_SE_HOME;
 
-  (void)noraw();
+  noraw();
   
   if (setjmp(set_err))
     {
@@ -9276,7 +9276,7 @@ home_command(const int disp, const int s_start)
       Drive(disp);
     }
 
-  (void)raw();
+  raw();
 
   save_jbuf(set_err, save_err);
 
@@ -10091,7 +10091,7 @@ se_join(const int del)
   (void)movelr(bs + j_col, nbs, len);
 
   disp_rest();
-  (void)refresh();
+  refresh();
 
   if (nrow != TEMPLATE_LINE)
     {
@@ -10437,7 +10437,7 @@ term(void)
     }
 
   (void)erase();
-  (void)refresh();
+  refresh();
   fscreen = NO;
   (void)endwin();
   lon = redisplay = SE_WAIT;
@@ -10507,7 +10507,7 @@ wmessage(const char *text)
   begx = ( COLS  - cols  ) / 2;
   begy = ( LINES - lines ) / 2;
 
-  (void)attrset(cntrl_col);
+  attrset(cntrl_col);
 
   ymax = lines - 1, xmax = cols - 1;
 
@@ -10560,7 +10560,7 @@ wmessage(const char *text)
 
   (void)rgetc();
 
-  (void)attrset(norm_col);
+  attrset(norm_col);
 }
 
 private
@@ -10581,7 +10581,7 @@ inform(char csc mess)
 {
   if (fscreen)
     {
-      (void)raw();
+      raw();
 #if UNIX
       restore_std();
 #endif  /* if UNIX */
@@ -11097,7 +11097,7 @@ split_line(const int margin)
   else
     {
       (void)clrtoeol();
-      (void)refresh();
+      refresh();
       if (row == last_line)
         {
           push_line(&in_stack, text, len);
@@ -11595,7 +11595,7 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
 #else  /* if ASM86 */
   (void)move(COMMAND_LINE, 0);
   put_seq(prompt, p_len, query_col);
-  (void)attrset(norm_col);
+  attrset(norm_col);
   (void)clrtoeol();
 #endif  /* if ASM86 */
 
@@ -12474,7 +12474,7 @@ Screen_ed(void)
       (void)move(row, col);
     }
 
-  (void)raw();
+  raw();
 
   if (trunc_recs)
     {

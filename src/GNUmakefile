@@ -71,8 +71,12 @@
 ###############################################################################
 # Utilities
 
+CAT     ?= cat
 CC      ?= cc
+CHMOD   ?= chmod
+ENV     ?= env
 GETCONF ?= getconf
+LN      ?= ln
 PRINTF  ?= printf
 RM      ?= rm -f
 SSTRIP  ?= sstrip
@@ -81,6 +85,33 @@ TEST    ?= test
 TR      ?= tr
 TRUE    ?= true
 UNAME   ?= uname
+WATWCL  ?= wcl
+WCL386  ?= wcl386
+
+###############################################################################
+# OpenWatcom configuration
+
+WATCOM   ?= /opt/watcom
+WATBIN   ?= binl64
+EXTENDER ?= DOS32A
+
+###############################################################################
+# DJGPP configuration
+
+DJGPP_GHOME    ?= /opt/djgpp
+DJGPP_GARCH    ?= i586-pc-msdosdjgpp-
+DJGPP_CCOMP    ?= gcc
+DJGPP_ECOFF    ?= exe2coff
+ifdef DEBUG
+   DJGPP_STRIP ?= size
+else
+   DJGPP_STRIP ?= strip
+endif # DEBUG
+
+###############################################################################
+# CWSDPMI configuration
+
+CWSDPMI_STUB ?= /opt/cwspdmi/cwsdstub.exe
 
 ###############################################################################
 # Detect operating system
@@ -146,7 +177,7 @@ endif # aix
 LDFLAGS     += $(CURSESLIB)
 
 ###############################################################################
-# Architecture
+# Architectures
 
 ifeq ($(OS),aix)
   MAIXBITS  ?= $(shell command -p $(GETCONF) KERNEL_BITMODE 2> /dev/null || \
@@ -173,9 +204,10 @@ SRC = g.c
 OUT = g$(OUTEXT)
 
 ###############################################################################
-# Compile
+# Standard Compilation
 
 .PHONY: all
+.NOTPARALLEL: all
 all: $(OUT)
 
 $(OUT): $(SRC)
@@ -183,6 +215,88 @@ ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(CC):\t\t%s\n' $<
 endif # !V
 	@$(VERBOSE); $(CC) $(CFLAGS) $(SRC) -o $(OUT) $(LDFLAGS)
+
+###############################################################################
+# OpenWatcom Debugging
+
+ifdef DEBUG
+   WATDBG = -d3 -DDEBUG=1
+else
+   WATDBG = -d0 -s -zq -oabls
+endif # DEBUG
+
+###############################################################################
+# OpenWatcom Compilation: 16-bit DOS, 8086 (Real mode)
+
+.PHONY: $(OUT)86 owc16
+.NOTPARALLEL: $(OUT)86 owc16 $(OUT)86.exe
+$(OUT)86 owc16 $(OUT)86.exe: g.lnk
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "g.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
+           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
+             -l=DOS -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lnk  \
+               $(WATDBG) -zp2 -fe=$(OUT)86.exe $(SRC) &&               \
+	        $(RM) -f "./g.o" 2> /dev/null
+
+###############################################################################
+# OpenWatcom Compilation: 16-bit DOS, 80386 (Real mode)
+
+.PHONY: $(OUT)386r owc386r
+.NOTPARALLEL: $(OUT)386r owc386r $(OUT)386r.exe
+$(OUT)386r owc386r $(OUT)386r.exe: g.lnk
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "g.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
+           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
+             -l=DOS -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lnk  \
+               $(WATDBG) -zp2 -fe=$(OUT)386r.exe $(SRC) &&             \
+	        $(RM) -f "./g.o" 2> /dev/null
+
+###############################################################################
+# OpenWatcom Compilation: 32-bit DOS, 386 (Protected mode)
+
+.PHONY: $(OUT)386p owc386p
+.NOTPARALLEL: $(OUT)386p owc386p $(OUT)386p.exe
+$(OUT)386p owc386p $(OUT)386p.exe: g.lnk
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(WCL386):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
+	 PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
+          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi -zm @g.lnk  \
+           -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
+	    $(RM) -f "./g.o" 2> /dev/null
+
+###############################################################################
+# DJGPP Compilation: 32-bit DOS, 386 (Protected mode)
+
+.PHONY: $(OUT)386 djgpp
+$(OUT)386 djgpp $(OUT)386.exe: $(CWSDPMI_STUB)           \
+	$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP)  \
+	$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(DJGPP_CCOMP):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "gt" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "gt.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "g.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "g386.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP)"        \
+	 -march=i386 -Wno-attributes $(CFLAGS) $(SRC) -o gt.exe $(LDFLAGS) && \
+	  $(RM) -f "./gt" &&                                                  \
+	   "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)" -s "./gt.exe" && \
+	    $(DJGPP_ECOFF) "./gt.exe" && $(RM) -f "./gt.exe" &&               \
+	     $(CAT) "$(CWSDPMI_STUB)" "./gt" > "./$(OUT)386.exe" &&           \
+	      $(RM) -f "./gt" 2> /dev/null && $(CHMOD) a+x "./$(OUT)386.exe"
 
 ###############################################################################
 # Strip
@@ -215,10 +329,18 @@ endif # !V
 .PHONY: clean distclean
 clean distclean:
 ifneq ($(V),1)
-	-@$(TEST) -f ./$(OUT) && \
-		$(PRINTF) '\r\t\t$(RM):\t\t%s\n' $(OUT) || $(TRUE)
+	-@$(PRINTF) '\r\t\t$(RM):\t\t%s\n' "(output)" || $(TRUE)
 endif # !V
-	-@$(VERBOSE); $(TEST) -f ./$(OUT) && \
-		$(RM) ./$(OUT) || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt"             2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt.o"           2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt.exe"         2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)"         2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).o"       2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).exe"     2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).err"     2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)86.exe"   2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386.exe"  2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386p.exe" 2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
 
 ###############################################################################

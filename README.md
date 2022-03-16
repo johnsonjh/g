@@ -71,8 +71,8 @@
 
 * A **C** compiler is required. *Oracle* **Developer Studio**, *LLVM*
   **Clang**, *AMD* **AOCC**, *GNU* **GCC**, *IBM* **XLC**/**OpenXL**,
-  *Intel* **ICX**/**ICC**, **DJGPP**, and **PCC** are currently known to
-  work.
+  *Intel* **ICX**/**ICC**, **DJGPP**, **OpenWatcom**, and **PCC** are
+  currently known to work.
 
 * The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
   or later) is available. **GNU** **Make** is helpful, but is not required
@@ -96,10 +96,10 @@
 Future plans for ***`G`***:
  * Overhauled documentation
  * Improved online help viewer
- * New Windows port with console support
- * VGA mode support for DOS port
+ * Proper Windows console support
+ * VGA-mode DOS port
  * Dynamic resizing
- * UTF-8 / multibyte support
+ * UTF-8/multibyte support
 
 ## Binaries
 
