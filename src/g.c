@@ -87,10 +87,24 @@
                ( defined(sun) || defined(__sun) || defined(__sun__) ) ) ||
                  defined(__illumos__) || defined(__solaris__) ) */
 
+#if defined(__GNUC__) && defined(__ia16__)
+# define OMIT_SYSTEM 1
+# define OMIT_POPEN  1
+# define OMIT_SIGNAL 1
+# define DOS_CONSOLE 1
+# define near
+#endif  /* if defined(__GNUC__) && defined(__ia16__) */
+
+#ifdef __MINGW32__
+# define DOS_CONSOLE 1
+#endif  /* ifdef __MINGW32__ */
+
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
+#if !defined(OMIT_SIGNAL)
 #include <signal.h>
+#endif  /* if !defined(OMIT_SIGNAL) */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -105,9 +119,11 @@
 # ifndef caddr_t
 #  define caddr_t void *
 # endif  /* ifndef caddr_t */
-# ifndef __MINGW32__
+# if !defined(__MINGW32__) && \
+   ( !defined(__GNUC__) && !defined(__ia16__) )
 #  include <sys/mman.h>
-# endif  /* ifndef __MINGW32__ */
+# endif  /* if !defined(__MINGW32__) &&
+             ( !defined(__GNUC__) && !defined(__ia16__) ) */
 #endif  /* if UNIX */
 
 #undef open
@@ -1246,7 +1262,7 @@ void Drive(const int);
   char  csc  near
 
 /* system specific strings */
-#if DOS || defined(__MINGW32__)
+#if DOS || DOS_CONSOLE
 FSTR shell_bin[] = "COMMAND",     near tty_file[] = "CON",
 near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
 near se_lcom[]   = ".tss:DIR /W:"
@@ -1254,19 +1270,19 @@ near se_lcom[]   = ".tss:DIR /W:"
 ,write_only[] = "w"
 # endif  /* ifdef __MINGW32__ */
 ;
-# ifdef __MINGW32__
+# if defined(__MINGW32__) || defined(DOS_CONSOLE)
 FSTR_LIST save_dirs[] = {                    
   ".", "~", "/usr/preserve", "/tmp", NULL
 };                                                        
-# endif  /* ifdef __MINGW32__ */
-#else  /* if DOS */
+# endif  /* if defined(__MINGW32__) || defined(DOS_CONSOLE) */
+#else  /* if DOS || DOS_CONSOLE */
 FSTR shell_var[] = "SHELL", shell_bin[] = "sh",
   se_pcom[]      = "S!\177lp -c '-tG print: %s' 1>/dev/null 2>&1\177,TE,X",
   se_lcom[]      = ".tss/ls -C/", write_only[] = "w", tty_file[] = "/dev/tty";
 FSTR_LIST save_dirs[] = {
   ".", "~", "/usr/preserve", "/tmp", NULL
 };
-#endif  /* if DOS || defined(__MINGW32__) */
+#endif  /* if DOS || DOS_CONSOLE */
 
 /* standard file names */
 FSTR si_file[] = "stdin", near so_file[] = "stdout", near t_fname[] = "*TMP*",
@@ -4789,6 +4805,7 @@ serial_read(UNIT *const vs_u, const int fd)
  *  Read and write to/from a process
  */
 
+#if !defined(OMIT_POPEN)
 private
 int
 Mem_to_proc(UNIT *const vs_u, char csc comm)
@@ -4830,6 +4847,7 @@ Proc_to_mem(UNIT *const vs_u, char csc comm)
 
   return rc != 0 ? EOF : (int)vstell(vs_u);
 }
+#endif  /* if !defined(OMIT_POPEN) */
 
 #endif  /* if UNIX */
 
@@ -4839,10 +4857,12 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 {
   int fd;
 
-#if DOS || defined(__DJGPP__) || defined(__MINGW32__)
+#if DOS || defined(__DJGPP__) || defined(__MINGW32__) || \
+    ( defined(__GNUC__) && defined(__ia16__)  )
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
-#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
+#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__)
+              ( defined(__GNUC__) && defined(__ia16__) */
 
 # if UNIX
   off_t f_len;
@@ -4866,9 +4886,11 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
   trunc_recs = 0;
 
 #if DOS || defined(__DJGPP__) || defined(__MINGW32__)
-# ifndef __DJGPP__
+# if !defined(__DJGPP__) && \
+   ( !defined(__GNUC__)  && !defined(__ia16__) )
   setmode(fd, O_BINARY);
-# endif  /* ifndef __DJGPP__ */
+# endif  /* if !defined(__DJGPP__) &&
+             ( !defined(__GNUC__)  && !defined(__ia16__) ) */
 
   while (( len = read(fd, p = buf + len, BLOCK_SIZE)) > 0)
     {
@@ -4901,7 +4923,8 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
 #else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
 
-# if UNIX || !defined(__DJGPP__)
+# if ( UNIX || !defined(__DJGPP__) ) && \
+    ( !defined(__GNUC__) && !defined(__ia16__) )
   f_len = lseek(fd, (off_t)0, SEEK_END);
   if (( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0))
       != (caddr_t)-1)
@@ -4924,7 +4947,8 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
     }
 
   (void)lseek(fd, 0, SEEK_SET);
-# endif  /* if UNIX || !defined(__DJGPP__) */
+# endif  /* if ( UNIX || !defined(__DJGPP__) ) &&
+              ( !defined(__GNUC__) && !defined(__ia16__) )*/
 
   return serial_read(vs_u, fd);
 
@@ -4939,13 +4963,13 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
   int len, fd, fmode;
   byte buf[BLOCK_SIZE + E_BUFF_SIZE], *p = buf, *const last = p + BLOCK_SIZE;
 
-#if UNIX
+#if UNIX && !defined(OMIT_POPEN)
   if (*fname == '!')
     {
       return Mem_to_proc(vs_u, fname + 1);
     }
 
-#endif  /* if UNIX */
+#endif  /* if UNIX && !defined(OMIT_POPEN) */
   if (mode == 'F')
     {
       fd = fd_out_terminal;
@@ -4973,9 +4997,9 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
         }
     }
 
-#if DOS
+#if DOS && ( !defined(__GNUC__) && !defined(__ia16__) )
   setmode(fd, O_BINARY);
-#endif  /* if DOS */
+#endif  /* if DOS && ( !defined(__GNUC__) && !defined(__ia16__) ) */
 
   if (isatty(fd))
     {
@@ -5206,12 +5230,14 @@ g_intr(int sig)
   string mess;
 #endif  /* if UNIX */
 
+#if !defined(OMIT_SIGNAL)
   (void)signal(sig, g_intr);
+#endif  /* if !defined(OMIT_SIGNAL) */
 
 #ifndef __MINGW32__
-# if DOS
+# if DOS || defined(OMIT_SIGNAL)
   g_err(BREAK_KEY, empty);
-# else  /* if DOS */
+# else  /* if DOS || defined(OMIT_SIGNAL) */
   switch (sig)
     {
     case SIGQUIT:
@@ -5248,16 +5274,18 @@ g_intr(int sig)
     }
   (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
   save_work(mess);
+#if !defined(OMIT_POPEN)
   if (( fp = popen("exec mail $LOGNAME", write_only)) != NULL)
     {
       (void)fprintf(fp, "\n%s", mess);
       (void)pclose(fp);
     }
+#endif  /* if !defined(OMIT_POPEN) */
 
   term();
   _exit(1);
 # endif  /* if DOS */
-#endif /* ifndef __MINGW32__ */
+#endif  /* ifndef __MINGW32__ */
 }
 
 /*
@@ -6053,13 +6081,13 @@ lex(char cssc ptr)
       ch = u_star(e);
       if (ch == 'E' || ch == '.')
         {
-#if TINY_G
+#if TINY_G && !defined(UNIX)
           if (( bios_word(0x410) & 0x02 ) == 0)  /* no 87 fitted */
             {
               g_err(BAD_NUM, p);
             }
 
-#endif  /* if TINY_G */
+#endif  /* if TINY_G && !defined(UNIX) */
           tok.litval.r = strtod(p, (char **)&e);
           tok.l_fp = YES;
         }
@@ -6936,7 +6964,7 @@ Xit(VERB csc opts)
         }
 
       vsreopen(out_u);
-#if UNIX
+#if UNIX && !defined(OMIT_POPEN)
       if (mode == '|')
         {
           c_out = dup(1), save_fd_in = fd_in_terminal;
@@ -6948,7 +6976,7 @@ Xit(VERB csc opts)
           break;
         }
 
-#endif  /* if UNIX */
+#endif  /* if UNIX && !defined(OMIT_POPEN) */
       recs = vssizeof(out_u);
       if (f_list->trans)
         {
@@ -13725,7 +13753,7 @@ Insert(VERB csc opts)
       wait_user();
       return;
 
-#if UNIX
+#if UNIX && !defined(OMIT_POPEN)
     case '!':
       vsunlink(out_u);
       if (( len = Proc_to_mem(out_u, s1p)) == EOF)
@@ -13736,7 +13764,7 @@ Insert(VERB csc opts)
       o_rec += len;
       return;
 
-#endif  /* if UNIX */
+#endif  /* if UNIX && !defined(OMIT_POPEN) */
     }
 
   ch_delim = *s1p++;
@@ -14289,10 +14317,12 @@ verb(VERB csc v)
 
       break;
 
+#if !defined(OMIT_SYSTEM)
     case '!':
       term();
       (void)!system(prep_name(v->o1.s));
       break;
+#endif  /* if !defined(OMIT_SYSTEM) */
 
     case ':':
       if (fscreen)
@@ -14748,7 +14778,7 @@ Drive(const int level)
   if (level == 0 && ( rc = setjmp(set_err)) == NO)
     {
       /* startup */
-#ifndef __MINGW32__
+#if !defined(__MINGW32__) && !defined(OMIT_SIGNAL)
       (void)signal(SIGINT, g_intr);
 # if UNIX
       (void)signal(SIGTERM, g_intr);
@@ -14762,7 +14792,7 @@ Drive(const int level)
       (void)signal(SIGPIPE, g_intr);
       (void)signal(SIGQUIT, g_intr);
 # endif  /* if UNIX */
-#endif  /* ifndef __MINGW32__ */
+#endif  /* if !defined(__MINGW32__) && !defined(OMIT_SIGNAL) */
       save_jbuf(save_err, set_err);
       if (g_init == NULL)
         {
