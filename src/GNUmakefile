@@ -127,6 +127,18 @@ ifeq ($(OS),sunos)
 endif # sunos
 
 ###############################################################################
+# Tiny build
+
+ifdef TINY
+  CFLAGS   += -DTINY_G=1
+endif # TINY
+ifdef TINY_G
+  ifndef TINY
+    CFLAGS += -DTINY_G=1
+  endif # !TINY
+endif # TINY_G
+
+###############################################################################
 # Verbose
 
 ifdef V
