@@ -136,6 +136,15 @@ else
 endif # !V
 
 ###############################################################################
+# Stack protection disable
+
+ifdef NOSSP
+  STACK_FLAGS ?= -fno-stack-protector -U_FORTIFY_SOURCE
+else
+  STACK_FLAGS ?= -D_FORTIFY_SOURCE=1
+endif # NOSSP
+
+###############################################################################
 # Debugging
 
 ifdef DEBUG
@@ -145,7 +154,7 @@ else
     OPTFLAGS ?= -O
   endif # _SUNOS
   OPTFLAGS   ?= -Os
-  CFLAGS     += $(OPTFLAGS) -D_FORTIFY_SOURCE=2 -Wno-int-to-pointer-cast
+  CFLAGS     += $(OPTFLAGS) $(STACK_FLAGS) -Wno-int-to-pointer-cast
 endif # DEBUG
 
 ###############################################################################
