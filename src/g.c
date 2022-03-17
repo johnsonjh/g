@@ -1726,7 +1726,7 @@ t.s({%1=%1*10+(*-48)}t.1)w{*>47&&*<58}{%1*=..}";
 FSTR ph[] = "{..=#}# p{..}";
 /* Write out a C main() prototype */
 FSTR cmain[] = "i///#include <stdio.h>//#include <stdlib.h>\
-////int//main( int argc, char const * const * argv )//    {////    }/////@";
+////int//main( int argc, char ** argv )//    {////    }/////@";
 /* Execute system command */
 FSTR tss[] = "!%1";
 
