@@ -61,9 +61,10 @@
 
 ### Modern
 
-* ***`G`*** can be built for **DOS**, **Windows**, and **UNIX** systems.
-  **AIX**, **Darwin**, **FreeBSD**, **NetBSD**, **OpenBSD**, **Solaris**,
-  **illumos**, and **Linux** are regularly tested and supported.
+* ***`G`*** can be built for **DOS**, **Windows**, and many **UNIX**
+  systems. **AIX**, **Darwin**, **FreeBSD**, **NetBSD**, **OpenBSD**,
+  **Solaris**, **illumos**, and **Linux** are regularly tested and
+  fully supported.
 
 * A **Curses** library is required on **UNIX** systems. **AT&T System V**
   **Curses**, **XPG4**/**XSI** **Extended Curses**, **PdCurses**,
@@ -71,8 +72,8 @@
 
 * A **C** compiler is required. *Oracle* **Developer Studio**, *LLVM*
   **Clang**, *AMD* **AOCC**, *GNU* **GCC**, *IBM* **XLC**/**OpenXL**,
-  *Intel* **ICX**/**ICC**, **DJGPP**, **OpenWatcom**, and **PCC** are
-  currently known to work.
+  *Intel* **ICX**/**ICC**, **DJGPP**, **OpenWatcom**, **Borland C**, and
+  **PCC** are currently known to work.
 
 * The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
   or later) is available. **GNU** **Make** is helpful, but is not required
