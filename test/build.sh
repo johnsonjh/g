@@ -273,7 +273,7 @@ test -f "g.exe" && du -k "g.exe" |                                         \
 ##############################################################################
 
 # NOTE: Not working yet!
-{ hrline; printf '%s\n' "## DOS: IA16-GCC, 8086, PdCursesMod:"; blline
+{ hrline; printf '%s\n' "## DOS: IA16-GCC, 8086, Curses:"; blline
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="${IA16GCC_CCOMP:?}"                                                \
     CFLAGS="-march=i8086 -mregparmcall                                     \
