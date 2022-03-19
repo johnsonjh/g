@@ -8,7 +8,7 @@
 #
 #  Building G for legacy systems:
 #
-#  * Commodore Amiga UNIX (AMIX) with GCC 2.x:
+#  * Commodore Amiga UNIX (AMIX):
 #     cc -O g.c -o g -lcurses
 #
 #  * HP-UX 9/10:

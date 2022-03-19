@@ -81,11 +81,11 @@
 ### Legacy
 
 * Historically, ***`G`*** was available for many systems, including Amdahl
-  UTS/V, AT&T System V, Berkeley (BSD) UNIX, BSDI BSD/OS, Commodore AMIX,
-  DG/UX, Honeywell GCOS/TSS, HP‑UX, IBM OS/2, ICL CDOS, ICL DRS/NX,
-  JRG/Everex ESIX, Microsoft Xenix, MINIX, MWC Coherent, NCR SVR4 MP‑RAS,
-  Novell/SCO UnixWare, Pyramid DC/OSx, Reliant UNIX/SINIX, SCO OpenServer,
-  Sequent DYNIX, SunOS 3/4, Tulip SVR3, and DEC VAX/VMS.
+  UTS/V, AT&T System V, Berkeley (BSD) UNIX, BSDI BSD/OS, Commodore Amiga
+  UNIX (AMIX), DG/UX, Honeywell GCOS/TSS, HP‑UX, IBM OS/2, ICL CDOS, ICL
+  DRS/NX, JRG/Everex ESIX, Microsoft Xenix, MINIX, MWC Coherent, NCR SVR4
+  MP‑RAS, Novell/SCO UnixWare, Pyramid DC/OSx, Reliant UNIX/SINIX, SCO
+  OpenServer, Sequent DYNIX, SunOS 3/4, Tulip SVR3, and DEC VAX/VMS.
 
 * The [`GNUmakefile`](https://github.com/johnsonjh/g/blob/master/src/GNUmakefile)
   contains information relevant to building ***`G`*** on many of these older
