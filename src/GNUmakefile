@@ -369,3 +369,12 @@ endif # !V
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
 
 ###############################################################################
+# Test
+
+.PHONY: test check
+test check: ../test/build.sh
+	@$(VERBOSE); command -p $(ENV) \
+		PATH="$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}" \
+			"sh" -c "../test/build.sh" 2>&1
+
+###############################################################################

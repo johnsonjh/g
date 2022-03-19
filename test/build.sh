@@ -106,6 +106,12 @@ test -f "./g.c" ||                                                         \
 
 ##############################################################################
 
+unset V > /dev/null 2>&1 || true
+unset VERBOSE > /dev/null 2>&1 || true
+unset MAKEFLAGS > /dev/null 2>&1 || true
+
+##############################################################################
+
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="gcc"                                                               \
