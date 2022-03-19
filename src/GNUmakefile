@@ -76,9 +76,11 @@ CC      ?= cc
 CHMOD   ?= chmod
 ENV     ?= env
 GETCONF ?= getconf
+MKTEMP  ?= mktemp
 LN      ?= ln
 PRINTF  ?= printf
 RM      ?= rm -f
+SCRIPT  ?= script
 SSTRIP  ?= sstrip
 STRIP   ?= strip
 TEST    ?= test
@@ -369,12 +371,21 @@ endif # !V
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
 
 ###############################################################################
-# Test
+# Tests
+
+# WARNING: GNU and Linux-isms abound; must be adaptated to your local system!
 
 .PHONY: test check
-test check: ../test/build.sh
-	@$(VERBOSE); command -p $(ENV) \
-		PATH="$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}" \
-			"sh" -c "../test/build.sh" 2>&1
+test check: g.c ../test/build.sh
+	@$(VERBOSE); export BUILD_LOG="$$($(MKTEMP))" &&                      \
+	  $(TEST) -f "$${BUILD_LOG:?}" &&                                     \
+	    $(SCRIPT) -q -e -f -c "command -p $(ENV)                          \
+	      PATH=\"$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"       \
+	        \"sh\" -c \"../test/build.sh\" 2>&1" "$${BUILD_LOG:?}" && {   \
+		  $(PRINTF) '%s\n' '## Tests completed successfully';         \
+	              $(RM) "$${BUILD_LOG:?}"; } || {                         \
+	          $(PRINTF) '\n%s\n'                                          \
+	            "## TEST ERROR - Build log saved to \"$${BUILD_LOG:?}\""; \
+	          exit 1; }
 
 ###############################################################################
