@@ -42,9 +42,9 @@
 * ***`G`*** can operate as either a line editor or as a visual screen
   editor, similar to `ex`/`vi` on *UNIX* systems.
 
-* The ***`G`*** language uses a conceptually simple two-file transcription
-  (*copy*/*edit*) paradigm which is transparent for the casual screen
-  editor user.
+* The ***`G`*** language uses a conceptually simple (*yet quite clever!*)
+  two-file transcription (*copy*/*edit*) paradigm, which is transparent for
+  the casual screen editor user.
 
 * ***`G`*** is designed to be as efficient as possible, to be highly
   portable, and to enable manipulation of large files. ***`G`*** has a very
@@ -95,12 +95,14 @@
 ## Roadmap
 
 Future plans for ***`G`***:
+ * IBM OS/2 support with binary builds
  * Overhauled documentation
  * Improved online help viewer
  * Proper Windows console support
  * VGA-mode DOS port
  * Dynamic resizing
  * UTF-8/multibyte support
+ * Binaries via GitHub and GitLab releases
 
 ## Binaries
 
