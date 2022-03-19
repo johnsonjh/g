@@ -109,7 +109,7 @@ test -f "./g.c" ||                                                         \
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="gcc"                                                               \
-    LTO=1 LGC=1 V=1                                                        \
+    NOSSP=1 LTO=1 LGC=1 V=1                                                \
     "${MAKE:?}" 2>&1 ;                                                     \
 "${MAKE:?}" "strip" > /dev/null 2>&1 ;                                     \
 test -f "g" && du -k "g" |                                                 \
@@ -124,7 +124,7 @@ test -f "g" && du -k "g" |                                                 \
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="gcc"                                                               \
     TINY=1                                                                 \
-    LTO=1 LGC=1 V=1                                                        \
+    NOSSP=1 LTO=1 LGC=1 V=1                                                \
     "${MAKE:?}" 2>&1 ;                                                     \
 "${MAKE:?}" "strip" > /dev/null 2>&1 ;                                     \
 test -f "g" && du -k "g" |                                                 \
@@ -138,7 +138,8 @@ test -f "g" && du -k "g" |                                                 \
 { hrline; printf '%s\n' "## ${MYOS:?}: Clang, Native:"; blline
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="clang"                                                             \
-    LTO=1 LGC=1 V=1                                                        \
+    OPTFLAGS="-Oz"                                                         \
+    NOSSP=1 LTO=1 LGC=1 V=1                                                \
     "${MAKE:?}" 2>&1 ;                                                     \
 "${MAKE:?}" "strip" > /dev/null 2>&1 ;                                     \
 test -f "g" && du -k "g" |                                                 \
@@ -153,7 +154,7 @@ test -f "g" && du -k "g" |                                                 \
 "${MAKE:?}" "clean" > /dev/null &&                                         \
     CC="pcc"                                                               \
     CFLAGS="-D_BITS_WCHAR_H=1"                                             \
-    LTO=1 LGC=1 V=1                                                        \
+    NOSSP=1 LTO=1 LGC=1 V=1                                                \
     "${MAKE:?}" 2>&1 |                                                     \
         grep -v -e 'warning: cannot inline but '                           \
                 -e 'warning: unsupported attribute ' ;                     \
