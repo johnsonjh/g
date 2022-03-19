@@ -18,6 +18,9 @@
 
 #ifdef DOS
 # define UNIX              0
+# ifdef __BORLANDC__
+extern unsigned _stacklen = 32767;
+# endif  /* ifdef __BORLANDC__ */
 #else  /* ifdef DOS */
 # define UNIX              1
 # define DOS               0
