@@ -87,13 +87,17 @@
                ( defined(sun) || defined(__sun) || defined(__sun__) ) ) ||
                  defined(__illumos__) || defined(__solaris__) ) */
 
-#if defined(__GNUC__) && defined(__ia16__)
+#if defined(__GNUC__) && defined(__ia16__) && defined(_DOS)
+# define IA16_GCC_DOS 1
+#endif  /* if defined(__GNUC__) && defined(__ia16__) && defined(_DOS) */
+
+#if defined(IA16_GCC_DOS)
 # define OMIT_SYSTEM 1
 # define OMIT_POPEN  1
 # define OMIT_SIGNAL 1
 # define DOS_CONSOLE 1
 # define near
-#endif  /* if defined(__GNUC__) && defined(__ia16__) */
+#endif  /* if defined(IA16_GCC_DOS) */
 
 #ifdef __MINGW32__
 # define DOS_CONSOLE 1
@@ -102,28 +106,36 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
+
 #if !defined(OMIT_SIGNAL)
 #include <signal.h>
 #endif  /* if !defined(OMIT_SIGNAL) */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <unistd.h>  /* comment this out for MSVC, or for Borland use io.h */
+
+#ifdef __BORLANDC__
+# include <io.h>
+#else
+# include <unistd.h>
+#endif  /* ifdef __BORLANDC__ */
 
 #if DOS
+# if defined(__BORLANDC__)
+#  include <dos.h>
+# endif  /* if defined(__BORLANDC__) */
 # include <direct.h>
 #endif  /* if DOS */
 
-#if UNIX  /* not ANSI */
+#if UNIX
 # ifndef caddr_t
 #  define caddr_t void *
 # endif  /* ifndef caddr_t */
-# if !defined(__MINGW32__) && \
-   ( !defined(__GNUC__) && !defined(__ia16__) )
+# if !defined(__MINGW32__) && !defined(IA16_GCC_DOS)
 #  include <sys/mman.h>
-# endif  /* if !defined(__MINGW32__) &&
-             ( !defined(__GNUC__) && !defined(__ia16__) ) */
+# endif  /* if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) */
 #endif  /* if UNIX */
 
 #undef open
@@ -473,7 +485,11 @@ extern void  bios_wait(   void   );
 
 # if DOS
 #  ifndef __DJGPP__
-#   include <i86.h>  /* use bios.h for MSVC and Borland */
+#   ifdef __BORLANDC__
+#    include <bios.h>
+#   else
+#    include <i86.h>
+#   endif  /* ifdef __BORLANDC__ */
 #  endif  /* ifndef __DJGPP__ */
 # endif  /* if DOS */
 
@@ -4857,12 +4873,12 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 {
   int fd;
 
-#if DOS || defined(__DJGPP__) || defined(__MINGW32__) || \
-    ( defined(__GNUC__) && defined(__ia16__)  )
+#if DOS || defined(__DJGPP__) || defined(__MINGW32__) \
+    || defined(IA16_GCC_DOS)
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
 #else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__)
-              ( defined(__GNUC__) && defined(__ia16__) */
+             || defined(IA16_GCC_DOS) */
 
 # if UNIX
   off_t f_len;
@@ -4886,11 +4902,9 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
   trunc_recs = 0;
 
 #if DOS || defined(__DJGPP__) || defined(__MINGW32__)
-# if !defined(__DJGPP__) && \
-   ( !defined(__GNUC__)  && !defined(__ia16__) )
+# if !defined(__DJGPP__) && !defined(IA16_GCC_DOS)
   setmode(fd, O_BINARY);
-# endif  /* if !defined(__DJGPP__) &&
-             ( !defined(__GNUC__)  && !defined(__ia16__) ) */
+# endif  /* if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) */
 
   while (( len = read(fd, p = buf + len, BLOCK_SIZE)) > 0)
     {
@@ -4923,8 +4937,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
 #else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
 
-# if ( UNIX || !defined(__DJGPP__) ) && \
-    ( !defined(__GNUC__) && !defined(__ia16__) )
+# if ( UNIX || !defined(__DJGPP__) ) && !defined(IA16_GCC_DOS)
   f_len = lseek(fd, (off_t)0, SEEK_END);
   if (( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0))
       != (caddr_t)-1)
@@ -4947,8 +4960,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
     }
 
   (void)lseek(fd, 0, SEEK_SET);
-# endif  /* if ( UNIX || !defined(__DJGPP__) ) &&
-              ( !defined(__GNUC__) && !defined(__ia16__) )*/
+# endif  /* if ( UNIX || !defined(__DJGPP__) ) && !defined(IA16_GCC_DOS) */
 
   return serial_read(vs_u, fd);
 
@@ -4997,9 +5009,9 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
         }
     }
 
-#if DOS && ( !defined(__GNUC__) && !defined(__ia16__) )
+#if DOS && !defined(IA16_GCC_DOS)
   setmode(fd, O_BINARY);
-#endif  /* if DOS && ( !defined(__GNUC__) && !defined(__ia16__) ) */
+#endif  /* if DOS && !defined(IA16_GCC_DOS) */
 
   if (isatty(fd))
     {
@@ -6081,13 +6093,13 @@ lex(char cssc ptr)
       ch = u_star(e);
       if (ch == 'E' || ch == '.')
         {
-#if TINY_G && !defined(UNIX)
+#if TINY_G && !(UNIX)
           if (( bios_word(0x410) & 0x02 ) == 0)  /* no 87 fitted */
             {
               g_err(BAD_NUM, p);
             }
 
-#endif  /* if TINY_G && !defined(UNIX) */
+#endif  /* if TINY_G && !(UNIX) */
           tok.litval.r = strtod(p, (char **)&e);
           tok.l_fp = YES;
         }
@@ -8269,7 +8281,7 @@ init_screen(void)
       found_ctrl = M_FOUND_CTRL;  /* matched binary */
     }
 
-# endif /* if COLOUR */
+# endif  /* if COLOUR */
 
   /* define constants that depend on window size */
   last_col = COLS - 1;

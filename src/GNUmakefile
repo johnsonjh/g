@@ -151,9 +151,13 @@ endif # !V
 # Stack protection disable
 
 ifdef NOSSP
-  STACK_FLAGS ?= -fno-stack-protector -U_FORTIFY_SOURCE
+  ifeq ($(_SUNOS),1)
+    STACK_FLAGS ?= -U_FORTIFY_SOURCE
+  else
+    STACK_FLAGS ?= -fno-stack-protector -U_FORTIFY_SOURCE
+  endif # _SUNOS
 else
-  STACK_FLAGS ?= -D_FORTIFY_SOURCE=1
+  STACK_FLAGS   ?= -D_FORTIFY_SOURCE=1
 endif # NOSSP
 
 ###############################################################################
@@ -221,15 +225,15 @@ endif # aix
 ###############################################################################
 # Files
 
-SRC = g.c
-OUT = g$(OUTEXT)
+SRC  = g.c
+OUT ?= g
 
 ###############################################################################
 # Standard Compilation
 
 .PHONY: all
-.NOTPARALLEL: all
-all: $(OUT)
+.NOTPARALLEL: all g
+$(OUT) all:
 
 $(OUT): $(SRC)
 ifneq ($(V),1)
