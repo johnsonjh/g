@@ -237,7 +237,7 @@ PDC_BUILD_LOG="$(mktemp)" &&                                               \
         exit 1; } ;                                                        \
 rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                    \
     || true ;                                                              \
-printf '%s\n' "Done, OK." ;                                                \
+printf '%s\n' "OK." ;                                                      \
 "${MAKE:?}" clean > /dev/null &&                                           \
     CFLAGS="-I${MYPDCURSES:?}"                                             \
     CURSESLIB="${MYPDCURSES:?}/dos/pdcurses.a"                             \
