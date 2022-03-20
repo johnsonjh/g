@@ -20,6 +20,7 @@
 # define UNIX              0
 # ifdef __BORLANDC__
 extern unsigned _stacklen = 32767;
+extern unsigned _stklen = 32767;
 # endif  /* ifdef __BORLANDC__ */
 #else  /* ifdef DOS */
 # define UNIX              1
@@ -136,9 +137,9 @@ extern unsigned _stacklen = 32767;
 # ifndef caddr_t
 #  define caddr_t void *
 # endif  /* ifndef caddr_t */
-# if !defined(__MINGW32__) && !defined(IA16_GCC_DOS)
+# if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) && !defined(__OS2__)
 #  include <sys/mman.h>
-# endif  /* if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) */
+# endif  /* if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) && !defined(__OS2__) */
 #endif  /* if UNIX */
 
 #undef open
@@ -1258,7 +1259,7 @@ void Exit(void);
 private
 void Drive(const int);
 
-#ifdef __WATCOMC__
+#if defined(__WATCOMC__) && !defined(__OS2__)
 # pragma aux main     aborts;
 # pragma aux Quit     aborts;
 # pragma aux Exit     aborts;
@@ -1266,7 +1267,7 @@ void Drive(const int);
 # pragma aux g_intr   aborts;
 # pragma aux se_error aborts;
 # pragma aux _exit    aborts;
-#endif  /* ifdef __WATCOMC__ */
+#endif  /* if defined(__WATCOMC__) && !defined(__OS2__) */
 
 #define FBSTR       \
   private           \
