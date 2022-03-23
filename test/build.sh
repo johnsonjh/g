@@ -46,9 +46,13 @@ test "${COLS:?}" -lt 40 &&                                                 \
         "Error: Screen too narrow (<40 columns)";                          \
       exit 1; }
 
+##############################################################################
+
 test "${COLS:?}" -lt 76 &&                                                 \
     { printf '%s\n'                                                        \
         "# Warning: Screen is narrow (<77 columns)"; }
+
+##############################################################################
 
 TWIDTH="$(( COLS - 06 ))" ; GWIDTH="$(( COLS - 10 ))"
 
@@ -68,11 +72,10 @@ MYPDCURSES="${HOME:?}/src/PDCursesMod"
 
 ##############################################################################
 
-DJGPP_ARCH="i586-pc-msdosdjgpp"
-DJGPP_HOME="/opt/djgpp"
-DJGPP_CCOMP="${DJGPP_HOME:?}/bin/${DJGPP_ARCH:?}-gcc"
-DJGPP_STRIP="${DJGPP_HOME:?}/bin/${DJGPP_ARCH:?}-strip"
-
+DJGPP_ARCH="i586-pc-msdosdjgpp" ;                                          \
+DJGPP_HOME="/opt/djgpp" ;                                                  \
+DJGPP_CCOMP="${DJGPP_HOME:?}/bin/${DJGPP_ARCH:?}-gcc" ;                    \
+DJGPP_STRIP="${DJGPP_HOME:?}/bin/${DJGPP_ARCH:?}-strip" ;                  \
 DJGPP_PDCBUILD="${MAKE:?} \"clean\" && CFLAGS=\"-flto -Os -fdata-sections  \
     -ffunction-sections -march=i386\" LDFLAGS=\"-flto -Wl,--gc-sections\"  \
       STRIP=\"${DJGPP_STRIP:?}\" CC=\"${DJGPP_CCOMP:?}\" ${MAKE:?}         \
@@ -82,18 +85,22 @@ DJGPP_PDCBUILD="${MAKE:?} \"clean\" && CFLAGS=\"-flto -Os -fdata-sections  \
 
 TREELOC="${HOME:?}/src/official/personal/g/test"
 
-test -d "${TREELOC:?}" ||
-  {
-    printf 'ERROR: %s\n' "${TREELOC:?} not found!"
-    exit 1
+##############################################################################
+
+test -d "${TREELOC:?}" ||                                                  \
+  {                                                                        \
+    printf 'ERROR: %s\n' "${TREELOC:?} not found!" ;                       \
+    exit 1 ;                                                               \
   }
 
-OWC_OS2_16_BUILD="${SHELL:?} -xc \"${TREELOC:?}/owc-os2-16.sh\""
+##############################################################################
+
+OWC_OS2_16_BUILD="${SHELL:?} -xc \"${TREELOC:?}/owc-os2-16.sh\"" ;         \
 OWC_OS2_32_BUILD="${SHELL:?} -xc \"${TREELOC:?}/owc-os2-32.sh\""
 
 ##############################################################################
 
-IA16GCC_HOME="${HOME:?}/src/build-ia16/prefix"
+IA16GCC_HOME="${HOME:?}/src/build-ia16/prefix" ;                           \
 IA16GCC_CCOMP="${IA16GCC_HOME:?}/bin/ia16-elf-gcc"
 
 ##############################################################################
@@ -124,13 +131,13 @@ REDACT="sed -e \"s#${HOME:?}#…#g\""
 
 ##############################################################################
 
-unset V > /dev/null 2>&1 || true
-unset VERBOSE > /dev/null 2>&1 || true
+unset V > /dev/null 2>&1 || true ;                                         \
+unset VERBOSE > /dev/null 2>&1 || true ;                                   \
 unset MAKEFLAGS > /dev/null 2>&1 || true
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline
+{ hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline ;             \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="gcc"                                                               \
     NOSSP=1 LTO=1 LGC=1 V=1                                                \
@@ -144,7 +151,7 @@ test -f "g" && du -k "g" |                                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## ${MYOS:?}: GCC, Tiny, Native:"; blline
+{ hrline; printf '%s\n' "## ${MYOS:?}: GCC, Tiny, Native:"; blline ;       \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="gcc"                                                               \
     TINY=1                                                                 \
@@ -159,7 +166,7 @@ test -f "g" && du -k "g" |                                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## ${MYOS:?}: Clang, Native:"; blline
+{ hrline; printf '%s\n' "## ${MYOS:?}: Clang, Native:"; blline ;           \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="clang"                                                             \
     OPTFLAGS="-Oz"                                                         \
@@ -174,7 +181,7 @@ test -f "g" && du -k "g" |                                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## ${MYOS:?}: PCC, Native:"; blline
+{ hrline; printf '%s\n' "## ${MYOS:?}: PCC, Native:"; blline ;             \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="pcc"                                                               \
     CFLAGS="-D_BITS_WCHAR_H=1"                                             \
@@ -191,7 +198,7 @@ test -f "g" && du -k "g" |                                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## ${MYOS:?}: Oracle Studio, Native:"; blline
+{ hrline; printf '%s\n' "## ${MYOS:?}: Oracle Studio, Native:"; blline ;   \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="suncc"                                                             \
     PATH="/opt/oracle/developerstudio-latest/bin:${PATH:?}"                \
@@ -206,7 +213,7 @@ test -f "g" && du -k "g" |                                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## DOS: OpenWatcom, 8086:"; blline
+{ hrline; printf '%s\n' "## DOS: OpenWatcom, 8086:"; blline ;              \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     V=1                                                                    \
     ${MAKE:?} "g86" 2>&1 |                                                 \
@@ -220,7 +227,7 @@ test -f "g86.exe" && du -k "g86.exe" |                                     \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Real mode:"; blline
+{ hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Real mode:"; blline ;    \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     V=1                                                                    \
     ${MAKE:?} "g386r" 2>&1 |                                               \
@@ -234,7 +241,7 @@ test -f "g386r.exe" && du -k "g386r.exe" |                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Protected:"; blline
+{ hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Protected:"; blline ;    \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     V=1                                                                    \
     ${MAKE:?} "g386p" 2>&1 |                                               \
@@ -248,7 +255,7 @@ test -f "g386p.exe" && du -k "g386p.exe" |                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## DOS: DJGPP, 386, Curses, Protected:"; blline
+{ hrline; printf '%s\n' "## DOS: DJGPP, 386, Curses, Protected:"; blline ; \
 PDC_BUILD_LOG="$(mktemp)" &&                                               \
     printf '%s' "+ Building PdCursesMod: " ;                               \
 ( cd "${MYPDCURSES:?}/dos" 2>&1 &&                                         \
@@ -279,7 +286,7 @@ test -f "g386.exe" && du -k "g386.exe" |                                   \
 ##############################################################################
 
 # NOTE: Not working yet!
-{ hrline; printf '%s\n' "## DOS: IA16-GCC, 8086:"; blline
+{ hrline; printf '%s\n' "## DOS: IA16-GCC, 8086:"; blline ;                \
 ${MAKE:?} "clean" > /dev/null &&                                           \
     CC="${IA16GCC_CCOMP:?}"                                                \
     CFLAGS="-march=i8086 -mregparmcall                                     \
@@ -318,7 +325,8 @@ test -f "g.exe" && du -k "g.exe" |                                         \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## OS/2: OpenWatcom, 286, Protected mode:"; blline
+{ hrline; printf '%s\n'                                                    \
+    "## OS/2: OpenWatcom, 286, Curses, Protected mode:"; blline ;          \
 PDC_BUILD_LOG="$(mktemp)" &&                                               \
     printf '%s' "+ Building PdCursesMod: " ;                               \
 ( cd "${MYPDCURSES:?}/os2" 2>&1 &&                                         \
@@ -348,7 +356,8 @@ test -f "g286p.exe" && du -k "g286p.exe" |                                 \
 
 ##############################################################################
 
-{ hrline; printf '%s\n' "## OS/2: OpenWatcom, 386, Protected mode:"; blline
+{ hrline; printf                                                           \
+    '%s\n' "## OS/2: OpenWatcom, 386, Curses, Protected mode:"; blline ;   \
 PDC_BUILD_LOG="$(mktemp)" &&                                               \
     printf '%s' "+ Building PdCursesMod: " ;                               \
 ( cd "${MYPDCURSES:?}/os2" 2>&1 &&                                         \
