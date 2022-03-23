@@ -96,7 +96,6 @@
 
 Future plans for ***`G`***:
  * Support building only line-mode editor (for constrained systems)
- * Revived OS/2 support (with binary builds)
  * Overhauled documentation
  * Improved online help viewer
  * Proper Windows console support

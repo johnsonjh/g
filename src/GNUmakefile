@@ -270,7 +270,7 @@ endif # !V
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
              -l=DOS -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lnk  \
                $(WATDBG) -zp2 -fe=$(OUT)86.exe $(SRC) &&               \
-	        $(RM) -f "./g.o" 2> /dev/null
+                 $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
 # OpenWatcom Compilation: 16-bit DOS, 80386 (Real mode)
@@ -287,7 +287,7 @@ endif # !V
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
              -l=DOS -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lnk  \
                $(WATDBG) -zp2 -fe=$(OUT)386r.exe $(SRC) &&             \
-	        $(RM) -f "./g.o" 2> /dev/null
+                 $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
 # OpenWatcom Compilation: 32-bit DOS, 386 (Protected mode)
@@ -301,18 +301,57 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
-	 PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
+         PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
           -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi -zm @g.lnk  \
            -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
-	    $(RM) -f "./g.o" 2> /dev/null
+            $(RM) -f "./g.o" 2> /dev/null
+
+###############################################################################
+# OpenWatcom Compilation: 16-bit OS/2, 286 (Protected mode)
+
+.PHONY: $(OUT)286p owc286p
+.NOTPARALLEL: $(OUT)286p owc286p $(OUT)286p.exe
+$(OUT)286p owc286p $(OUT)286p.exe: gos2.lnk
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "./g286p.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"     \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                     \
+           -l=OS2 -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lnk           \
+            -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -fe=$(OUT)286p.exe \
+             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
+              2> /dev/null
+
+###############################################################################
+# OpenWatcom Compilation: 32-bit OS/2, 386 (Protected mode)
+
+.PHONY: $(OUT)os2p owcos2p
+.NOTPARALLEL: $(OUT)os2p owcos2p $(OUT)os2p.exe
+$(OUT)os2p owcos2p $(OUT)os2p.exe: gos2.lnk
+ifneq ($(V),1)
+	-@$(PRINTF) '\r\t\t$(WCL386):\t\t%s\n' "$(SRC)"
+endif # !V
+	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(RM) -f "./gos2p.exe" 2> /dev/null || $(TRUE)
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"       \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                     \
+           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3 -mf -fpi -zm @gos2.lnk       \
+            -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe     \
+             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
+              2> /dev/null
 
 ###############################################################################
 # DJGPP Compilation: 32-bit DOS, 386 (Protected mode)
 
 .PHONY: $(OUT)386 djgpp
-$(OUT)386 djgpp $(OUT)386.exe: $(CWSDPMI_STUB)           \
-	$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP)  \
-	$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)
+$(OUT)386 djgpp $(OUT)386.exe:                                                \
+                              $(CWSDPMI_STUB)                                 \
+                              $(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP) \
+                              $(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(DJGPP_CCOMP):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -321,12 +360,12 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "g386.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP)"        \
-	 -march=i386 -Wno-attributes $(CFLAGS) $(SRC) -o gt.exe $(LDFLAGS) && \
-	  $(RM) -f "./gt" &&                                                  \
-	   "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)" -s "./gt.exe" && \
-	    $(DJGPP_ECOFF) "./gt.exe" && $(RM) -f "./gt.exe" &&               \
-	     $(CAT) "$(CWSDPMI_STUB)" "./gt" > "./$(OUT)386.exe" &&           \
-	      $(RM) -f "./gt" 2> /dev/null && $(CHMOD) a+x "./$(OUT)386.exe"
+         -march=i386 -Wno-attributes $(CFLAGS) $(SRC) -o gt.exe $(LDFLAGS) && \
+          $(RM) -f "./gt" &&                                                  \
+           "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)" -s "./gt.exe" && \
+             $(DJGPP_ECOFF) "./gt.exe" && $(RM) -f "./gt.exe" &&              \
+              $(CAT) "$(CWSDPMI_STUB)" "./gt" > "./$(OUT)386.exe" &&          \
+               $(RM) -f "./gt" 2> /dev/null && $(CHMOD) a+x "./$(OUT)386.exe"
 
 ###############################################################################
 # Strip
@@ -335,7 +374,7 @@ endif # !V
 strip: $(OUT)
 ifneq ($(V),1)
 	-@$(TEST) -f ./$(OUT) && \
-		$(PRINTF) '\r\t\t$(STRIP):\t\t%s\n' $(OUT) || $(TRUE)
+          $(PRINTF) '\r\t\t$(STRIP):\t\t%s\n' $(OUT) || $(TRUE)
 endif # !V
 	-@$(VERBOSE); $(STRIP) $(STRARGS)    $(OUT) 2> /dev/null || $(TRUE)
 	-@$(VERBOSE); $(STRIP) $(STRARGS) -s $(OUT) 2> /dev/null || $(TRUE)
@@ -370,6 +409,8 @@ endif # !V
 	-@$(VERBOSE); $(RM) -f "./$(OUT).err"     2>/dev/null || $(TRUE)
 	-@$(VERBOSE); $(RM) -f "./$(OUT)86.exe"   2>/dev/null || $(TRUE)
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386.exe"  2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)286p.exe" 2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)os2p.exe" 2>/dev/null || $(TRUE)
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386p.exe" 2>/dev/null || $(TRUE)
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
 
@@ -381,14 +422,14 @@ endif # !V
 .PHONY: test check
 test check: g.c ../test/build.sh
 	@$(VERBOSE); export BUILD_LOG="$$($(MKTEMP))" &&                      \
-	  $(TEST) -f "$${BUILD_LOG:?}" &&                                     \
-	    $(SCRIPT) -q -e -f -c "command -p $(ENV)                          \
-	      PATH=\"$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"       \
-	        \"sh\" -c \"../test/build.sh\" 2>&1" "$${BUILD_LOG:?}" && {   \
-		  $(PRINTF) '%s\n' '## Tests completed successfully';         \
-	              $(RM) "$${BUILD_LOG:?}"; } || {                         \
-	          $(PRINTF) '\n%s\n'                                          \
-	            "## TEST ERROR - Build log saved to \"$${BUILD_LOG:?}\""; \
-	          exit 1; }
+          $(TEST) -f "$${BUILD_LOG:?}" &&                                     \
+            $(SCRIPT) -q -e -f -c "command -p $(ENV)                          \
+              PATH=\"$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"       \
+                \"sh\" -c \"../test/build.sh\" 2>&1" "$${BUILD_LOG:?}" && {   \
+                  $(PRINTF) '%s\n' '## Tests completed successfully';         \
+                      $(RM) "$${BUILD_LOG:?}"; } || {                         \
+                  $(PRINTF) '\n%s\n'                                          \
+                    "## TEST ERROR - Build log saved to \"$${BUILD_LOG:?}\""; \
+                  exit 1; }
 
 ###############################################################################

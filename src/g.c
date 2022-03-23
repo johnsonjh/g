@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "G 4.7.3 (2022-03-16)"
+#define VERSION_STRING     "G 4.7.4-dev (2022-03-23)"
 
 #ifdef DOS
 # define UNIX              0
@@ -96,6 +96,7 @@ extern unsigned _stklen = 32767;
 #endif  /* if defined(__GNUC__) && defined(__ia16__) && defined(_DOS) */
 
 #if defined(IA16_GCC_DOS)
+# define OMIT_MMAP   1
 # define OMIT_SYSTEM 1
 # define OMIT_POPEN  1
 # define OMIT_SIGNAL 1
@@ -103,9 +104,25 @@ extern unsigned _stklen = 32767;
 # define near
 #endif  /* if defined(IA16_GCC_DOS) */
 
+#if defined(__WATCOMC__) && defined(__OS2V2__)
+# define __OS2__     1
+#endif  /* if defined(__WATCOMC__) && defined(__OS2V2__) */
+
+#if defined(__WATCOMC__) && defined(__OS2__)
+# define OMIT_MMAP   1
+# define OMIT_POPEN  1
+# define OMIT_SIGNAL 1
+# define DOS_CONSOLE 1
+# define near
+#endif  /* if defined(__WATCOMC__) && defined(__OS2__) */
+
 #ifdef __MINGW32__
 # define DOS_CONSOLE 1
 #endif  /* ifdef __MINGW32__ */
+
+#ifdef __DJGPP__
+# define OMIT_MMAP   1
+#endif  /* ifdef __DJGPP__ */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -137,9 +154,9 @@ extern unsigned _stklen = 32767;
 # ifndef caddr_t
 #  define caddr_t void *
 # endif  /* ifndef caddr_t */
-# if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) && !defined(__OS2__)
+# if !defined(OMIT_MMAP)
 #  include <sys/mman.h>
-# endif  /* if !defined(__MINGW32__) && !defined(IA16_GCC_DOS) && !defined(__OS2__) */
+# endif  /* if !defined(OMIT_MMAP) */
 #endif  /* if UNIX */
 
 #undef open
@@ -4877,22 +4894,22 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 {
   int fd;
 
-#if DOS || defined(__DJGPP__) || defined(__MINGW32__) \
-    || defined(IA16_GCC_DOS)
+#if DOS || defined(OMIT_MMAP)
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
-#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__)
-             || defined(IA16_GCC_DOS) */
+#else  /* if DOS || defined(OMIT_MMAP) */
 
 # if UNIX
   off_t f_len;
   caddr_t f_p;
 # endif  /* if UNIX */
 
+# if !defined(OMIT_POPEN)
   if (*fname == '!')
     {
       return Proc_to_mem(vs_u, fname + 1);
     }
+# endif  /* if !defined(OMIT_POPEN) */
 
 #endif  /* if DOS */
 
@@ -4905,7 +4922,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   trunc_recs = 0;
 
-#if DOS || defined(__DJGPP__) || defined(__MINGW32__)
+#if DOS || defined(OMIT_MMAP)
 # if !defined(__DJGPP__) && !defined(IA16_GCC_DOS)
   setmode(fd, O_BINARY);
 # endif  /* if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) */
@@ -4939,9 +4956,9 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
   return vstell(vs_u);
 
-#else  /* if DOS || defined(__DJGPP__) || defined(__MINGW32__) */
+#else  /* if DOS || defined(OMIT_MMAP) */
 
-# if ( UNIX || !defined(__DJGPP__) ) && !defined(IA16_GCC_DOS)
+# if UNIX || !defined(OMIT_MMAP)
   f_len = lseek(fd, (off_t)0, SEEK_END);
   if (( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0))
       != (caddr_t)-1)
@@ -4964,11 +4981,11 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
     }
 
   (void)lseek(fd, 0, SEEK_SET);
-# endif  /* if ( UNIX || !defined(__DJGPP__) ) && !defined(IA16_GCC_DOS) */
+# endif  /* if UNIX || !defined(OMIT_MMAP) */
 
   return serial_read(vs_u, fd);
 
-#endif  /* if DOS || defined(__DJGPP__) */
+#endif  /* if DOS || defined(OMIT_MMAP) */
 }
 
 private
@@ -15128,4 +15145,8 @@ main(int i, char csc * argv)
     }
 
   Drive(D_LINE_USER);
+
+#if !(DOS)
+  return 0;
+#endif  /* if !(DOS) */
 }
