@@ -339,7 +339,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"       \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                     \
-           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3 -mf -fpi -zm @gos2.lnk       \
+           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lnk      \
             -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe     \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
               2> /dev/null

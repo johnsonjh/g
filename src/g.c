@@ -224,7 +224,7 @@ case 'F'
 #define se_b4key(c) ( g_map[c] &  040U )
 #define se_jkey(c)  ( g_map[c] & 0100U )
 #define se_b1key(c) ( g_map[c] & 0200U )
-#define wordch(c)   ( g_map[c] & ( 04U | 010U | 020U ))
+#define wordch(c)   ( g_map[c] & ( 04U | 010U | 020U ) )
 
 #if DOS
 # define path_sep(c) ( c == SLASH || c == BSLASH )
@@ -233,26 +233,33 @@ case 'F'
 #endif  /* if DOS */
 
 /* upper case is done by g_map */
+
 #define tolower(c) ( isupper(c) ? c + ( 'a' - 'A' ) : c )
 
 /* Standard one treats Formfeed etc as space too */
+
 #define isspace(c) ( ( c ) == SPACE )
 
 /* "punctuation" includes control characters here */
+
 #define punctch(c) ( !( wordch(c) || isspace(c) ) )
 
 /* determine if char is valid ASCII */
+
 #define isascii(c) ( !( ( c ) & ~ASCII_MASK ) )
 
 /* convert char to ASCII 7 bit */
+
 #define toascii(c) ( ( c ) & ASCII_MASK )
 
 /* control character literals */
+
 #define CNTRL(c)   ( c & CNTRL_MASK )
 #define iscntrl(c) ( c < SPACE  || c >= DEL )
 #define isprint(c) ( c >= SPACE && c  < DEL )
 
 /* case conversion */
+
 #define u_star(p) u_map[*( p )]
 
 #define TAB_WIDTH  8
@@ -276,9 +283,9 @@ case 'F'
 #define csc  const  *const
 #define cssc const **const
 
-#define skip_space(s)      \
-  while (isspace(*( s )))  \
-    ++ ( s )
+#define skip_space( s )        \
+  while ( isspace( *( s ) ) )  \
+     ++ ( s )
 
 #define nullstr(s)    ( *( s ) == EOS )
 #define heap(t)       ( t *)getvec(sizeof ( t ) )
@@ -292,15 +299,18 @@ case 'F'
 #endif  /* if DOS */
 
 /* length of temp strings */
+
 #define STR_LEN 2048
 typedef char string[STR_LEN];
 
 /* history, del/ins record stacks */
+
 typedef int *stack;
 
 #define plural(n) ( n > 1 ? let_s : empty )
 
 /* path/file names */
+
 #if DOS
 # if !defined(_MAX_PATH) && defined(STR_LEN)
 #  define _MAX_PATH STR_LEN
@@ -311,10 +321,13 @@ typedef char FNAME[STR_LEN];
 #endif  /* if DOS */
 
 /* Length of system provided date string */
+
 #define DATE_LEN 33
 
 #if ASM86
+
 /* smaller or faster versions of standard functions */
+
 extern void  space_fill(  void *start,    short len);
 extern byte *mspace_fill( void *start,    short len);
 extern void  bzero(       void *start,    short len);
@@ -343,161 +356,161 @@ extern char *get_eos(     const char *s);
 extern char *tab_fill(    void *start);
 extern void  bios_wait(   void   );
 
-# pragma aux bios_wait =     \
-  "xor ah,ah"                \
+# pragma aux bios_wait =                                   \
+  "xor ah,ah"                                              \
   "int 16h" modify[ah];
 
-# pragma aux get_eos =       \
-  "xor al,al"                \
-  "or cx,-1"                 \
-  "repne scasb"              \
+# pragma aux get_eos =                                     \
+  "xor al,al"                                              \
+  "or cx,-1"                                               \
+  "repne scasb"                                            \
   "dec di" parm[es di] value[es di] modify[cx al];
 
-# pragma aux wfill =         \
+# pragma aux wfill =                                       \
   "rep stosw" parm[es di][ax][cx];
 
-# pragma aux movelr =        \
+# pragma aux movelr =                                      \
   "rep movsb" parm[es di][ds si][cx];
 
-# pragma aux mmovelr =       \
+# pragma aux mmovelr =                                     \
   "rep movsb" parm[es di][ds si][cx] value[es di];
 
-# pragma aux cwmovelr =      \
-  "shr cx,1"                 \
-  "rep movsw"                \
-  "jnc nocp"                 \
-  "movsb"                    \
+# pragma aux cwmovelr =                                    \
+  "shr cx,1"                                               \
+  "rep movsw"                                              \
+  "jnc nocp"                                               \
+  "movsb"                                                  \
   "nocp:" parm[es di][ds si][cx];
 
-# pragma aux cwmmovelr =     \
-  "shr cx,1"                 \
-  "rep movsw"                \
-  "jnc nocp"                 \
-  "movsb"                    \
+# pragma aux cwmmovelr =                                   \
+  "shr cx,1"                                               \
+  "rep movsw"                                              \
+  "jnc nocp"                                               \
+  "movsb"                                                  \
   "nocp:" parm[es di][ds si][cx] value[es di];
 
-# pragma aux movelrz =       \
-  "rep movsb"                \
-  "xor al,al"                \
+# pragma aux movelrz =                                     \
+  "rep movsb"                                              \
+  "xor al,al"                                              \
   "stosb" parm[es di][ds si][cx] modify[al];
 
-# pragma aux tmovelr =       \
-  "cmp cx,0"                 \
-  "jbe nocp"                 \
-  "rep movsb"                \
+# pragma aux tmovelr =                                     \
+  "cmp cx,0"                                               \
+  "jbe nocp"                                               \
+  "rep movsb"                                              \
   "nocp:" parm[es di][ds si][cx];
 
-# pragma aux zmovelr =       \
-  "nc: lodsb"                \
-  "stosb"                    \
-  "test al,al"               \
+# pragma aux zmovelr =                                     \
+  "nc: lodsb"                                              \
+  "stosb"                                                  \
+  "test al,al"                                             \
   "jnz nc" parm[es di][ds si] modify[al];
 
-# pragma aux mzmovelr =      \
-  "nc: lodsb"                \
-  "stosb"                    \
-  "test al,al"               \
-  "jnz nc"                   \
+# pragma aux mzmovelr =                                    \
+  "nc: lodsb"                                              \
+  "stosb"                                                  \
+  "test al,al"                                             \
+  "jnz nc"                                                 \
   "dec di" parm[es di][ds si] modify[al] value[es di];
 
-# pragma aux cmovelr =       \
-  "or cx,-1"                 \
-  "xor al,al"                \
-  "repne scasb"              \
-  "dec di"                   \
-  "nc: lodsb"                \
-  "stosb"                    \
-  "test al,al"               \
+# pragma aux cmovelr =                                     \
+  "or cx,-1"                                               \
+  "xor al,al"                                              \
+  "repne scasb"                                            \
+  "dec di"                                                 \
+  "nc: lodsb"                                              \
+  "stosb"                                                  \
+  "test al,al"                                             \
   "jnz nc" parm[es di][ds si] modify[cx al];
 
-# pragma aux mcmovelr =      \
-  "or cx,-1"                 \
-  "xor al,al"                \
-  "repne scasb"              \
-  "dec di"                   \
-  "nc: lodsb"                \
-  "stosb"                    \
-  "test al,al"               \
-  "jnz nc"                   \
+# pragma aux mcmovelr =                                    \
+  "or cx,-1"                                               \
+  "xor al,al"                                              \
+  "repne scasb"                                            \
+  "dec di"                                                 \
+  "nc: lodsb"                                              \
+  "stosb"                                                  \
+  "test al,al"                                             \
+  "jnz nc"                                                 \
   "dec di" parm[es di][ds si] modify[cx al] value[es di];
 
-# pragma aux bmovelr =       \
+# pragma aux bmovelr =                                     \
   "rep movsd" parm[es di][ds si][cx];
 
-# pragma aux mmovelr4 =      \
+# pragma aux mmovelr4 =                                    \
   "movsd" parm[es di][ds si] value[es di];
 
-# pragma aux movelr5 =       \
-  "movsd"                    \
+# pragma aux movelr5 =                                     \
+  "movsd"                                                  \
   "movsb" parm[es di][ds si];
 
-# pragma aux mmovelr5 =      \
-  "movsd"                    \
+# pragma aux mmovelr5 =                                    \
+  "movsd"                                                  \
   "movsb" parm[es di][ds si] value[es di];
 
-# pragma aux bzero =         \
-  "xor eax,eax"              \
+# pragma aux bzero =                                       \
+  "xor eax,eax"                                            \
   "rep stosd" parm[es di][cx] modify[ax];
 
-# pragma aux bmoverl =       \
-  "mov dx,cx"                \
-  "shl dx,2"                 \
-  "add di,dx"                \
-  "add si,dx"                \
-  "sub di,4"                 \
-  "sub si,4"                 \
-  "std"                      \
-  "rep movsd"                \
+# pragma aux bmoverl =                                     \
+  "mov dx,cx"                                              \
+  "shl dx,2"                                               \
+  "add di,dx"                                              \
+  "add si,dx"                                              \
+  "sub di,4"                                               \
+  "sub si,4"                                               \
+  "std"                                                    \
+  "rep movsd"                                              \
   "cld" parm[es di][ds si][cx] modify[dx];
 
-# pragma aux tab_fill =      \
-  "mov eax,20202020h"        \
-  "stosd"                    \
+# pragma aux tab_fill =                                    \
+  "mov eax,20202020h"                                      \
+  "stosd"                                                  \
   "stosd" parm[es di] modify[ax] value[es di];
 
-# pragma aux wmovelr =       \
+# pragma aux wmovelr =                                     \
   "rep movsw" parm[es di][ds si][cx];
 
-# pragma aux moverl =        \
-  "add di,cx"                \
-  "add si,cx"                \
-  "dec di"                   \
-  "dec si"                   \
-  "std"                      \
-  "rep movsb"                \
+# pragma aux moverl =                                      \
+  "add di,cx"                                              \
+  "add si,cx"                                              \
+  "dec di"                                                 \
+  "dec si"                                                 \
+  "std"                                                    \
+  "rep movsb"                                              \
   "cld" parm[es di][ds si][cx];
 
-# pragma aux wmoverl =       \
-  "add di,cx"                \
-  "add di,cx"                \
-  "add si,cx"                \
-  "add si,cx"                \
-  "sub di,2"                 \
-  "sub si,2"                 \
-  "std"                      \
-  "rep movsw"                \
+# pragma aux wmoverl =                                     \
+  "add di,cx"                                              \
+  "add di,cx"                                              \
+  "add si,cx"                                              \
+  "add si,cx"                                              \
+  "sub di,2"                                               \
+  "sub si,2"                                               \
+  "std"                                                    \
+  "rep movsw"                                              \
   "cld" parm[es di][ds si][cx];
 
-# pragma aux space_fill =    \
-  "mov al,32"                \
+# pragma aux space_fill =                                  \
+  "mov al,32"                                              \
   "rep stosb" parm[es di][cx] modify[al];
 
-# pragma aux mspace_fill =   \
-  "mov al,32"                \
+# pragma aux mspace_fill =                                 \
+  "mov al,32"                                              \
   "rep stosb" parm[es di][cx] modify[al] value[es di];
 
-# pragma aux ecmp =          \
-  "xor ax,ax"                \
-  "or cx,cx"                 \
-  "repe cmpsb"               \
-  "jne neq"                  \
-  "inc ax"                   \
+# pragma aux ecmp =                                        \
+  "xor ax,ax"                                              \
+  "or cx,cx"                                               \
+  "repe cmpsb"                                             \
+  "jne neq"                                                \
+  "inc ax"                                                 \
   "neq:" parm[es di][ds si][cx] value[ax];
 
-# pragma aux size =          \
-  "xor al,al"                \
-  "or cx,-1"                 \
-  "repnz scasb"              \
+# pragma aux size =                                        \
+  "xor al,al"                                              \
+  "or cx,-1"                                               \
+  "repnz scasb"                                            \
   "not cx" parm[es di] value[cx] modify[al];
 
 # define save_jbuf(d, s) wmovelr(d, s, 13)
@@ -527,91 +540,91 @@ wfill(void *s, const short v, int len)
 }
 
 # define movelr(a, b, n)                           \
-    memcpy((void *)( a ),                          \
-           (const void *)( b ), ( n ) )
-
-# define moverl(a, b, n)                           \
-    memmove((void *)( a ),                         \
+    memcpy( (void *)( a ),                         \
             (const void *)( b ), ( n ) )
 
+# define moverl(a, b, n)                           \
+    memmove( (void *)( a ),                        \
+             (const void *)( b ), ( n ) )
+
 # define movelr5(a, b)                             \
-    memcpy((void *)( a ),                          \
-           (const void *)( b ), 5)
+    memcpy( (void *)( a ),                         \
+            (const void *)( b ), 5 )
 
 # define mmovelr(a, b, n)                          \
-    ( memcpy((void *)( a ),                        \
-             (const void *)( b ), n),              \
-             (void *)((char *)( a ) + n ) )
+    ( memcpy( (void *)( a ),                       \
+              (const void *)( b ), n),             \
+              (void *)( (char *)( a ) + n ) )
 
 # define cwmovelr(a, b, n)                         \
-    memcpy((void *)( a ),                          \
-           (const void *)( b ), ( n ) )
+    memcpy( (void *)( a ),                         \
+            (const void *)( b ), ( n ) )
 
 # define cwmmovelr(a, b, n)                        \
-    ( memcpy((void *)( a ),                        \
-             (const void *)( b ), n),              \
-             (void *)((char *)( a ) + n ) )
+    ( memcpy( (void *)( a ),                       \
+              (const void *)( b ), n),             \
+              (void *)( (char *)( a ) + n ) )
 
 # define mmovelr4(a, b)                            \
-    ( memcpy((void *)( a ),                        \
-             (const void *)( b ), 4),              \
-             (void *)((char *)( a ) + 4 ) )
+    ( memcpy( (void *)( a ),                       \
+              (const void *)( b ), 4),             \
+              (void *)( (char *)( a ) + 4 ) )
 
 # define mmovelr5(a, b)                            \
-    ( memcpy((void *)( a ),                        \
-             (const void *)( b ), 5),              \
-             (void *)((char *)( a ) + 5 ) )
+    ( memcpy( (void *)( a ),                       \
+              (const void *)( b ), 5),             \
+              (void *)( (char *)( a ) + 5 ) )
 
 # define tmovelr(a, b, n)                          \
     if (n > 0)                                     \
-      memcpy((void *)( a ),                        \
-             (const void *)( b ), n)
+      memcpy( (void *)( a ),                       \
+              (const void *)( b ), n )
 
 # define movelrz(a, b, n)                          \
-    memcpy((void *)( a ),                          \
-           (const void *)( b ), n);                \
+    memcpy( (void *)( a ),                         \
+            (const void *)( b ), n );              \
     a[n] = EOS;
 
 # define zmovelr(a, b)                             \
-    strcpy((void *)( a ),                          \
-           (const void *)( b ) )
+    strcpy( (void *)( a ),                         \
+            (const void *)( b ) )
 
 # define mzmovelr(a, b)                            \
-    ( strcpy((void *)a,                            \
-             (const void *)b), get_eos(a) )
+    ( strcpy( (void *)a,                           \
+              (const void *)b), get_eos(a) )
 
 # define cmovelr(a, b)                             \
-    strcat((void *)( a ),                          \
-           (const void *)( b ) )
+    strcat( (void *)( a ),                         \
+            (const void *)( b ) )
 
 # define mcmovelr(a, b)                            \
-    ( strcat((void *)a,                            \
-             (const void *)b),                     \
+    ( strcat( (void *)a,                           \
+              (const void *)b),                    \
       get_eos(a) )
 
 # define wmovelr(a, b, n)                          \
-    memcpy((void *)( a ),                          \
-           (const void *)( b ),                    \
-           ( n ) << 1)
+    memcpy( (void *)( a ),                         \
+            (const void *)( b ),                   \
+            ( n ) << 1 )
 
 # define wmoverl(a, b, n)                          \
-    memmove((void *)( a ),                         \
-            (const void *)( b ),                   \
-            ( n ) << 1)
+    memmove( (void *)( a ),                        \
+             (const void *)( b ),                  \
+             ( n ) << 1 )
 
 # ifndef bzero
 #  define bzero(s, n)                              \
-     (void)memset((char *)( s ),                   \
-                  EOS, ( n ) << 1)
+     (void)memset( (char *)( s ),                  \
+                   EOS, ( n ) << 1 )
 # endif  /* ifndef bzero */
 
 # define space_fill(s, n)                          \
-    (void)memset((char *)( s ),                    \
-                 SPACE, n)
+    (void)memset( (char *)( s ),                   \
+                  SPACE, n )
 
 # define mspace_fill(s, n)                         \
-    ( (void)memset((char *)s,                      \
-                   SPACE, n), s + n )
+    ( (void)memset( (char *)s,                     \
+                    SPACE, n), s + n )
 
 # define tab_fill(s)                               \
     ( space_fill(s, TAB_WIDTH),                    \
@@ -633,7 +646,7 @@ wfill(void *s, const short v, int len)
     wmoverl
 
 # define save_jbuf(d, s)                           \
-    movelr(d, s, sizeof ( jmp_buf ))
+    movelr( d, s, sizeof ( jmp_buf ) )
 
 #endif  /* if ASM86 */
 
@@ -643,55 +656,61 @@ wfill(void *s, const short v, int len)
 
 typedef struct _pp
 {
-  byte *base;     /* Memory address of page */
+  byte *base;     /* Memory address of page       */
   word rec;       /* Record number of last record */
-  ushort linked,  /* Shared page index */
-    end_pos;      /* One past last byte */
+  ushort linked,  /* Shared page index            */
+    end_pos;      /* One past last byte           */
 } PAGE_PTR;
 
 typedef struct _unit
 {
-  PAGE_PTR *list;        /* page table */
+  PAGE_PTR *list;        /* page table              */
   byte *rec_start;       /* address for next r/w op */
-  struct _unit *link_u;  /* linked file descriptor */
-  word rec_num,          /* current GE record */
-    eof_rec,             /* location of EOF */
-    page,                /* index of current page */
-    eof_page,            /* last active page */
-    list_end;            /* last page in table */
-  char read;             /* read/write */
+  struct _unit *link_u;  /* linked file descriptor  */
+  word rec_num,          /* current GE record       */
+    eof_rec,             /* location of EOF         */
+    page,                /* index of current page   */
+    eof_page,            /* last active page        */
+    list_end;            /* last page in table      */
+  char read;             /* read/write              */
 } UNIT;
 
 /* Report the current record pointer of the file */
+
 #define vstell(fp) ( fp->rec_num )
 
 /* Report the current size of the file (for read files only) */
+
 #define vssizeof(fp) ( fp->eof_rec )
 
 /* Reset file pointers */
+
 #define vsrewind(fp) \
   ( fp->rec_num = fp->page = 0, fp->rec_start = fp->list->base )
 
 /* Determine if a file is primary and therefore linked */
+
 #define isprimary(fp) ( fp->link_u != NULL )
 
 /* vsam page size & allocation unit */
+
 #if TINY_G
-# define PPP         200            /* Entries per page */
-# define BLOCK_SIZE 4096            /* R/W block size */
+# define PPP         200              /* Entries per page */
+# define BLOCK_SIZE 4096              /* R/W block size   */
 #else  /* if TINY_G */
 # define PPP         360
 # define BLOCK_SIZE 8192
 #endif  /* if TINY_G */
 
-#define PPB 8                        /* Pages per allocation unit */
-#define PP_SIZE sizeof ( PAGE_PTR )  /* should be 10/12 bytes */
+#define PPB 8                         /* Pages per allocation unit */
+#define PP_SIZE  sizeof ( PAGE_PTR )  /*   should be 10/12 bytes   */
 #ifndef PAGE_SIZE
 # define PAGE_SIZE ( PP_SIZE * PPP )  /* Data page size */
 #endif  /* ifndef PAGE_SIZE */
-#define PBLOCK        ( PPP * PPB )  /* Sizeof allocation unit */
+#define PBLOCK         ( PPP * PPB )  /* Sizeof allocation unit */
 
 /* Max length of text line */
+
 #if TINY_G
 # define E_BUFF_LEN 1022
 #else  /* if TINY_G */
@@ -727,10 +746,10 @@ typedef struct
 typedef struct _fl
 {
   struct _fl *next, *prev;
-  UNIT *old_u;     /* Previous file in list */
-  SAVE_AREA save;  /* Previous kernel state */
-  FNAME name;      /* File name */
-  char disp;       /* Access mode letter */
+  UNIT *old_u;     /* Previous file in list  */
+  SAVE_AREA save;  /* Previous kernel state  */
+  FNAME name;      /* File name              */
+  char disp;       /* Access mode letter     */
   byte trans;      /* File is transient file */
 } FILE_LIST;
 
@@ -742,19 +761,20 @@ typedef struct _tk
   {
     real r;
     long i;
-  } opval,           /* operand and temporary values */
-    litval;          /* literal values */
-  struct _tk *next,  /* when compiled or on free list */
-    *snext;          /* when stacked */
+  } opval,           /* operand and temporary values                 */
+    litval;          /* literal values                               */
+  struct _tk *next,  /* when compiled or on free list                */
+    *snext;          /* when stacked                                 */
   const char *errp;  /* position of start of token for error reports */
-  word id;           /* operator, var name or LITERAL */
-  char fp;           /* int or real operand */
-  char l_fp;         /* int or real literal */
-  char group;        /* Basic type selected in outer loop */
+  word id;           /* operator, var name or LITERAL                */
+  char fp;           /* int or real operand                          */
+  char l_fp;         /* int or real literal                          */
+  char group;        /* Basic type selected in outer loop            */
 }  /* Note one wasted byte */
 TOKEN;
 
 /* G_err manifests */
+
 #define SYN_EXPR         0
 #define NO_DOT           1
 #define Y_LENGTHS        2
@@ -815,15 +835,18 @@ TOKEN;
 #define HEX_INV         57
 
 /* Standard files */
+
 #define vdu    stderr
 #define kbd_fd 0
 #define vdu_fd 2
 
 /* screen action on return from CE */
+
 #define SE_DISP 1
 #define SE_WAIT 2
 
 /* terminating condition codes */
+
 #define NO_OPT          0
 #define OP_EOF          1
 #define RECS            2
@@ -841,6 +864,7 @@ TOKEN;
 #define LOOP_MASK  0xF000
 
 /* string options for find_string */
+
 #define STR_END  \
      'B':        \
 case 'C':        \
@@ -851,20 +875,24 @@ case 'R':        \
 case 'r'
 
 /* Drive options */
+
 #define D_LINE_USER 0
 #define D_SE_HOME   1
 #define D_USE_FILE  2
 #define D_SE_AUTO   3
 
 /* calculator options */
+
 #define C_ENDP   0   /* calculator is to evaluate an endpoint */
-#define C_SIDE   3   /* Used for side effects only */
-#define C_REPEAT 4   /* Interactive mode, display result */
+#define C_SIDE   3   /* Used for side effects only            */
+#define C_REPEAT 4   /* Interactive mode, display result      */
 
 /* length of portions */
+
 #define L_LEN 76
 
 /* Possible GE delimiters */
+
 #define DELIM   \
       '/':      \
 case  ':':      \
@@ -888,22 +916,23 @@ case DEL
 typedef struct _option
 {
   word q;    /* the primary option (#,R,C,S etc) */
-  int v;     /* from #, N, or {} */
-  TOKEN *e;  /* compiled numeric expressions */
-  string s;  /* search string */
+  int v;     /* from #, N, or {}                 */
+  TOKEN *e;  /* compiled numeric expressions     */
+  string s;  /* search string                    */
 } OPTION;
 
 typedef struct _verb
 {
-  struct _verb *next, *cpar;  /* end of loop/cond clause */
+  struct _verb *next, *cpar;  /* end of loop/cond clause               */
   const char *errp;           /* pointer to start of command for g_err */
-  OPTION o1;                  /* inter-record component */
-  OPTION o2;                  /* intra-record component */
-  char comm;                  /* the command itself (T,P etc) */
-  char dot;                   /* line component flag */
+  OPTION o1;                  /* inter-record component                */
+  OPTION o2;                  /* intra-record component                */
+  char comm;                  /* the command itself (T,P etc)          */
+  char dot;                   /* line component flag                   */
 } VERB;
 
 /* record nested command lists to implement co-routine SE/CE */
+
 typedef struct _verb_list
 {
   struct _verb_list *next, *prev;
@@ -919,8 +948,8 @@ typedef struct _verb_list
 
 # include <bios.h>
 
-# define bios_byte(offs) ( *((byte *)offs ))
-# define bios_word(offs) ( *((ushort *)offs ))
+# define bios_byte(offs) ( *(   (byte *)offs ) )
+# define bios_word(offs) ( *( (ushort *)offs ) )
 
 typedef ushort chtype;       /* 8-bit attr + 8-bit char */
 
@@ -938,23 +967,24 @@ word near LINES, near COLS;  /* terminal width/height */
  *  Function and Keypad Key Definitions.
  */
 
-# define ERR             0     /* general error flag */
+# define ERR             0     /* general error flag            */
 
-# define KEY_DOWN   0x5000     /* Down arrow key */
-# define KEY_UP     0x4800     /* Up arrow key */
-# define KEY_LEFT   0x4B00     /* Left arrow key */
-# define KEY_RIGHT  0x4D00     /* Right arrow key */
-# define KEY_HOME   0x4700     /* home key */
-# define KEY_NPAGE  0x5100     /* next page */
-# define KEY_PPAGE  0x4900     /* previous page */
-# define KEY_BTAB   0x0F00     /* Back tab key */
+# define KEY_DOWN   0x5000     /* Down arrow key                */
+# define KEY_UP     0x4800     /* Up arrow key                  */
+# define KEY_LEFT   0x4B00     /* Left arrow key                */
+# define KEY_RIGHT  0x4D00     /* Right arrow key               */
+# define KEY_HOME   0x4700     /* home key                      */
+# define KEY_NPAGE  0x5100     /* next page                     */
+# define KEY_PPAGE  0x4900     /* previous page                 */
+# define KEY_BTAB   0x0F00     /* Back tab key                  */
 # define KEY_IC     0x5200     /* insert char or enter ins mode */
-# define KEY_END    0x4F00     /* end key */
-# define KEY_DC     0x5300     /* delete character */
-# define KEY_SLEFT  0x7300     /* shifted left arrow key */
-# define KEY_SRIGHT 0x7400     /* shifted right arrow */
-# define KEY_F0     0x3A00     /* 10 function keys */
-# define KEY_F(n) ( ( 0x3A + ( n )) << 8 )
+# define KEY_END    0x4F00     /* end key                       */
+# define KEY_DC     0x5300     /* delete character              */
+# define KEY_SLEFT  0x7300     /* shifted left arrow key        */
+# define KEY_SRIGHT 0x7400     /* shifted right arrow           */
+# define KEY_F0     0x3A00     /* 10 function keys              */
+
+# define KEY_F(n) ( ( 0x3A + ( n ) ) << 8 )
 
 private
 void clrtoeol(void);
@@ -978,12 +1008,12 @@ private
 void napms(const unsigned long);
 
 # define init_pair(a, b, c)  /* Empty */
-# define endwin()            bios_gotoxy((byte)( LINES - 2 ), 0)
+# define endwin()            bios_gotoxy( (byte)( LINES - 2 ), 0 )
 # define raw()               /* Empty */
 # define noraw()             /* Empty */
 # define attrset(a)          /* Empty */
 # define refresh()           /* Empty */
-# define move(y, x)          (curs_row = ( y ), curs_col = ( x ))
+# define move(y, x)          ( curs_row = ( y ), curs_col = ( x ) )
 # define rgetc()             curs_getc()
 # define getch()             curs_getc()
 # define insch(c)            curs_chins()
@@ -996,20 +1026,22 @@ void napms(const unsigned long);
 #else  /* if DOS */
 
 /* specials for UNIX curses.h */
+
 # define PERFORMANCE 1
 # define CURS_PERFORMANCE
-# define NCC         8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2) */
+# define NCC         8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2)  */
 # ifndef L_ctermid
 #  define L_ctermid  1  /* so curses defines SYSV and not index and bcopy */
 # endif  /* ifndef L_ctermid */
 
 # ifdef _HPUX_SOURCE
 #  include <curses_colr/curses.h>
-# else  /* ifdef _HPUX_SOURCE */
+# else  /* ifdef _HPUX_SOURCE  */
 #  include <curses.h>
 # endif  /* ifdef _HPUX_SOURCE */
 
 /* specials for AIX */
+
 # ifndef ACS_HLINE
 #  define ACS_HLINE      '-'
 #  define ACS_VLINE      '|'
@@ -1017,7 +1049,8 @@ void napms(const unsigned long);
 #  define ACS_URCORNER   '+'
 #  define ACS_LLCORNER   '+'
 #  define ACS_LRCORNER   '+'
-#  define wtimeout(w, t) (( w )->_nodelay = ( t ))
+#  define wtimeout(w, t) ( ( w )->_nodelay = ( t ) )
+
 private
 int
 rgetc(void)
@@ -1025,14 +1058,15 @@ rgetc(void)
   (void)refresh();
   return getch();
 }
-# else  /* ifndef ACS_HLINE */
+
+# else  /* ifndef ACS_HLINE  */
 #  define rgetc() getch()
 # endif  /* ifndef ACS_HLINE */
 
 # ifndef COLOUR
 #  ifdef COLOR_PAIR
 #   define COLOUR 1
-#  else  /* ifdef COLOR_PAIR */
+#  else  /* ifdef COLOR_PAIR  */
 #   define COLOUR 0
 #  endif  /* ifdef COLOR_PAIR */
 # endif  /* ifndef COLOUR */
@@ -1042,18 +1076,20 @@ rgetc(void)
 /* Manifests for the Screen Editor */
 
 /* Action codes */
-#define NEXT_LINE  1   /* Move window down one record */
-#define PREV_LINE  2   /* Move window up one record */
+
+#define NEXT_LINE  1   /* Move window down one record       */
+#define PREV_LINE  2   /* Move window up one record         */
 #define NEXT_PAGE  3   /* Move window down one 20 line page */
-#define PREV_PAGE  4   /* Move window up one page */
-#define MOVE_TOF   5   /* Move to start of file */
-#define MOVE_EOF   6   /* Move to end of file */
-#define MOVE_ABS   7   /* Move direct to absolute line */
-#define SE_ENTER   8   /* Do T.#0 and fill buffer */
+#define PREV_PAGE  4   /* Move window up one page           */
+#define MOVE_TOF   5   /* Move to start of file             */
+#define MOVE_EOF   6   /* Move to end of file               */
+#define MOVE_ABS   7   /* Move direct to absolute line      */
+#define SE_ENTER   8   /* Do T.#0 and fill buffer           */
 #define SE_LEAVE   9   /* Leave S.E and write ALL text back */
 #define PEEK_LINE 10   /* Push line direct from file to stk */
 
 /* Screen and command buffer definition */
+
 #define STATUS_LINE   0
 #define COMMAND_LINE  1
 #define TEMPLATE_LINE 2
@@ -1061,102 +1097,121 @@ rgetc(void)
 #define MATCH_LINE    6
 
 /* Screen attributes */
+
 #if DOS
+
 /* colour & mono */
-# define found_col  0x4F00    /* matched text */
-# define cntrl_col  0x1F00    /* control characters */
-# define eof_col    0x0F00    /* EOF marker */
-# define scale_col  0x0E00    /* the scale line */
-# define status_col 0x0B00    /* the status line */
-# define norm_col   0x0A00    /* normal text */
-# define query_col  0x0C00    /* query */
-# define marg_col   0x0D00    /* margins */
-# define found_ctrl 0x4900    /* matched binary */
+
+# define found_col  0x4F00    /* matched text           */
+# define cntrl_col  0x1F00    /* control characters     */
+# define eof_col    0x0F00    /* EOF marker             */
+# define scale_col  0x0E00    /* the scale line         */
+# define status_col 0x0B00    /* the status line        */
+# define norm_col   0x0A00    /* normal text            */
+# define query_col  0x0C00    /* query                  */
+# define marg_col   0x0D00    /* margins                */
+# define found_ctrl 0x4900    /* matched binary         */
 # define norm_space 0x0A20    /* normal text space char */
 
 #else  /* if DOS */
+
 /* colour */
-# define FOUND_COL  COLOR_PAIR(1)  /* matched text */
+
+# define FOUND_COL  COLOR_PAIR(1)  /* matched text       */
 # define CNTRL_COL  COLOR_PAIR(2)  /* control characters */
-# define EOF_COL    COLOR_PAIR(3)  /* EOF marker */
-# define SCALE_COL  COLOR_PAIR(4)  /* the scale line */
-# define STATUS_COL COLOR_PAIR(5)  /* the status line */
-# define NORM_COL   COLOR_PAIR(6)  /* normal text */
-# define QUERY_COL  COLOR_PAIR(7)  /* query */
-# define MARG_COL   COLOR_PAIR(8)  /* margins */
-# define FOUND_CTRL COLOR_PAIR(9)  /* matched binary */
+# define EOF_COL    COLOR_PAIR(3)  /* EOF marker         */
+# define SCALE_COL  COLOR_PAIR(4)  /* the scale line     */
+# define STATUS_COL COLOR_PAIR(5)  /* the status line    */
+# define NORM_COL   COLOR_PAIR(6)  /* normal text        */
+# define QUERY_COL  COLOR_PAIR(7)  /* query              */
+# define MARG_COL   COLOR_PAIR(8)  /* margins            */
+# define FOUND_CTRL COLOR_PAIR(9)  /* matched binary     */
 
 /* monochrome */
+
 # ifndef A_NORMAL
 #  define A_NORMAL 0
 # endif  /* ifndef A_NORMAL */
-# define M_FOUND_COL  A_REVERSE    /* matched text */
+
+# define M_FOUND_COL  A_REVERSE    /* matched text       */
 # define M_CNTRL_COL  A_REVERSE    /* control characters */
-# define M_EOF_COL    A_BOLD       /* EOF marker */
-# define M_SCALE_COL  A_NORMAL     /* the scale line */
-# define M_STATUS_COL A_NORMAL     /* the status line */
-# define M_NORM_COL   A_NORMAL     /* normal text */
-# define M_QUERY_COL  A_BOLD       /* query */
-# define M_MARG_COL   A_BOLD       /* margins */
-# define M_FOUND_CTRL A_REVERSE    /* matched binary */
+# define M_EOF_COL    A_BOLD       /* EOF marker         */
+# define M_SCALE_COL  A_NORMAL     /* the scale line     */
+# define M_STATUS_COL A_NORMAL     /* the status line    */
+# define M_NORM_COL   A_NORMAL     /* normal text        */
+# define M_QUERY_COL  A_BOLD       /* query              */
+# define M_MARG_COL   A_BOLD       /* margins            */
+# define M_FOUND_CTRL A_REVERSE    /* matched binary     */
 
 # if COLOUR
+
 private
-chtype found_col = FOUND_COL,      /* matched text */
+chtype found_col = FOUND_COL,      /* matched text       */
 cntrl_col        = CNTRL_COL,      /* control characters */
-eof_col          = EOF_COL,        /* EOF marker */
-scale_col        = SCALE_COL,      /* the scale line */
-status_col       = STATUS_COL,     /* the status line */
-norm_col         = NORM_COL,       /* normal text */
-query_col        = QUERY_COL,      /* query */
-marg_col         = MARG_COL,       /* margins */
-found_ctrl       = FOUND_CTRL;     /* matched binary */
+eof_col          = EOF_COL,        /* EOF marker         */
+scale_col        = SCALE_COL,      /* the scale line     */
+status_col       = STATUS_COL,     /* the status line    */
+norm_col         = NORM_COL,       /* normal text        */
+query_col        = QUERY_COL,      /* query              */
+marg_col         = MARG_COL,       /* margins            */
+found_ctrl       = FOUND_CTRL;     /* matched binary     */
+
 # else  /* if COLOUR */
+
 private
-chtype found_col = M_FOUND_COL,    /* matched text */
+chtype found_col = M_FOUND_COL,    /* matched text       */
   cntrl_col      = M_CNTRL_COL,    /* control characters */
-  eof_col        = M_EOF_COL,      /* EOF marker */
-  scale_col      = M_SCALE_COL,    /* the scale line */
-  status_col     = M_STATUS_COL,   /* the status line */
-  norm_col       = M_NORM_COL,     /* normal text */
-  query_col      = M_QUERY_COL,    /* query */
-  marg_col       = M_MARG_COL,     /* margins */
-  found_ctrl     = M_FOUND_CTRL;   /* matched binary */
+  eof_col        = M_EOF_COL,      /* EOF marker         */
+  scale_col      = M_SCALE_COL,    /* the scale line     */
+  status_col     = M_STATUS_COL,   /* the status line    */
+  norm_col       = M_NORM_COL,     /* normal text        */
+  query_col      = M_QUERY_COL,    /* query              */
+  marg_col       = M_MARG_COL,     /* margins            */
+  found_ctrl     = M_FOUND_CTRL;   /* matched binary     */
+
 # endif  /* if COLOUR */
 
 #endif  /* if DOS */
 
 /* directions for deletes etc */
+
 #define LEFT  1
 #define RIGHT 2
 
 /* current screen line */
-#define CURSOR_ROW (( row == COMMAND_LINE ? text_row : row ) - FIRST_LINE )
+
+#define CURSOR_ROW ( ( row == COMMAND_LINE ? text_row : row ) - FIRST_LINE )
 
 /* line number of start of screen */
+
 #define START_OF_PAGE ( o_rec + 1 )
 
 /* current file position */
+
 #define FILE_LINE  ( START_OF_PAGE + row - FIRST_LINE )
 #define HFILE_LINE ( START_OF_PAGE + CURSOR_ROW )
 #define FILE_COL   ( col + offset )
 
 /* address of cursor in screen buffer */
+
 #define BUF(c) ( &s_buf[row][c] )
 
 #ifndef kbd_check
 # ifdef __DGUX__
-#  define kbd_check(c) ( nodelay(stdscr, 1), c = rgetc(), nodelay(stdscr, 0))
+#  define kbd_check(c) \
+    ( nodelay(stdscr, 1),  c = rgetc(), nodelay(stdscr, 0) )
 # else  /* ifdef __DGUX__ */
 #  define kbd_check(c) \
-  ( wtimeout(stdscr, 0), c = rgetc(), wtimeout(stdscr, -1))
+    ( wtimeout(stdscr, 0), c = rgetc(), wtimeout(stdscr, -1) )
 # endif  /* ifdef __DGUX__ */
 #endif  /* ifndef kbd_check */
 
 /* peek at length of object at top of a stack */
-#define pop_length(s) ( *(short *)( s + 1 ))
+
+#define pop_length(s) ( *(short *)( s + 1 ) )
 
 /* keyboard sequence actions */
+
 typedef enum
 {
   A_C_UP,
@@ -1199,6 +1254,7 @@ typedef enum
 } ACTION;
 
 /* user query types */
+
 typedef enum
 {
   Q_EDIT,
@@ -1232,47 +1288,64 @@ typedef enum
 #define se_sync() file_move(-START_OF_PAGE)
 
 #if UNIX  /* for smooth scrolling */
+
 # define se_insertln()         \
   {                            \
     (void)idlok(stdscr, YES);  \
     (void)insertln();          \
     ++idlpending;              \
   }
+
 # define se_deleteln()         \
   {                            \
     (void)idlok(stdscr, YES);  \
     (void)deleteln();          \
     ++idlpending;              \
   }
+
 #else  /* if UNIX */
+
 # define se_insertln() insertln()
 # define se_deleteln() deleteln()
+
 #endif  /* if UNIX */
 
 private
 int George(const VERB *);
+
 private
 void G_compile(VERB **, const char *);
+
 private
 int Disk_to_mem(char csc, UNIT *const, const int);
+
 private
 void c_comm_u(void);
+
 private
 void Xit(VERB csc);
+
 private
 void term(void);
+
 private
 void message(char csc);
+
 private
 void inform(char csc);
+
 private
 void se_execute(const ACTION, const int);
+
 private
 void alter_end(int, const int);
+
 private
 void Quit(void);
+
 private
 void Exit(void);
+
 private
 void Drive(const int);
 
@@ -1299,6 +1372,7 @@ void Drive(const int);
   char  csc  near
 
 /* system specific strings */
+
 #if DOS || DOS_CONSOLE
 FSTR shell_bin[] = "COMMAND",     near tty_file[] = "CON",
 near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
@@ -1322,10 +1396,12 @@ FSTR_LIST save_dirs[] = {
 #endif  /* if DOS || DOS_CONSOLE */
 
 /* standard file names */
+
 FSTR si_file[] = "stdin", near so_file[] = "stdout", near t_fname[] = "*TMP*",
 near no_file[] = "*NEW*";
 
 /* strings used more than once */
+
 FSTR se_find[]  = "Find:", near let_s[] = "s",
 near se_ep[]    = "End point:", near se_fin1[] = "(unchanged) ",
 near se_fcom1[] = "TR\177%s\177", near se_hit[] = "\r\n[Enter to Continue] ",
@@ -1339,22 +1415,26 @@ near ps_name[]  = "%s file: %s", near m_real[] = "%.14g",
 near eof_mess[] = "************ EOF ************";
 
 /* format of details line */
+
 FSTR f_wc[] = "Lines   Words   Punct.  Cntrl.  Sent.   L.O.C   Chars.\n\
 %-8ld%-8ld%-8ld%-8ld%-8ld%-8ld%-ld";
 
 /* arithmetic operator priority */
+
 FBSTR opprio[] = {
   13, 13, 13, 12, 12, 10, 10, 8, 7, 6, 2, 2, 1, 0
 },
 near esc_char[] = "\013\007\n\t\b\f\r";
 
 #if FULL_G
-FSTR user_template[] = "  "
-                       "0....+....1....+....2....+....3....+....4....+....5..."
-                       ".+....6....+....7....+\n";
+FSTR \
+    user_template[] = "  "
+                      "0....+....1....+....2....+....3....+....4....+....5..."
+                      ".+....6....+....7....+\n";
 #endif  /* if FULL_G */
 
 /* Errors */
+
 FSTR g_mess[] =
   "Syntax error in expression\0\
 This command does not accept a dot part\0\
@@ -1416,6 +1496,7 @@ Last file operation was Merge - use XM first and then XS\0\
 Hex digits missing or invalid";
 
 /* calculator char display */
+
 FSTR asc_tab[][4]
   = {
   "NUL", "SOH",  "STX", "ETX",  "EOT", "ENQ", "ACK", "BEL",   "BS",  "HT",
@@ -1683,156 +1764,193 @@ FSTR_LIST *const near help_tab[]
 /* Case conversion translate table, also strips parity */
 
 FSTR u_map[] = {
-  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
-  0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
-  0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
-  0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33,
-  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,
-  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
-  0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A,
-  0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-  0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54,
-  0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
-  /* upper half of table strips parity and maps case */
-  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
-  0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
-  0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
-  0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33,
-  0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,
-  0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
-  0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A,
-  0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
-  0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54,
-  0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F
+ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
+ 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+ 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
+ 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33,
+ 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,
+ 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
+ 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A,
+ 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+ 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54,
+ 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
+
+ /* upper half of table strips parity and maps case */
+
+ 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
+ 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,
+ 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26,
+ 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33,
+ 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F, 0x40,
+ 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D,
+ 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A,
+ 0x5B, 0x5C, 0x5D, 0x5E, 0x5F, 0x60, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47,
+ 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54,
+ 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F
 };
 
 /* 1 if delim, 2 if comsep, 4 if alpha, 8 if digit, 0 otherwise */
 
 FBSTR g_map[] = {
-  0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x80, 0x01, 0x00, 0x01, 0x01, 0x01,
-  0x01, 0x02, 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x01, 0x08, 0x08, 0x08, 0x08,
-  0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x01, 0x02, 0x01, 0x01, 0x01, 0x21, 0x00,
-  0x90, 0x50, 0x50, 0x10, 0x30, 0x30, 0x10, 0x10, 0x10, 0x50, 0x10, 0x70, 0x10,
-  0x10, 0x90, 0x30, 0x10, 0xD0, 0x50, 0x10, 0x90, 0x10, 0xD0, 0x10, 0x10, 0x10,
-  0x01, 0x00, 0x01, 0x00, 0x04, 0x01, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-  0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
-  0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x80, 0x00, 0x00, 0x01, 0x02, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x02,
-  0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
-  0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
+ 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x80, 0x01, 0x00, 0x01, 0x01, 0x01,
+ 0x01, 0x02, 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x01, 0x08, 0x08, 0x08, 0x08,
+ 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x01, 0x02, 0x01, 0x01, 0x01, 0x21, 0x00,
+ 0x90, 0x50, 0x50, 0x10, 0x30, 0x30, 0x10, 0x10, 0x10, 0x50, 0x10, 0x70, 0x10,
+ 0x10, 0x90, 0x30, 0x10, 0xD0, 0x50, 0x10, 0x90, 0x10, 0xD0, 0x10, 0x10, 0x10,
+ 0x01, 0x00, 0x01, 0x00, 0x04, 0x01, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+ 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+ 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x00, 0x80, 0x00, 0x00, 0x01, 0x02, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x01, 0x02,
+ 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00,
+ 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
 };
 
 /*
  *  Predefined macros
  */
+
 /* Change string1 to string2 from here on (simple) */
+
 FSTR cha[] = "(tc\177%1\177 (r\177%1\177%2\177).e t)e @";
+
 /* Change string1 to string2 from here on (RE's) */
+
 FSTR rcha[] = "(tr\177%1\177 ((rr\177\177%2\177).e t tr//)e) @";
+
 /* Paginated, line-numbered listings */
+
 FSTR tpri[]
   =
     "{t=$/%1}((v%3 ix/0C0A/;) i/      / if(i/ /).o{%2/2-8}id(i/ /).o{%2-12}\
 i/Page / n1 i{++p}i/ of / i{t*%1==$?t:t+1}(i////)*2 n10(i{#}i/  / t)%1)e\
 (v%3 ix/0C/)";
+
 /* Strip parity/control characters */
+
 FSTR clr[] = "((ic{*&127}p.1).e t)e @((v{*<32|*>126}p.1;t.1).e t)e @";
+
 /* List all lines containing string */
+
 FSTR lis[] = "(tci\177%1\177 l0 t)e @";
+
 /* Get regular expression and print (grep) */
+
 FSTR grep[] = "(tr\177%1\177(l0 t tr//)e) @";
+
 /* Convert line to upper case */
+
 FSTR up[] = "rr/.*/\\u&/";
+
 /* Convert line to lower case */
+
 FSTR lo[] = "rr/.*/\\l&/";
+
 /* Convert line to hex */
+
 FSTR hex[] = "n02X(i{*}p.1).e";
+
 /* Read in and move past number in text */
+
 FSTR num[] = "{%1=0,..=1}t.s(v{* ==43}t.1;v{* ==45}{..=-1}t.1;) \
 t.s({%1=%1*10+(*-48)}t.1)w{*>47&&*<58}{%1*=..}";
+
 /* Delete up to the current line */
+
 FSTR ph[] = "{..=#}# p{..}";
+
 /* Write out a C main() prototype */
+
 FSTR cmain[] = "i///#include <stdio.h>//#include <stdlib.h>\
 ////int//main( int argc, char ** argv )//    {////    }/////@";
+
 /* Execute system command */
+
 FSTR tss[] = "!%1";
 
 private
-const MACRO near mac_tab[] = { { mac_tab + 1,  cha,         "c",      '%',    2 },
-                               { mac_tab + 2,  rcha,        "r",      '%',    2 },
-                               { mac_tab + 3,  tpri,        "tpri",   '%',    3 },
-                               { mac_tab + 4,  clr,         "clea",   '%',    0 },
-                               { mac_tab + 5,  lis,         "lis",    '%',    1 },
-                               { mac_tab + 6,  grep,        "grep",   '%',    1 },
-                               { mac_tab + 7,  up,          "u",      '%',    0 },
-                               { mac_tab + 8,  lo,          "l",      '%',    0 },
-                               { mac_tab + 9,  hex,         "hex",    '%',    0 },
-                               { mac_tab + 10, num,         "num",    '%',    1 },
-                               { mac_tab + 11, ph,          "ph",     '%',    0 },
-                               { mac_tab + 12, cmain,       "main",   '%',    0 },
-                               { NULL,         tss,         "tss",    '%',    1 } };
+const MACRO near mac_tab[] = { { mac_tab + 1,  cha,    "c",      '%',   2 },
+                               { mac_tab + 2,  rcha,   "r",      '%',   2 },
+                               { mac_tab + 3,  tpri,   "tpri",   '%',   3 },
+                               { mac_tab + 4,  clr,    "clea",   '%',   0 },
+                               { mac_tab + 5,  lis,    "lis",    '%',   1 },
+                               { mac_tab + 6,  grep,   "grep",   '%',   1 },
+                               { mac_tab + 7,  up,     "u",      '%',   0 },
+                               { mac_tab + 8,  lo,     "l",      '%',   0 },
+                               { mac_tab + 9,  hex,    "hex",    '%',   0 },
+                               { mac_tab + 10, num,    "num",    '%',   1 },
+                               { mac_tab + 11, ph,     "ph",     '%',   0 },
+                               { mac_tab + 12, cmain,  "main",   '%',   0 },
+                               { NULL,         tss,    "tss",    '%',   1 } };
 
 private
-int near l_numbers = NO,   /* Switch on or off line-numbered listings */
+int near l_numbers = NO,         /* Switch on or off line-numbered listings */
 #if FULL_G
-near show_template = NO,   /* display a template */
+near show_template = NO,         /* display a template */
 #endif  /* if FULL_G */
-near lon = NO;     /* listing flag */
+near lon           = NO;         /* listing flag */
+
 private
 char near n_format[8] = "%ld";   /* Format for printing numbers */
+
 private
 const char *near g_init = NULL;  /* Holds G initial command */
 
 /* Globals for Context Editor (saved by save_all) */
 
 private
-int near g_rec = -1,        /* Current G record number (input file) */
-near g_eof     = NO,        /* End of file flag (input file) */
-near i_eor     =  0,        /* Input file end of record */
-near i_col     =  0,        /* Input file current column */
-near e_col     =  0,        /* Output side of GE */
-near o_rec     = -1,        /* Output file record number */
-near s_g_rec   =  0,        /* Saved G rec no for @ end cond */
-near s_g_col   =  0,        /* Saved G col (e_col) for @ */
-near buff_sec  =  0,        /* Section number that ptr is in */
-near running   =  1;        /* Currently not parsing */
+int near g_rec = -1,             /* Current G record number (input file) */
+near g_eof     = NO,             /* End of file flag (input file)        */
+near i_eor     =  0,             /* Input file end of record             */
+near i_col     =  0,             /* Input file current column            */
+near e_col     =  0,             /* Output side of GE                    */
+near o_rec     = -1,             /* Output file record number            */
+near s_g_rec   =  0,             /* Saved G rec no for @ end cond        */
+near s_g_col   =  0,             /* Saved G col (e_col) for @            */
+near buff_sec  =  0,             /* Section number that ptr is in        */
+near running   =  1;             /* Currently not parsing                */
 
 private
 word near depth = 0;  /* George nesting level */
 
 /* used by save_all() to copy file offsets etc */
+
 private
 SAVE_AREA near g_save;
 
 /* Editor buffers */
+
 private
 char *near i_buff, *near e_buff;
+
 private
 const char *near cmd_buf;
 
 /* primary filenames */
+
 private
 const char *near in_fname = si_file, *near out_fname = so_file;
 
 /* file descriptors for stdin/stdout (may be changed after redirection) */
+
 private
 int fd_in_terminal = 0, fd_out_terminal = 1;
 
 /* do not allow overwrite of old file */
+
 private
 int ro_mode = NO;
 
 /* 'N' for new/normal file, 'A' for append, 'F' for filter */
+
 private
 char near i_mode = 'N', near o_mode = 'N';
 
@@ -1851,7 +1969,7 @@ private
 stack *near hist_top = NULL;
 
 private
-FILE_LIST *near c_list = NULL,  /* list of command files open */
+FILE_LIST *near c_list = NULL,  /* list of command files open    */
 *near f_list = NULL;            /* list of save/merge files open */
 
 private
@@ -1861,79 +1979,99 @@ private
 int near infile_recs;  /* saved number of old file recs for EQ */
 
 /* Environments for error trap returns */
+
 private
 jmp_buf near set_err, near save_err, near se_ret, near se_err;
 
 /* justification parameters */
+
 private
 int near l_margin = 0, near r_margin = 68, near line_spacing = 0;
+
 private
-int near adjust = YES  /*, overhang = NO*/;
+int near adjust = YES  /*, overhang = NO */;
+
 private
 int near left_right, near t_margin, near wordwrap = NO;
 
 /* status line EOF column */
+
 private
 int near se_save_eof;
 
 /* warn of truncated records on input */
+
 private
 int near trunc_recs = NO;
 
 /* inserted lines stack */
+
 private
 stack *near in_stack = NULL;
+
 private
 int near in_count = 0;
 
 /* deleted lines stack */
+
 private
 stack *near del_stack = NULL;
 
 /* se only history stack ptr */
+
 private
 stack *near hist_ptr = NULL;
 
 /* idlok needs clearing */
+
 #if UNIX
 private
 int idlpending = NO;
 #endif  /* if UNIX */
 
 /* these depend on LINES & COLS in curses.h */
+
 private
 int near last_line, near last_col, near text_lines, near h_inc;
 
 /* cursor tracking */
+
 private
 int near row, near col, near offset, near text_row, near text_col,
 near text_offset, near last_offset;
 
 /* currently in a QQ loop */
+
 private
 int near qq_loop = NO;
 
 /* expand mode */
+
 private
 int near expand = YES;
 
 /* in full screen mode */
+
 private
 word near fscreen = NO;
 
 /* redisplay needed after error in CE */
+
 private
 word near redisplay = NO;
 
 /* screen soft tab columns default to every 4 */
+
 private
 int near screen_tabs = 4;
 
 /* main screen buffer */
+
 private
 char **near s_buf = NULL;
 
 /* the "end of record" index */
+
 private
 short *near eor, *near s_eor;
 
@@ -1941,6 +2079,7 @@ private
 FILE_LIST *near f_free_list = NULL;
 
 /* status of trans_u */
+
 private
 int near trans_open_count = 0;
 
@@ -1952,10 +2091,12 @@ private
 PAGE_PTR *near page_list = NULL, *near page_list_end = NULL;
 
 /* initial page and free page list */
+
 private
 byte *near v_free_list = NULL;
 
 /* fixed primary units */
+
 private
 UNIT near primary_out;  /* allow forward use */
 
@@ -1970,14 +2111,17 @@ UNIT near primary_out = {
 };
 
 private
-UNIT *near in_u = &primary_in, *near out_u = &primary_out, *near comm_u = NULL,
-*near trans_u = NULL;
+UNIT *near in_u = &primary_in,  *near out_u  = \
+                  &primary_out, *near comm_u = NULL,
+                  *near trans_u = NULL;
 
 /* detect altered primary files */
+
 private
 int near prim_changed = NO;
 
 /* no tab processing etc */
+
 private
 int near bin_mode = NO;
 
@@ -2003,7 +2147,7 @@ int near bin_mode = NO;
     }
 
 # define get_len(p)                   \
-  if (( len = *p++ ) > 254)           \
+  if ( ( len = *p++ ) > 254 )         \
     {                                 \
       len = *(short *)p;              \
       p += 2;                         \
@@ -2020,7 +2164,7 @@ int near bin_mode = NO;
     }
 
 # define get_len(p)                   \
-  if (( len = *p++ ) > 254)           \
+  if ( ( len = *p++ ) > 254 )         \
     {                                 \
       len = ( word ) * p++ << 8;      \
       len |= *p++;                    \
@@ -2048,7 +2192,7 @@ private
 void
 putstr(char csc s)
 {
-  (void)!write(vdu_fd, s, strlen(s));
+  (void)!write( vdu_fd, s, strlen(s) );
 }
 
 private
@@ -2071,7 +2215,7 @@ wait_user(void)
 #if DOS
 # if ASM86
   bios_wait();
-# else  /* if ASM86 */
+# else  /* if ASM86  */
   (void)_bios_keybrd(_KEYBRD_READ);
 # endif  /* if ASM86 */
 #else  /* if DOS */
@@ -2120,17 +2264,22 @@ tabex(byte *b2, const byte *b1, int len)
   const int maxlen = E_BUFF_LEN;
 
   /* delete trailing whitespace on input */
-  while (len && ( b1[len - 1] == SPACE || b1[len - 1] == TAB ))
+
+  while ( len && ( b1[len - 1] == SPACE || b1[len - 1] == TAB ) )
     {
       --len;
     }
+
   /* skip existing tabs */
+
   while (len && *b1 == TAB)
     {
       *b2++ = *b1++, --len;
     }
+
   /* compress any further spaces */
-  while (len >= TAB_WIDTH && ( *b1 == SPACE || *b1 == TAB ))
+
+  while ( len >= TAB_WIDTH && ( *b1 == SPACE || *b1 == TAB ) )
     {
       for (i = 0; i < TAB_WIDTH && b1[i] == SPACE; ++i)
         {
@@ -2158,13 +2307,15 @@ tabex(byte *b2, const byte *b1, int len)
 
   col = ( b2 - start ) * TAB_WIDTH;
 
-  while (( p = (byte *)memchr(b1, TAB, len)) != NULL)
+  while ( ( p = (byte *)memchr(b1, TAB, len) ) != NULL)
     {
+
       /* move the inter-tab data */
+
       col += ( gap = p - b1 );
       if (col > maxlen)
         {
-          (void)movelr(b2, b1, maxlen - ( col - gap ));
+          (void)movelr( b2, b1, maxlen - ( col - gap ) );
           col = maxlen;
           len = 0;
           break;
@@ -2175,6 +2326,7 @@ tabex(byte *b2, const byte *b1, int len)
       len -= gap;
 
       /* expand the tab */
+
       new_col = ( col / TAB_WIDTH + 1 ) * TAB_WIDTH;
       if (new_col > maxlen)
         {
@@ -2275,12 +2427,12 @@ new_page(void)
 
   if (page_list >= page_list_end)
     {
-      if (( page_list = (PAGE_PTR *)malloc(PBLOCK * PP_SIZE)) == NULL)
+      if ( ( page_list = (PAGE_PTR *)malloc(PBLOCK * PP_SIZE) ) == NULL)
         {
           static int warned = 0;
           if (!warned++)
             {
-              inform("WARNING: low on memory");
+              inform("WARNING: Low on memory!");
             }
 
           page_list = page_list_end;
@@ -2352,7 +2504,7 @@ free_pt(UNIT *const fp)
   for (; pp < last; pp += PPP)
     {
       *(byte **)pp = v_free_list;
-      v_free_list = (byte *)pp;
+      v_free_list  = (byte *)pp;
     }
 }
 
@@ -2368,7 +2520,7 @@ extend_list(UNIT *const fp)
   PAGE_PTR *const new_pt = get_pt(old_end + PPP);
 
   (void)bmovelr(new_pt, fp->list, old_end * PP_SIZE >> B_SIZE);
-  bzero(new_pt + old_end, PP_SIZE * ( PPP >> B_SIZE ));
+  bzero( new_pt + old_end, PP_SIZE * ( PPP >> B_SIZE ) );
   free_pt(fp);
   fp->list = new_pt;
   fp->list_end += PPP;
@@ -2419,7 +2571,7 @@ unlink_page(UNIT *const fp, PAGE_PTR *const cp, const word offset)
 {
   byte csc link_base = cp->base;
 
-  fp->rec_start = ( cp->base = get_page()) + offset;
+  fp->rec_start = ( cp->base = get_page() ) + offset;
   clear_link(fp->link_u, cp);
   (void)cwmovelr(cp->base, link_base, offset);
 }
@@ -2487,7 +2639,7 @@ vsunlink(UNIT *const fp)
 
   if (cp->linked)
     {
-      unlink_page(fp, cp, (int)( fp->rec_start - cp->base ));
+      unlink_page( fp, cp, (int)( fp->rec_start - cp->base ) );
     }
 
   for (++cp; cp->base != NULL; ++cp)
@@ -2514,7 +2666,7 @@ vsopen(void)
   UNIT *const fp = heap(UNIT);
 
   fp->list = (PAGE_PTR *)get_page();
-  bzero(fp->list, PP_SIZE * ( PPP >> B_SIZE ));
+  bzero( fp->list, PP_SIZE * ( PPP >> B_SIZE ) );
   fp->rec_start = fp->list->base = get_page();
   fp->rec_num = fp->page = fp->read = 0;
   fp->link_u = NULL;
@@ -2531,7 +2683,9 @@ private
 void
 vsclose(UNIT *const fp)
 {
+
   /* Return all blocks, FCB etc back to pool */
+
   clear_pages(fp);
   free_pt(fp);
   rlsevec(fp);
@@ -2545,11 +2699,14 @@ private
 void
 vsreopen(UNIT *const fp)
 {
-  if (( fp->read = !fp->read ) == YES)
+  if ( ( fp->read = !fp->read ) == YES )
     {
-      /* Set eof here.  File cannot end up in read mode without eof
-       * set as this is the only route
+
+      /*
+       * Set eof here.  File cannot end up in read
+       * mode without eof set as this is the only route
        */
+
       page_end(fp);
       fp->eof_rec = fp->rec_num;
       fp->eof_page = fp->page + 1;
@@ -2605,10 +2762,11 @@ vsputrec(UNIT *const fp, const char *record, word len)
   offset = fp->rec_start - cp->base;
 
   /* will record fit in this page ? */
+
   if (++len > PAGE_SIZE - offset)
     {
       page_end(fp);
-      if (( fp->page = ++pg ) >= fp->list_end)
+      if ( ( fp->page = ++pg ) >= fp->list_end )
         {
           extend_list(fp);
         }
@@ -2627,7 +2785,7 @@ vsputrec(UNIT *const fp, const char *record, word len)
 
   if (cp->linked)
     {
-      if (offset + len <= cp->end_pos && ecmp(fp->rec_start, p, len))
+      if ( offset + len <= cp->end_pos && ecmp(fp->rec_start, p, len) )
         {
           fp->rec_start += len;
           return;
@@ -2658,6 +2816,7 @@ vsputrec(UNIT *const fp, const char *record, word len)
     }
 
   /* normal write */
+
   fp->rec_start = cwmmovelr(fp->rec_start, p, len);
 }
 
@@ -2695,6 +2854,7 @@ vsload(UNIT *const fp, char csc record, word len)
   put_len(p);
 
   /* will record fit in this page ? */
+
   if (++len > PAGE_SIZE - offset)
     {
       cp->rec = fp->rec_num;
@@ -2714,6 +2874,7 @@ vsload(UNIT *const fp, char csc record, word len)
     }
 
   /* normal write */
+
   fp->rec_start = cwmmovelr(fp->rec_start, p, len);
 
   ++fp->rec_num;
@@ -2771,12 +2932,14 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
     }
 
   rem2 = PAGE_SIZE - offset2;
-  ep1 = cp1->base + cp1->end_pos;
-  while (cp1->rec < dst || ( ep1 = find_rec(fp1, dst)) - rs1 > rem2)
+  ep1  = cp1->base + cp1->end_pos;
+  while (cp1->rec < dst || ( ep1 = find_rec(fp1, dst) ) - rs1 > rem2)
     {
       irec1 = rec1;
       irs1 = rs1;
+
       /* find end of segment */
+
       if (ep1 - rs1 > rem2)
         {
           byte csc last = rs1 + rem2;
@@ -2800,9 +2963,12 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
         }
 
       /* move segment */
+
       len = rs1 - irs1;
       (void)cwmovelr(rs2, irs1, len);
+
       /* next new file page */
+
       cp2->rec = rec2 += ( rec1 - irec1 );
       cp2->end_pos = (ushort)( offset2 + len );
       if (++fp2->page >= fp2->list_end)
@@ -2811,7 +2977,9 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
         }
 
       cp2 = fp2->list + fp2->page;
+
       /* next old file page */
+
       if (rec1 >= cp1->rec)
         {
           ++fp1->page;
@@ -2824,13 +2992,15 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
         }
 
       /* check status of this page now we */
+
       if (cp2->linked)  /* know its going to be written to */
         {
           clear_link(lu, cp2);
           cp2->base = get_page();
         }
 
-      elif(cp2->base == NULL) cp2->base = get_page();
+      elif(cp2->base == NULL)
+          cp2->base = get_page();
 
       offset2 = 0;
       rs2 = cp2->base;
@@ -2838,7 +3008,7 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
       ep1 = cp1->base + cp1->end_pos;
     }
 
-  fp2->rec_start = cwmmovelr(rs2, rs1, (int)( ep1 - rs1 ));
+  fp2->rec_start = cwmmovelr( rs2, rs1, (int)( ep1 - rs1 ) );
   fp1->rec_start = ep1;
   fp1->rec_num   = dst;
   fp2->rec_num   = rec2 + ( dst - rec1 );
@@ -2862,13 +3032,13 @@ vscopy(UNIT *const fp2, UNIT *const fp1, const word end_rec)
 
   if (offset1 != fp2->rec_start - cp2->base || slow)
     {
-      if (block_copy(fp2, fp1, end_rec, !slow))
+      if ( block_copy(fp2, fp1, end_rec, !slow) )
         {
           return;
         }
 
       cp2 = fp2->list + fp2->page;
-      if (( ++cp1 )->base != cp2->base)
+      if ( ( ++cp1 )->base != cp2->base )
         {
           set_link(cp1, cp2);
         }
@@ -2876,7 +3046,9 @@ vscopy(UNIT *const fp2, UNIT *const fp1, const word end_rec)
 
   if (cp1->rec < end_rec)
     {
+
       /* move remainder of current page */
+
       if (cp1->base != cp2->base)
         {
           if (cp2->linked)
@@ -2910,6 +3082,7 @@ vscopy(UNIT *const fp2, UNIT *const fp1, const word end_rec)
         }
 
       /* for each page */
+
       while (pages--)
         {
           cp2->rec = cp1->rec + rec_offset;
@@ -2923,7 +3096,8 @@ vscopy(UNIT *const fp2, UNIT *const fp1, const word end_rec)
       fp2->page = cp2 - fp2->list;
     }
 
-  elif(cp1->base != cp2->base) set_link(cp1, cp2);
+  elif(cp1->base != cp2->base)
+      set_link(cp1, cp2);
 
   fp2->rec_start = fp1->rec_start = find_rec(fp1, end_rec);
   fp2->rec_num = ( fp1->rec_num = end_rec ) + rec_offset;
@@ -3098,7 +3272,7 @@ vsprimary(void)
   out_u->rec_start = in_u->list->base = in_u->rec_start;
   if (in_fname != no_file)
     {
-      if (( infile_recs = Disk_to_mem(in_fname, in_u, i_mode)) == EOF)
+      if ( ( infile_recs = Disk_to_mem(in_fname, in_u, i_mode) ) == EOF)
         {
           in_fname = no_file;
         }
@@ -3300,7 +3474,7 @@ char
 toprint(int c)
 {
   c = toascii(c);
-  if (iscntrl(c))
+  if ( iscntrl(c) )
     {
       c = CNTRL(c) + 0x40;
     }
@@ -3327,7 +3501,7 @@ err_print(char *const err_text, const int code, const char *ptr)
 
   if (code == FILE_ERROR && errno != 0)
     {
-      (void)sprintf(err_text, "%s - %s.", mess, strerror(errno));
+      (void)sprintf( err_text, "%s - %s.", mess, strerror(errno) );
       errno = 0;
     }
   else
@@ -3340,7 +3514,7 @@ err_print(char *const err_text, const int code, const char *ptr)
       ptr = com_stack_ptr->prog->errp;
     }
 
-  if (ptr != NULL && !nullstr(ptr))
+  if ( ptr != NULL && !nullstr(ptr) )
     {
       p = mcmovelr(err_text, "\nCulprit: ");
       last = p + L_LEN / 2;
@@ -3376,7 +3550,7 @@ g_err(const int code, char csc ptr)
         get_eos(buf),
         "\nCalled from edit file %s (line %d)",
         c_list->name,
-        vstell(comm_u));
+        vstell(comm_u) );
       c_comm_u();
     }
 
@@ -3427,13 +3601,13 @@ xtoc(char csc p)
 {
   const char *p1, *p2;
 
-  if (( p1 = (const char *)memchr(hextrans, u_star(p), 16)) == NULL
-      || ( p2 = (const char *)memchr(hextrans, u_star(p + 1), 16)) == NULL)
+  if ( ( p1 = (const char *)memchr(hextrans, u_star(p), 16) ) == NULL
+      || ( p2 = (const char *)memchr(hextrans, u_star(p + 1), 16) ) == NULL)
     {
       g_err(HEX_INV, NULL);
     }
 
-  return (byte)(( p1 - hextrans ) << 4 | ( p2 - hextrans ));
+  return (byte)( ( p1 - hextrans ) << 4 | ( p2 - hextrans ) );
 }
 
 /*
@@ -3472,12 +3646,16 @@ xtoc(char csc p)
 private
 const char *near braslist[NBRA], *near braelist[NBRA], *near loc1,
 *near loc2 = NULL;
+
 private
 int near circf, near low, near range, near l2rec;
+
 private
 char near nbra;
+
 private
 byte expbuf[RE_BUFF_SIZE + CCL_SIZE + 2];  /* for compiled RE */
+
 private
 word near cflags;
 
@@ -3487,6 +3665,7 @@ const byte near bittab[] = {
 };
 
 /* character translations for rhs */
+
 #define C_UPPER       1
 #define C_LOWER       2
 #define C_NEXT_UPPER  4
@@ -3517,14 +3696,14 @@ getrnge(const byte *ep)
 {
   word len;
 
-  if (( len = *ep++ ) > 254)
+  if ( ( len = *ep++ ) > 254 )
     {
       len = ( word ) * ep++ << 8;
       len |= *ep++;
     }
 
   low = len;
-  if (( len = *ep++ ) > 254)
+  if ( ( len = *ep++ ) > 254 )
     {
       len = ( word ) * ep++ << 8;
       len |= *ep++;
@@ -3565,7 +3744,7 @@ compile(char csc instring, const int len)
         }
 
       c = *sp++;
-      if (c != '*' && ( c != '\\' || *sp != '{' ))
+      if ( c != '*' && ( c != '\\' || *sp != '{' ) )
         {
           lastep = ep;
         }
@@ -3598,7 +3777,7 @@ compile(char csc instring, const int len)
           *ep++ = CCL;
           bzero(ep, CCL_SIZE >> B_SIZE);
           lc = neg = 0;
-          if (( c = *sp++ ) == '^')
+          if ( ( c = *sp++ ) == '^' )
             {
               ++neg;
               c = *sp++;
@@ -3613,7 +3792,7 @@ compile(char csc instring, const int len)
 
               if (c == '-' && lc != 0)
                 {
-                  if (( c = *sp++ ) == ']')
+                  if ( ( c = *sp++ ) == ']' )
                     {
                       PLACE('-');
                       break;
@@ -3629,7 +3808,7 @@ compile(char csc instring, const int len)
               lc = c;
               PLACE(c);
             }
-          while (( c = *sp++ ) != ']' );
+          while ( ( c = *sp++ ) != ']' );
 
           if (neg)
             {
@@ -3696,7 +3875,7 @@ nlim:
 
                   i = i * 10 + c - '0';
                 }
-              while ((( c = *sp++ ) != '\\' ) && ( c != ',' ));
+              while ( ( ( c = *sp++ ) != '\\' ) && ( c != ',' ) );
               ep = putrnge(ep, i);
               if (c == ',')
                 {
@@ -3705,7 +3884,7 @@ nlim:
                       g_err(RE_END_RANGE, instring);
                     }
 
-                  if (( c = *sp++ ) == BSLASH)
+                  if ( ( c = *sp++ ) == BSLASH )
                     {
                       ep = putrnge(ep, E_BUFF_SIZE);
                     }
@@ -3737,7 +3916,7 @@ nlim:
               continue;
 
             case PNUMERIC:
-              if (( c -= '1' ) >= closed)
+              if ( ( c -= '1' ) >= closed )
                 {
                   g_err(RE_BACKREF, instring);
                 }
@@ -3815,7 +3994,7 @@ advance(const char *lp, const byte *ep)
 
     case CCL:
       c = ( byte ) * lp++;
-      if (ISTHERE(c))
+      if ( ISTHERE(c) )
         {
           ep += CCL_SIZE;
           continue;
@@ -3835,7 +4014,7 @@ advance(const char *lp, const byte *ep)
     case CBACK:
       bbeg = braslist[*ep];
       ct = braelist[*ep++] - bbeg;
-      if (ecmp(bbeg, lp, ct))
+      if ( ecmp(bbeg, lp, ct) )
         {
           lp += ct;
           continue;
@@ -3844,7 +4023,7 @@ advance(const char *lp, const byte *ep)
       return NO;
 
     case SWORD:
-      if (( lp == loc1 || !wordch(lp[-1])) && wordch(lp[0]))
+      if ( ( lp == loc1 || !wordch(lp[-1]) ) && wordch(lp[0]) )
         {
           continue;
         }
@@ -3852,7 +4031,7 @@ advance(const char *lp, const byte *ep)
       return NO;
 
     case EWORD:
-      if (lp > loc1 && wordch(lp[-1]) && !wordch(lp[0]))
+      if ( lp > loc1 && wordch(lp[-1]) && !wordch(lp[0]) )
         {
           continue;
         }
@@ -3864,11 +4043,11 @@ advance(const char *lp, const byte *ep)
       ct = braelist[*ep++] - bbeg;
       ep = getrnge(ep);
       curlp = lp;
-      while (low-- && ecmp(bbeg, lp, ct))
+      while ( low-- && ecmp(bbeg, lp, ct) )
         {
           lp += ct;
         }
-      while (range-- && ecmp(bbeg, lp, ct))
+      while ( range-- && ecmp(bbeg, lp, ct) )
         {
           lp += ct;
         }
@@ -3878,7 +4057,7 @@ advance(const char *lp, const byte *ep)
       bbeg = braslist[*ep];
       ct = braelist[*ep++] - bbeg;
       curlp = lp;
-      while (ecmp(bbeg, lp, ct))
+      while ( ecmp(bbeg, lp, ct) )
         {
           lp += ct;
         }
@@ -3886,7 +4065,7 @@ advance(const char *lp, const byte *ep)
 cstar:
       while (lp >= curlp)
         {
-          if (advance(lp, ep))
+          if ( advance(lp, ep) )
             {
               return YES;
             }
@@ -3949,7 +4128,7 @@ cstar:
       while (low--)
         {
           c = ( byte ) * lp++;
-          if (!ISTHERE(c))
+          if ( !( ISTHERE(c) ) )
             {
               return NO;
             }
@@ -3958,7 +4137,7 @@ cstar:
       while (range--)
         {
           c = ( byte ) * lp++;
-          if (!ISTHERE(c))
+          if ( !( ISTHERE(c) ) )
             {
               break;
             }
@@ -3986,7 +4165,7 @@ cstar:
         {
           c = ( byte ) * lp++;
         }
-      while ( ISTHERE(c));
+      while ( ISTHERE(c) );
       ep += CCL_SIZE;
       goto star;
 
@@ -4000,7 +4179,7 @@ cstar:
 star:
       while (--lp >= curlp)
         {
-          if (advance(lp, ep))
+          if ( advance(lp, ep) )
             {
               return YES;
             }
@@ -4021,13 +4200,14 @@ step(const char *lp)
     }
 
   /* fast check for first character */
+
   if (*ep == CCHR)
     {
       const int c = ep[1];
       ep += 2;
-      while (( lp = strchr(lp, c)) != NULL)
+      while ( ( lp = strchr(lp, c) ) != NULL)
         {
-          if (advance(++lp, ep))
+          if ( advance(++lp, ep) )
             {
               loc1 = lp - 1;
               return YES;
@@ -4037,9 +4217,10 @@ step(const char *lp)
     }
 
   /* regular algorithm */
+
   do
     {
-      if (advance(lp, ep))
+      if ( advance(lp, ep) )
         {
           loc1 = lp;
           return YES;
@@ -4057,7 +4238,8 @@ xcase(const int c)
   const word f = cflags;
 
   cflags = f & ~( C_NEXT_UPPER | C_NEXT_LOWER );
-  return (char)(( f & C_NEXT_UPPER || f == C_UPPER ) ? u_map[c] : tolower(c));
+  return (char)( ( f & C_NEXT_UPPER || \
+                   f == C_UPPER ) ? u_map[c] : tolower(c) );
 }
 
 /*
@@ -4089,7 +4271,7 @@ re_sub(const char *ep, char *const str)
   char csc end_buff = str + E_BUFF_LEN;
   int len;
 
-  if (equal1(ep, '~'))
+  if ( equal1(ep, '~') )
     {
       if (e_save_len < 0)
         {
@@ -4098,14 +4280,14 @@ re_sub(const char *ep, char *const str)
     }
   else
     {
-      if (( len = size(ep)) > e_save_len)
+      if ( ( len = size(ep) ) > e_save_len )
         {
           if (e_save_len > 0)
             {
               rlsevec(e_save);
             }
 
-          if (( e_save_len = len ) > 0)
+          if ( ( e_save_len = len ) > 0 )
             {
               e_save = getbuf(len);
             }
@@ -4116,7 +4298,7 @@ re_sub(const char *ep, char *const str)
 
   ep = e_save;
 
-  if (equal1(ep, '%'))
+  if ( equal1(ep, '%') )
     {
       if (s_save_len < 0)
         {
@@ -4128,7 +4310,7 @@ re_sub(const char *ep, char *const str)
     }
 
   cflags = 0;
-  while (( c = *ep++ ) != EOS)
+  while ( ( c = *ep++ ) != EOS )
     {
       if (c == '&')
         {
@@ -4165,7 +4347,7 @@ re_sub(const char *ep, char *const str)
               continue;
 
             case PNUMERIC:
-              if (( c -= '1' ) >= nbra)
+              if ( ( c -= '1' ) >= nbra )
                 {
                   g_err(RE_BACKREF, str);
                 }
@@ -4190,14 +4372,14 @@ re_sub(const char *ep, char *const str)
         }
     }
 
-  if (( len = (int)( sp - str )) > s_save_len)
+  if ( ( len = (int)( sp - str ) ) > s_save_len)
     {
       if (s_save_len > 0)
         {
           rlsevec(s_save);
         }
 
-      if (( s_save_len = len ) > 0)
+      if ( ( s_save_len = len ) > 0 )
         {
           s_save = getbuf(len);
         }
@@ -4222,7 +4404,7 @@ Quit(void)
       say("Edit abandoned.");
     }
 
-#else  /* if UNIX */
+#else  /* if UNIX  */
     {
       putstr("Edit abandoned.");
     }
@@ -4243,7 +4425,7 @@ get_com(char *str, char csc c_prompt)
 
   if (c_list != NULL)
     {
-      if (( len = vsgetrec(comm_u, &p)) == EOF)
+      if ( ( len = vsgetrec(comm_u, &p) ) == EOF )
         {
           c_comm_u();
           return YES;
@@ -4272,7 +4454,7 @@ get_com(char *str, char csc c_prompt)
 
   lon = YES;
   putstr(c_prompt);
-  if (( len = read(kbd_fd, str, STR_LEN)) <= 0)
+  if ( ( len = read(kbd_fd, str, STR_LEN) ) <= 0 )
     {
       Quit();
       abort();
@@ -4295,17 +4477,17 @@ gdss(char *const buf, int *const buf_len, char cssc ptr)
   char csc str = *ptr, *p;
   int len;
 
-  if (!delim(ch_delim = str[-1]))
+  if ( !( delim(ch_delim = str[-1]) ) )
     {
       g_err(M_DELIM, str - 1);
     }
 
-  if (( p = strchr(str, ch_delim)) == NULL)
+  if ( ( p = strchr(str, ch_delim) ) == NULL )
     {
       p = get_eos(str);
     }
 
-  if (( len = p - str ) > STR_LEN)
+  if ( ( len = p - str ) > STR_LEN )
     {
       g_err(S_STR_LEN, str);
     }
@@ -4490,10 +4672,11 @@ contains(const char *ptr, char csc str, const int len, char csc last)
 {
   const int c = *str;
 
-  while (ptr <= last
-         && ( ptr = (const char *)memchr(ptr, c, ( last - ptr ) + 1)) != NULL)
+  while ( ptr <= last &&
+           ( ptr = (const char *)memchr( ptr, c, ( last - ptr ) + 1 ) )
+             != NULL )
     {
-      if (ecmp(ptr, str, len))
+      if ( ecmp(ptr, str, len) )
         {
           loc1 = ptr;
           loc2 = ptr + len;
@@ -4511,7 +4694,7 @@ private
 int
 ncontains(const char *ptr, char csc str, const int len, char csc i_end)
 {
-  while (i_end - ptr >= len && ecmp(ptr, str, len))
+  while ( i_end - ptr >= len && ecmp(ptr, str, len) )
     {
       ++ptr;
     }
@@ -4531,7 +4714,7 @@ nstep(const char *p1)
     }
   else
     {
-      while (advance(p1++, p2))
+      while ( advance(p1++, p2) )
         {
           ;
         }
@@ -4558,7 +4741,8 @@ string_search(char *const ign_buff, char csc str, const int len,
           compile(str, len);
         }
 
-      elif(nullstr(expbuf)) g_err(NO_PREV_RE, str);
+      elif( nullstr(expbuf) )
+          g_err(NO_PREV_RE, str);
     }
 
   repeat
@@ -4584,6 +4768,7 @@ string_search(char *const ign_buff, char csc str, const int len,
     *i_end = EOS;
 
     /* set up start position */
+
     switch (type)
       {
       case 'r':
@@ -4592,10 +4777,13 @@ string_search(char *const ign_buff, char csc str, const int len,
         b_ptr += i_col;
         break;
 
-      /* TS// matches rec with blanks only */
-      /* T// matches truly empty rec */
+      /*
+       *  TS// matches rec with blanks only
+       *  T// matches truly empty rec
+       */
+
       case 'S':
-        while (b_ptr < i_end && isspace(*b_ptr))
+        while ( b_ptr < i_end && isspace(*b_ptr) )
           {
             ++b_ptr;
           }
@@ -4622,6 +4810,7 @@ string_search(char *const ign_buff, char csc str, const int len,
     loc1 = b_ptr;
 
     /* too short for match ? */
+
     if (regex || i_end - loc1 >= len)
       {
         switch (type)
@@ -4640,9 +4829,9 @@ string_search(char *const ign_buff, char csc str, const int len,
                 return advance(b_ptr, expbuf) != negate;
               }
 
-            if (!negate && step(b_ptr) || negate && nstep(b_ptr))
+            if ( !negate && step(b_ptr) || negate && nstep(b_ptr) )
               {
-                altr_line((int)( loc1 - b_ptr ), comm);
+                altr_line( (int)( loc1 - b_ptr ), comm );
                 return YES;
               }
 
@@ -4666,10 +4855,10 @@ string_search(char *const ign_buff, char csc str, const int len,
             break;
 
           case 'G':
-            if (!negate && contains(b_ptr, str, len, i_end - len)
-                || negate && ncontains(b_ptr, str, len, i_end))
+            if ( !negate && contains(b_ptr, str, len, i_end - len)
+                || negate && ncontains(b_ptr, str, len, i_end) )
               {
-                altr_line((int)( loc1 - b_ptr ), comm);
+                altr_line( (int)( loc1 - b_ptr ), comm );
                 return YES;
               }
 
@@ -4683,15 +4872,17 @@ string_search(char *const ign_buff, char csc str, const int len,
           }
       }
 
-    elif(negate) return YES;
+    elif(negate)
+        return YES;
 
     /* come here when negative logic finds a match */
+
     if (stay)
       {
         return NO;
       }
 
-    if (!add_line(comm))
+    if ( !add_line(comm) )
       {
         return negate;
       }
@@ -4714,7 +4905,7 @@ findstr(char csc str, int len, word type, const int comm)
 
   loc2 = NULL;
 
-  if (string_search(buf, str, len, comm, ignore, negate, type))
+  if ( string_search(buf, str, len, comm, ignore, negate, type) )
     {
       if (ignore && loc2 != NULL)
         {
@@ -4744,7 +4935,7 @@ prep_name(const char *fname)
   const char *v;
   char *p = name, *t, c;
 
-  while (( c = *fname++ ) != EOS)
+  while ( ( c = *fname++ ) != EOS )
     {
       switch (c)
         {
@@ -4760,9 +4951,9 @@ prep_name(const char *fname)
           break;
 
         case '~':
-          if (path_sep(*fname))
+          if ( path_sep(*fname) )
             {
-              if (( v = getenv("HOME")) == NULL)
+              if ( ( v = getenv("HOME") ) == NULL )
                 {
                   v = empty;
                 }
@@ -4782,7 +4973,7 @@ prep_name(const char *fname)
             }
 
           *t = EOS;
-          if (( v = getenv(p)) == NULL)
+          if ( ( v = getenv(p) ) == NULL )
             {
               g_err(NO_ENV, p);
             }
@@ -4808,12 +4999,12 @@ serial_read(UNIT *const vs_u, const int fd)
   int len = 0;
   char buf[BLOCK_SIZE + E_BUFF_SIZE], *p;
 
-  while (( len = read(fd, p = buf + len, BLOCK_SIZE)) > 0)
+  while ( ( len = read(fd, p = buf + len, BLOCK_SIZE) ) > 0 )
     {
       const char *start = buf, *const last = p + len;
-      while (( len = last - p ) > 0)
+      while ( ( len = last - p ) > 0 )
         {
-          if (( p = (char *)memchr(p, LFEED, len)) == NULL)
+          if ( ( p = (char *)memchr(p, LFEED, len) ) == NULL )
             {
               if (len > E_BUFF_LEN)
                 {
@@ -4824,13 +5015,13 @@ serial_read(UNIT *const vs_u, const int fd)
               break;
             }
 
-          vsload(vs_u, start, (int)( p - start ));
+          vsload( vs_u, start, (int)( p - start ) );
           start = ++p;
         }
     }
   if (p > buf)
     {
-      vsload(vs_u, buf, (int)( p - buf ));
+      vsload( vs_u, buf, (int)( p - buf ) );
     }
 
   (void)close(fd);
@@ -4851,11 +5042,12 @@ Mem_to_proc(UNIT *const vs_u, char csc comm)
   const byte *p;
   int len, rc = -1;
 
-  if (( fp = popen(prep_name(comm), write_only)) != NULL)
+  if ( ( fp = popen(prep_name(comm), write_only) ) != NULL )
     {
-      while (( len = vsgetrec(vs_u, &p)) != EOF)
+      while ( ( len = vsgetrec(vs_u, &p) ) != EOF )
         {
-          if (fwrite(p, 1, len, fp) != len || fwrite(pt_list, 1, 1, fp) != 1)
+          if ( fwrite(p, 1, len, fp) != len || \
+               fwrite(pt_list, 1, 1, fp) != 1 )
             {
               break;
             }
@@ -4873,11 +5065,11 @@ Proc_to_mem(UNIT *const vs_u, char csc comm)
   FILE *fp;
   int rc = -1;
 
-  if (( fp = popen(prep_name(comm), "r")) != NULL)
+  if ( ( fp = popen(prep_name(comm), "r") ) != NULL )
     {
       trunc_recs = 0;
 
-      (void)serial_read(vs_u, fileno(fp));
+      (void)serial_read( vs_u, fileno(fp) );
 
       rc = pclose(fp);
     }
@@ -4918,7 +5110,8 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
       fd = fd_in_terminal;
     }
 
-  elif(( fd = open(prep_name(fname), O_RDONLY)) == -1) return EOF;
+  elif( ( fd = open(prep_name(fname), O_RDONLY) ) == -1 )
+      return EOF;
 
   trunc_recs = 0;
 
@@ -4927,12 +5120,12 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
   setmode(fd, O_BINARY);
 # endif  /* if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) */
 
-  while (( len = read(fd, p = buf + len, BLOCK_SIZE)) > 0)
+  while ( ( len = read(fd, p = buf + len, BLOCK_SIZE) ) > 0 )
     {
       const char *start = buf, *const last = p + len;
-      while (( len = last - p ) > 0)
+      while ( ( len = last - p ) > 0 )
         {
-          if (( p = (char *)memchr(p, LFEED, len)) == NULL)
+          if ( ( p = (char *)memchr(p, LFEED, len) ) == NULL )
             {
               if (len > E_BUFF_LEN)
                 {
@@ -4943,13 +5136,13 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
               break;
             }
 
-          vsload(vs_u, start, (int)( p - start ));
+          vsload( vs_u, start, (int)( p - start ) );
           start = ++p;
         }
     }
   if (p > buf)
     {
-      vsload(vs_u, buf, (int)( p - buf ));
+      vsload( vs_u, buf, (int)( p - buf ) );
     }
 
   (void)close(fd);
@@ -4960,20 +5153,20 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 
 # if UNIX || !defined(OMIT_MMAP)
   f_len = lseek(fd, (off_t)0, SEEK_END);
-  if (( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0))
+  if ( ( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0) )
       != (caddr_t)-1)
     {
       const char *start = f_p, *p, *const last = start + f_len;
       int len;
       (void)close(fd);
-      while (( len = last - start ) > 0)
+      while ( ( len = last - start ) > 0 )
         {
-          if (( p = memchr(start, LFEED, len)) == NULL)
+          if ( ( p = memchr(start, LFEED, len) ) == NULL )
             {
               p = last;
             }
 
-          vsload(vs_u, start, (int)( p - start ));
+          vsload( vs_u, start, (int)( p - start ) );
           start = p + 1;
         }
       (void)munmap(f_p, f_len);
@@ -5009,7 +5202,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
     }
   else
     {
-      if (ro_mode && equal(fname, in_fname))
+      if ( ro_mode && equal(fname, in_fname) )
         {
           errno = EACCES;
           return EOF;
@@ -5024,7 +5217,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
           fmode = O_WRONLY | O_CREAT | O_APPEND;
         }
 
-      if (( fd = open(prep_name(fname), fmode, 0644)) == -1)
+      if ( ( fd = open(prep_name(fname), fmode, 0644) ) == -1)
         {
           return EOF;
         }
@@ -5034,12 +5227,12 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
   setmode(fd, O_BINARY);
 #endif  /* if DOS && !defined(IA16_GCC_DOS) */
 
-  if (isatty(fd))
+  if ( isatty(fd) )
     {
       term();
     }
 
-  while (( len = vsgetrec(vs_u, &rec)) != EOF)
+  while ( ( len = vsgetrec(vs_u, &rec) ) != EOF )
     {
       p = cwmmovelr(p, rec, len);
 #if DOS
@@ -5057,7 +5250,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
           p = cwmmovelr(buf, last, len);
         }
     }
-  if (( len = p - buf ) > 0)
+  if ( ( len = p - buf ) > 0 )
     {
       if (write(fd, buf, len) != len)
         {
@@ -5140,6 +5333,7 @@ buf_to_file(const int com)
   o_rec += i - FIRST_LINE;
 
   /* in case buf_to_file gets called again (from SIGUSR2) */
+
 #if UNIX
   eor[FIRST_LINE] = EOF;
 #endif  /* if UNIX */
@@ -5232,7 +5426,7 @@ save_work(char *const mess)
   for (i = 0; save_dirs[i] != NULL; ++i)
     {
       (void)zmovelr(mzmovelr(filename, save_dirs[i]), "/g.hup");
-      if (( recs = Mem_to_disk(in_u, filename, 'N')) != EOF)
+      if ( ( recs = Mem_to_disk(in_u, filename, 'N' ) ) != EOF )
         {
           (void)sprintf(
             get_eos(mess),
@@ -5308,7 +5502,7 @@ g_intr(int sig)
   (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
   save_work(mess);
 #if !defined(OMIT_POPEN)
-  if (( fp = popen("exec mail $LOGNAME", write_only)) != NULL)
+  if ( ( fp = popen("exec mail $LOGNAME", write_only) ) != NULL )
     {
       (void)fprintf(fp, "\n%s", mess);
       (void)pclose(fp);
@@ -5326,7 +5520,8 @@ g_intr(int sig)
  */
 
 /* portable multiple character constants */
-#define COMB(a, b) (( a << 8 ) | b )
+
+#define COMB(a, b) ( ( a << 8 ) | b )
 
 #define SHL    COMB('<', '<')
 #define SHR    COMB('>', '>')
@@ -5387,13 +5582,14 @@ case  SHLAB:   \
 case  SHRAB
 
 /* compound variable names */
+
 #define DOT_AT   COMB('.', '@')
 #define DOT_HASH COMB('.', '#')
 #define DOT_DOL  COMB('.', '$')
 #define DOT_AND  COMB('.', '&')
 #define DOT_DOT  COMB('.', '.')
 
-#define LAST_RES    26   /* Last result (.) */
+#define LAST_RES    26   /* Last result (.)           */
 #define M_TEMP      27   /* Temporary for macros (..) */
 
 #define LITERAL   0177   /* Un-named constant */
@@ -5404,10 +5600,12 @@ case  SHRAB
 #define NROM         5
 
 /* Free list to save malloc calls/fragmentation */
+
 private
 TOKEN *c_free_list = NULL;
 
 /* Possible values for the group field */
+
 #define OPERAND   0  /* literal or variable */
 #define OPEN_PAR  1
 #define CLOSE_PAR 2
@@ -5415,7 +5613,7 @@ TOKEN *c_free_list = NULL;
 #define POSTFIX   4
 #define DYADIC    5
 #define COMMA     6
-#define END_EXP   7  /* EOS or Close Curly */
+#define END_EXP   7  /* EOS or Close Curly  */
 #define QUERY     8
 #define COLON     9
 
@@ -5439,7 +5637,7 @@ private
 word
 priority(const word op)
 {
-  if (( op >> 8 ) == 0)
+  if ( ( op >> 8 ) == 0 )
     {
       return xlat(op, "*/%+-<>&^|?:=,", opprio);
     }
@@ -5522,7 +5720,7 @@ execute(TOKEN *const rhs, TOKEN csc action)
         }
     }
 
-  if (( op & BYTE_MASK ) == '=')
+  if ( ( op & BYTE_MASK ) == '=' )
     {
       if (lhs->id == LITERAL)
         {
@@ -5857,7 +6055,7 @@ rtoi(char cssc ptr)
 
   while (--p >= s)
     {
-      switch (u_star(p))
+      switch ( u_star(p) )
         {
         default:
           g_err(BAD_NUM, s);
@@ -5907,14 +6105,14 @@ rtoi(char cssc ptr)
         }
 
       elif(val == last)
-      {
-        if (!pow10 || ++contig > 3)
-          {
-            g_err(BAD_NUM, s);
-          }
+        {
+          if (!pow10 || ++contig > 3)
+            {
+              g_err(BAD_NUM, s);
+            }
 
-        n += val;
-      }
+          n += val;
+        }
       else
         {
           if (!pow10 || contig != 1 || dec)
@@ -5941,7 +6139,7 @@ get_op(char cssc ptr)
 {
   word c1, c2;
 
-  if (( c1 = *( *ptr )++ ) != EOS)
+  if ( ( c1 = *( *ptr )++ ) != EOS )
     {
       c2 = *( *ptr )++;
     }
@@ -5961,7 +6159,7 @@ get_op(char cssc ptr)
 
       if (c2 == c1)
         {
-          if (( c1 = **ptr ) == '=')
+          if ( ( c1 = **ptr ) == '=' )
             {
               ++( *ptr );
               return COMB(c2, c1);
@@ -6058,7 +6256,7 @@ lex(char cssc ptr)
 
   skip_space(e);
   tok.errp = e;
-  if (( ch = get_op(&e)) == EOS)
+  if ( ( ch = get_op(&e) ) == EOS )
     {
       *ptr = e;
       return NULL;
@@ -6082,7 +6280,7 @@ lex(char cssc ptr)
       break;
 
     case '.':
-      if (!isdigit(*p))
+      if ( !( isdigit(*p) ) )
         {
           tok.id = LAST_RES;
           break;
@@ -6115,7 +6313,7 @@ lex(char cssc ptr)
       if (ch == 'E' || ch == '.')
         {
 #if TINY_G && !(UNIX)
-          if (( bios_word(0x410) & 0x02 ) == 0)  /* no 87 fitted */
+          if ( ( bios_word(0x410) & 0x02 ) == 0 )  /* no 87 fitted */
             {
               g_err(BAD_NUM, p);
             }
@@ -6136,7 +6334,7 @@ have_num:
 
     case SQUOTE:
       tok.id = LITERAL;
-      if (( ch = *p++ ) == BSLASH)
+      if ( ( ch = *p++ ) == BSLASH )
         {
           ch = xlat(u_star(p++), esc_symb, esc_char);
         }
@@ -6207,7 +6405,7 @@ binops:
 
     default:
       ch = u_map[ch];
-      if (!isupper(ch))
+      if ( !( isupper(ch) ) )
         {
           g_err(SYN_EXPR, tok.errp);
         }
@@ -6231,9 +6429,9 @@ Expr_compile(TOKEN **start, char cssc ptr)
   TOKEN *tok, *temp;
 
   *start = NULL;
-  ++last_was_op;  /* ie. its ok to have a unop here */
+  ++last_was_op;  /* ie. it's ok to have a unop here */
 
-  while (( tok = lex(ptr)) != NULL)
+  while ( ( tok = lex(ptr) ) != NULL )
     {
       if (c_free_list != NULL)
         {
@@ -6574,7 +6772,7 @@ itoc(const long n)
 {
   static char str[] = "\'c\'";
 
-  if (iscntrl(n))
+  if ( iscntrl(n) )
     {
       return asc_tab[n == DEL ? 32 : n];
     }
@@ -6592,11 +6790,11 @@ itob(unsigned long n)
 
   do
     {
-      *p-- = (char)(( n & ODD_MASK ) + '0' );
+      *p-- = (char)( ( n & ODD_MASK ) + '0' );
       n >>= 1;
     }
   while ( n != 0 );
-  if (( &bstr[32] - p ) & ODD_MASK)
+  if ( ( &bstr[32] - p ) & ODD_MASK )
     {
       return p + 1;
     }
@@ -6636,17 +6834,18 @@ print_val(void)
         }
 
       elif(val > 0 && val <= MAXROM)
-          (void)zmovelr(p, itor(val));
+          (void)zmovelr( p, itor(val) );
+
       elif(val < 0 && val >= -MAXROM)
-      (void)zmovelr(mcmovelr(p, "negativus "), itor(-val));
+          (void)zmovelr( mcmovelr(p, "negativus "), itor(-val) );
       else
         {
           (void)zmovelr(p, "numerus negatus");
         }
 
-      if (isascii(val))
+      if ( isascii(val) )
         {
-          (void)zmovelr(mzmovelr(astr, ",  Ascii: "), itoc(val));
+          (void)zmovelr( mzmovelr(astr, ",  Ascii: "), itoc(val) );
         }
       else
         {
@@ -6656,7 +6855,7 @@ print_val(void)
       len = sprintf(
         oline,
         "Bin: %s,  Oct: %lo,  Dec: %ld,  Hex: %s%s%s",
-        itob((unsigned long)val),
+        itob( (unsigned long)val ),
         val,
         val,
         itoh(val),
@@ -6676,10 +6875,11 @@ print_val(void)
 
       if (len > 74)
         {
-          (void)sprintf(oline, "Oct: %lo,  Dec: %ld,  Hex: %s",
+          (void)sprintf(
+                  oline, "Oct: %lo,  Dec: %ld,  Hex: %s",
                   val,
                   val,
-                  itoh(val));
+                  itoh(val) );
         }
     }
 
@@ -6721,14 +6921,14 @@ Calc(TOKEN *expr)
           free_expr(ptr);
         }
 
-      if (get_com(cline, "{ ") || nullstr(cline))
+      if ( get_com(cline, "{ ") || nullstr(cline) )
         {
           break;
         }
 
       p = cline;
     }
-  while ( Expr_compile(&ptr, &p));
+  while ( Expr_compile(&ptr, &p) );
 
   save_jbuf(set_err, c_save_err);
 }
@@ -6760,7 +6960,7 @@ print_size(const int recs)
     }
   else
     {
-      (void)fprintf(vdu, " - %d line%s.\n", recs, plural(recs));
+      (void)fprintf( vdu, " - %d line%s.\n", recs, plural(recs) );
     }
 }
 
@@ -6769,7 +6969,7 @@ void
 print_i_size(char csc ftype, char csc file, UNIT csc fp)
 {
   (void)fprintf(vdu, ps_name, ftype, equal1(file, '-') ? si_file : file);
-  print_size(vssizeof(fp));
+  print_size( vssizeof(fp) );
 }
 
 private
@@ -6777,7 +6977,7 @@ void
 print_o_size(char csc ftype, char csc file, UNIT csc fp)
 {
   (void)fprintf(vdu, ps_name, ftype, equal1(file, '-') ? so_file : file);
-  print_size(vstell(fp));
+  print_size( vstell(fp) );
 }
 
 /*
@@ -6892,7 +7092,7 @@ new_input_file(VERB csc opts, FILE_LIST **const f_stack, UNIT **const vs_u)
     {
       int recs;
       temp_u = vsopen();
-      if (( recs = Disk_to_mem(fn = opts->o1.s, temp_u, 'N')) <= 0)
+      if ( ( recs = Disk_to_mem(fn = opts->o1.s, temp_u, 'N') ) <= 0 )
         {
           vsclose(temp_u);
           g_err(recs == 0 ? EMPTY_USE_MERGE : FILE_ERROR, opts->errp);
@@ -7040,7 +7240,7 @@ Xit(VERB csc opts)
         }
 
       elif(Mem_to_disk(out_u, f_list->name, f_list->disp) == EOF)
-      g_err(FILE_ERROR, f_list->name);
+        g_err(FILE_ERROR, f_list->name);
       break;
 
     case 'M':
@@ -7121,7 +7321,7 @@ Save(VERB csc opts)
       /* fallthrough */
     case '!':
       sptr = get_flist();
-      if (( sptr->next = f_list ) != NULL)
+      if ( ( sptr->next = f_list ) != NULL )
         {
           f_list->prev = sptr;
         }
@@ -7212,7 +7412,7 @@ short_num(char *t, const char *p)
   char def = '0';
   char c = p[-1];
 
-  if (isdigit(c))
+  if ( isdigit(c) )
     {
       c = '#';
       --p;
@@ -7228,9 +7428,9 @@ short_num(char *t, const char *p)
     case '#':
       *t++ = 'T';
       *t++ = c;
-      if (isdigit(*p))
+      if ( isdigit(*p) )
         {
-          while (isdigit(*p))
+          while ( isdigit(*p) )
             {
               *t++ = *p++;
             }
@@ -7257,7 +7457,7 @@ short_str(char *t, const char *p)
   switch (p[-1])
     {
     case '/':
-      if (nullstr(p))
+      if ( nullstr(p) )
         {
           *t++ = 'T';
           *t++ = SPACE;
@@ -7284,24 +7484,24 @@ private
 const char *
 num_ep(OPTION *const o, const char *p, char csc erp)
 {
-  if (isdigit(*p))
+  if ( isdigit(*p) )
     {
       o->v = 0;
-      while (isdigit(*p))
+      while ( isdigit(*p) )
         {
           o->v = o->v * 10 + *p++ - '0';
         }
     }
 
   elif(*p++ == '{')
-  {
-    if (Expr_compile(&o->e, &p))
-      {
-        g_err(INT_OPT, erp);
-      }
+    {
+      if ( Expr_compile(&o->e, &p) )
+        {
+          g_err(INT_OPT, erp);
+        }
 
-    o->q |= OP_CALC;
-  }
+      o->q |= OP_CALC;
+    }
   else
     {
       g_err(DIG_OR_END, erp);
@@ -7323,7 +7523,7 @@ string_ep(OPTION *const o, const char *p, char csc erp)
 
   repeat
   {
-    switch (c = u_star(p++))
+    switch ( c = u_star(p++) )
       {
       default:
         g_err(M_DELIM, erp);
@@ -7345,16 +7545,16 @@ string_ep(OPTION *const o, const char *p, char csc erp)
       case 'C':
       case 'F':
       case 'S':
-        if (( o->q & BYTE_MASK ) == 'G' && c == 'R')
+        if ( ( o->q & BYTE_MASK ) == 'G' && c == 'R' )
           {
             c = 'r';
           }
 
-        o->q = ( o->q & ( BYTE_MASK << 8 )) | c;
+        o->q = ( o->q & ( BYTE_MASK << 8 ) ) | c;
         continue;
 
       case DELIM:
-        if (gdss(o->s, &len, &p))
+        if ( gdss(o->s, &len, &p) )
           {
             g_err(M_DELIM, erp);
           }
@@ -7477,7 +7677,7 @@ get_name(char cssc ptr, char *name)
       *name++ = *p++;
     }
 
-#else  /* if UNIX */
+#else  /* if UNIX  */
     {
       g_err(I_OPT, p);
     }
@@ -7539,7 +7739,7 @@ parse_G(const char *p, VERB *const opts)
       switch (c2)
         {
         case 'O':
-          if (( c3 = u_star(p)) == 'N')
+          if ( ( c3 = u_star(p) ) == 'N' )
             {
               opts->o1.q = L_LON;
               return p + 1;
@@ -7618,7 +7818,7 @@ standard:
 
           opts->dot = YES;
           ++p;
-          if (comsep(*p))
+          if ( comsep(*p) )
             {
               g_err(I_OPT, erp);
             }
@@ -7706,7 +7906,7 @@ parse_I(const char *p, VERB *const opts)
       /* fallthrough */
 
     case '{':
-      if (Expr_compile(&opts->o1.e, &p))
+      if ( Expr_compile(&opts->o1.e, &p) )
         {
           g_err(INT_OPT, erp);
         }
@@ -7737,14 +7937,14 @@ get_macro(char csc name)
 {
   const MACRO *macptr;
 
-  if (nullstr(name))
+  if ( nullstr(name) )
     {
       g_err(NO_MAC_NAM, NULL);
     }
 
   for (macptr = mac_list; macptr != NULL; macptr = macptr->next)
     {
-      if (equal(name, macptr->name))
+      if ( equal(name, macptr->name) )
         {
           break;
         }
@@ -7767,6 +7967,7 @@ Create(const char *s)
   char name[MAC_NAME_LEN + 1], subs[3], subs_ch;
 
   /* get macro name from command */
+
   skip_space(s);
   for (i = 0; wordch(*s); ++s)
     {
@@ -7779,7 +7980,9 @@ Create(const char *s)
     }
 
   name[i] = EOS;
+
   /* get subs char and count */
+
   ++s;
   if (gdss(subs, &i, &s) || i != 2)
     {
@@ -7787,30 +7990,36 @@ Create(const char *s)
     }
 
   subs_ch = subs[0];
-  if (!isdigit(subs[1]))
+  if ( !( isdigit(subs[1]) ) )
     {
       g_err(NO_COUNT, erp);
     }
 
   arg_count = subs[1] - '0';
+
   /* rest of it is the command */
+
   skip_space(s);
-  if (nullstr(s))
+  if ( nullstr(s) )
     {
       g_err(NO_M_COMM, erp);
     }
 
   /* add macro to front of the list */
+
   m = heap(MACRO);
   m->next = mac_list;
   (void)zmovelr(m->name, name);
   m->par_sub = subs_ch;
-  m->nargs = (byte)arg_count;
-  m->text = (const char *)getvec(size(s));
-  (void)zmovelr((char *)m->text, s);
+  m->nargs   = (byte)arg_count;
+  m->text    = (const char *)getvec( size(s) );
+  (void)zmovelr( (char *)m->text, s );
 
-  /* Note predefined macros are in read/only core, so
-   * you cannot just simply replace existing ptr. */
+  /*
+   * Note predefined macros are in read/only core, so
+   * you cannot just simply replace existing ptr.
+   */
+
   if (c_list == NULL && get_macro(name) != NULL)
     {
       (void)sprintf(name, "Warning: macro \"%s\" redefined", m->name);
@@ -7847,7 +8056,7 @@ dotcallmac(char *const text, const char *p)
   text[i] = EOS;
 
   bzero(args, 10 * sizeof ( char * ) >> B_SIZE);
-  if (( macptr = get_macro(text)) == NULL)
+  if ( ( macptr = get_macro(text) ) == NULL )
     {
       g_err(M_NAME_NF, erp);
     }
@@ -7863,10 +8072,12 @@ dotcallmac(char *const text, const char *p)
 
   if (arg_count > 0)
     {
+
       /* set up pointers to the strings */
+
       for (i = 1; i <= arg_count; ++i)
         {
-          if (( p = strchr(args[i] = ++p, ch)) == NULL)
+          if ( ( p = strchr(args[i] = ++p, ch) ) == NULL )
             {
               g_err(M_DELIM, erp);
             }
@@ -7877,8 +8088,9 @@ dotcallmac(char *const text, const char *p)
       ++p;
 
       /* insert in the text */
+
       t_ptr = text;
-      while (( ch = *c_ptr++ ) != EOS)
+      while ( ( ch = *c_ptr++ ) != EOS )
         {
           if (ch == subs_ch)
             {
@@ -7926,19 +8138,23 @@ endpoint(VERB **const prog, char cssc ptr)
   VERB_LIST *v;
   string exp;
 
-  while (*p && ( isspace(*p) || *p == ',' ))
+  while (*p && ( isspace(*p) || *p == ',' ) )
     {
       ++p;
     }
+
   /* end of command line */
+
   if (*p == EOS)
     {
       return NO;
     }
 
   erp = p;
+
   /* expand # @ / etc */
-  switch (c1 = u_star(p++))
+
+  switch ( c1 = u_star(p++) )
     {
     case '#':
     case '+':
@@ -7972,7 +8188,9 @@ comp:
       Create(p);
       return NO;
     }
+
   /* get space for normal verb */
+
   if (g_free_list != NULL)
     {
       opts = g_free_list;
@@ -7988,7 +8206,7 @@ comp:
 
   opts->errp = erp;
   opts->comm = (char)c1;
-  opts->o1.q = c2 = ( comsep(*p) ? NO_OPT : u_star(p));
+  opts->o1.q = c2 = ( comsep(*p) ? NO_OPT : u_star(p) );
   opts->o2.q = NO_OPT;
   opts->dot = NO;
   opts->o1.e = opts->o2.e = NULL;
@@ -8030,8 +8248,8 @@ comp:
           opts->o1.q = 'r';
         }
 
-      if (gdss(opts->o1.s, &opts->o1.v, &p)
-          || gdss(opts->o2.s, &opts->o2.v, &p))
+      if ( gdss(opts->o1.s, &opts->o1.v, &p)
+          || gdss(opts->o2.s, &opts->o2.v, &p) )
         {
           g_err(M_DELIM, erp);
         }
@@ -8070,7 +8288,7 @@ comp:
     case 'Q':
     case 'E':
     case ':':
-      while (wordch(*p))
+      while ( wordch(*p) )
         {
           ++p;
         }
@@ -8128,7 +8346,7 @@ comp:
     case '!':
       if (c2 == NO_OPT)
         {
-          if (( p = getenv(shell_var)) == NULL)
+          if ( ( p = getenv(shell_var) ) == NULL )
             {
               p = shell_bin;
             }
@@ -8153,7 +8371,7 @@ copy_com:
           g_err(BAD_NUM, erp);
         }
 
-      if (comsep(c2))
+      if ( comsep(c2) )
         {
           c2 = 'd';
         }
@@ -8193,7 +8411,7 @@ copy_com:
       break;
 
     case '{':
-      if (Expr_compile(&opts->o1.e, &p))
+      if ( Expr_compile(&opts->o1.e, &p) )
         {
           if (depth)
             {
@@ -8242,7 +8460,7 @@ G_compile(VERB **start, const char *ptr)
 {
   VERB *v;
 
-  while (endpoint(start, &ptr))
+  while ( endpoint(start, &ptr) )
     {
       for (v = *start; v->next != NULL; v = v->next)
         {
@@ -8279,32 +8497,33 @@ init_screen(void)
 # if COLOUR
   if (start_color() == OK)
     {
-      (void)init_pair(1, COLOR_WHITE,   COLOR_RED);    /* matched text */
-      (void)init_pair(2, COLOR_WHITE,   COLOR_BLUE);   /* control characters */
-      (void)init_pair(3, COLOR_WHITE,   COLOR_BLACK);  /* EOF marker */
-      (void)init_pair(4, COLOR_YELLOW,  COLOR_BLACK);  /* the scale line */
-      (void)init_pair(5, COLOR_CYAN,    COLOR_BLACK);  /* the status line */
-      (void)init_pair(6, COLOR_GREEN,   COLOR_BLACK);  /* normal text */
-      (void)init_pair(7, COLOR_RED,     COLOR_BLACK);  /* query */
-      (void)init_pair(8, COLOR_MAGENTA, COLOR_BLACK);  /* margins */
-      (void)init_pair(9, COLOR_BLUE,    COLOR_RED);    /* matched binary */
+      (void)init_pair(1, COLOR_WHITE,   COLOR_RED);   /* matched text       */
+      (void)init_pair(2, COLOR_WHITE,   COLOR_BLUE);  /* control characters */
+      (void)init_pair(3, COLOR_WHITE,   COLOR_BLACK); /* EOF marker         */
+      (void)init_pair(4, COLOR_YELLOW,  COLOR_BLACK); /* the scale line     */
+      (void)init_pair(5, COLOR_CYAN,    COLOR_BLACK); /* the status line    */
+      (void)init_pair(6, COLOR_GREEN,   COLOR_BLACK); /* normal text        */
+      (void)init_pair(7, COLOR_RED,     COLOR_BLACK); /* query              */
+      (void)init_pair(8, COLOR_MAGENTA, COLOR_BLACK); /* margins            */
+      (void)init_pair(9, COLOR_BLUE,    COLOR_RED);   /* matched binary     */
     }
   else
     {
-      found_col  = M_FOUND_COL;   /* matched text */
+      found_col  = M_FOUND_COL;   /* matched text       */
       cntrl_col  = M_CNTRL_COL;   /* control characters */
-      eof_col    = M_EOF_COL;     /* EOF marker */
-      scale_col  = M_SCALE_COL;   /* the scale line */
-      status_col = M_STATUS_COL;  /* the status line */
-      norm_col   = M_NORM_COL;    /* normal text */
-      query_col  = M_QUERY_COL;   /* query */
-      marg_col   = M_MARG_COL;    /* margins */
-      found_ctrl = M_FOUND_CTRL;  /* matched binary */
+      eof_col    = M_EOF_COL;     /* EOF marker         */
+      scale_col  = M_SCALE_COL;   /* the scale line     */
+      status_col = M_STATUS_COL;  /* the status line    */
+      norm_col   = M_NORM_COL;    /* normal text        */
+      query_col  = M_QUERY_COL;   /* query              */
+      marg_col   = M_MARG_COL;    /* margins            */
+      found_ctrl = M_FOUND_CTRL;  /* matched binary     */
     }
 
 # endif  /* if COLOUR */
 
   /* define constants that depend on window size */
+
   last_col = COLS - 1;
   h_inc = COLS / 2;
   last_line = ( lines = LINES ) - 1;
@@ -8312,7 +8531,8 @@ init_screen(void)
 #endif  /* if DOS */
 
   /* get space for all vectors and divide them up */
-  p = s_buf = (char **)getvec(( sizeof ( char * ) + 4 ) * lines);
+
+  p = s_buf = (char **)getvec( ( sizeof ( char * ) + 4 ) * lines );
   last = p++ + lines;
   while (p < last)
     {
@@ -8344,7 +8564,7 @@ set_eor(const int line, const int nsize)
   if (nsize > asize)
     {
       char *const temp = s_buf[line];
-      s_buf[line] = getbuf(s_eor[line] = (short)( nsize + L_LEN ));
+      s_buf[line] = getbuf( s_eor[line] = (short)( nsize + L_LEN ) );
       (void)movelr(s_buf[line], temp, asize);
       rlsevec(temp);
     }
@@ -8368,13 +8588,13 @@ next_line(const int line)
 
   if (in_stack != NULL)
     {
-      (void)set_eor(line, pop_length(in_stack));
+      (void)set_eor( line, pop_length(in_stack) );
       pop_line(&in_stack, s_buf[line]);
     }
   else
     {
       ++g_rec;
-      if (( len = vsgetrec(in_u, &p)) == EOF)
+      if ( ( len = vsgetrec(in_u, &p) ) == EOF )
         {
           g_eof = YES;
           eor[line] = EOF;
@@ -8421,7 +8641,7 @@ file_to_buf(const int com)
           return;
         }
     }
-  while ( next_line(line++));
+  while ( next_line(line++) );
   --line;
 
   wfill(&eor[line], EOF, LINES - line);
@@ -8463,12 +8683,13 @@ short curs_row, curs_col;
 # if TINY_G && !defined(WCL386)
 private
 chtype *near v_base = (chtype *)0xb8000000;
-#  define call_bios int86  /* need _int86 for MSVC, OK for Borland */
-# else  /* if TINY_G && !defined(WCL386) */
+#  define call_bios int86  /* need _int86 for MSVC? */
+# else  /* if TINY_G && !defined(WCL386)  */
 private
 chtype *v_base = (chtype *)0xb8000;
 #  define call_bios int386
 # endif  /* if TINY_G && !defined(WCL386) */
+
 private
 chtype *near h_base, *near t_base;
 
@@ -8493,7 +8714,7 @@ initscr(void)
     {
 # if TINY_G
       v_base = (chtype *)0xb0000000;
-# else  /* if TINY_G */
+# else  /* if TINY_G  */
       v_base = (chtype *)0xb0000;
 # endif  /* if TINY_G */
     }
@@ -8515,34 +8736,34 @@ clrtoeol(void)
 # if ASM86
 
 extern ushort bios_getc(void);
-#  pragma aux bios_getc =    \
-  "xor ah,ah"                \
-  "int 16h"                  \
-  "test al,al"               \
-  "jz scanc"                 \
-  "xor ah,ah"                \
+#  pragma aux bios_getc =                      \
+  "xor ah,ah"                                  \
+  "int 16h"                                    \
+  "test al,al"                                 \
+  "jz scanc"                                   \
+  "xor ah,ah"                                  \
   "scanc:" value[ax];
 
 extern void bios_gotoxy(byte row, byte col);
-#  pragma aux bios_gotoxy =  \
-  "mov ah,2"                 \
-  "xor bh,bh"                \
+#  pragma aux bios_gotoxy =                    \
+  "mov ah,2"                                   \
+  "xor bh,bh"                                  \
   "int 10h" parm[dh][dl] modify exact[ah bh];
 
 extern void scr_fill(void *start, short len);
 extern void scale_fill(void *start, short len);
 extern void berase(void *start, short len);
 
-#  pragma aux scr_fill =     \
-  "mov eax,0A200A20h"        \
+#  pragma aux scr_fill =                       \
+  "mov eax,0A200A20h"                          \
   "rep stosd" parm[es di][cx] modify[ax];
 
-#  pragma aux scale_fill =   \
-  "mov eax,0E2E0E2Eh"        \
+#  pragma aux scale_fill =                     \
+  "mov eax,0E2E0E2Eh"                          \
   "rep stosd" parm[es di][cx] modify[ax];
 
-#  pragma aux berase =       \
-  "mov eax,07200720h"        \
+#  pragma aux berase =                         \
+  "mov eax,07200720h"                          \
   "rep stosd" parm[es di][cx] modify[ax];
 
 # else  /* if ASM86 */
@@ -8551,7 +8772,7 @@ private
 void
 bios_gotoxy(const byte row, const byte col)
 {
-  union REGS regs;  /* need _REGS for MSVC, OK for Borland */
+  union REGS regs;  /* need _REGS for MSVC? */
 
   regs.h.ah = 0x02;
   regs.h.bh =    0;
@@ -8570,7 +8791,8 @@ private
 ushort
 curs_getc(void)
 {
-  bios_gotoxy((byte)curs_row, (byte)curs_col);
+  bios_gotoxy( (byte)curs_row, (byte)curs_col );
+
 # if ASM86
   return bios_getc();
 
@@ -8621,7 +8843,7 @@ napms(const unsigned long msec)
 {
   const clock_t goal = clock() + ( msec * CLOCKS_PER_SEC ) / 1000;
 
-  while (goal > clock())
+  while ( goal > clock() )
     {
       ;
     }
@@ -8644,98 +8866,103 @@ mv_put_byte(const int y, const int x, const chtype c)
 # if ASM86
 
 /* scale line writes */
+
 extern void put_scale(chtype *start, const char *s, ushort n);
-#  pragma aux put_scale =   \
-  "mov ah,0eh"              \
-  "nextc: lodsb"            \
-  "stosw"                   \
-  "dec dx"                  \
+#  pragma aux put_scale =                                     \
+  "mov ah,0eh"                                                \
+  "nextc: lodsb"                                              \
+  "stosw"                                                     \
+  "dec dx"                                                    \
   "jnz nextc" parm[es di][ds si][dx] modify[ax];
 
 /* status line writes */
+
 extern void put_status(chtype *start, const char *s, ushort n);
-#  pragma aux put_status =  \
-  "mov ah,0bh"              \
-  "nextc: lodsb"            \
-  "stosw"                   \
-  "dec dx"                  \
+#  pragma aux put_status =                                    \
+  "mov ah,0bh"                                                \
+  "nextc: lodsb"                                              \
+  "stosw"                                                     \
+  "dec dx"                                                    \
   "jnz nextc" parm[es di][ds si][dx] modify[ax];
 
 /* write text (fixed attribute given) and clear remainder of line */
+
 extern void put_seq(chtype *start, const char *s, ushort n, ushort attr,
                     ushort c);
-#  pragma aux put_seq =     \
-  "sub cx,bx"               \
-  "nextc: lodsb"            \
-  "stosw"                   \
-  "dec bx"                  \
-  "jnz nextc"               \
-  "mov ax,0a20h"            \
+#  pragma aux put_seq =                                       \
+  "sub cx,bx"                                                 \
+  "nextc: lodsb"                                              \
+  "stosw"                                                     \
+  "dec bx"                                                    \
+  "jnz nextc"                                                 \
+  "mov ax,0a20h"                                              \
   "rep stosw" parm[es di][ds si][bx][ax][cx];
 
 /* write matched text (variable attributes), clear remainder */
+
 extern void put_matched(chtype *start, const char *s, ushort n);
-#  pragma aux put_matched = \
-  "mov ah,4fh"              \
-  "nextw: lodsb"            \
-  "cmp al,20h"              \
-  "jb ctrlc"                \
-  "cmp al,7Fh"              \
-  "jae ctrlc"               \
-  "stosw"                   \
-  "dec bx"                  \
-  "jnz nextw"               \
-  "jmp endw"                \
-  "ctrlc: and al,7Fh"       \
-  "cmp al,20h"              \
-  "jl stctl"                \
-  "cmp al,7Fh"              \
-  "jl print"                \
-  "stctl: and al,1fh"       \
-  "add al,40h"              \
-  "print: mov ah,49h"       \
-  "stosw"                   \
-  "mov ah,4fh"              \
-  "dec bx"                  \
-  "jnz nextw"               \
+#  pragma aux put_matched =                                   \
+  "mov ah,4fh"                                                \
+  "nextw: lodsb"                                              \
+  "cmp al,20h"                                                \
+  "jb ctrlc"                                                  \
+  "cmp al,7Fh"                                                \
+  "jae ctrlc"                                                 \
+  "stosw"                                                     \
+  "dec bx"                                                    \
+  "jnz nextw"                                                 \
+  "jmp endw"                                                  \
+  "ctrlc: and al,7Fh"                                         \
+  "cmp al,20h"                                                \
+  "jl stctl"                                                  \
+  "cmp al,7Fh"                                                \
+  "jl print"                                                  \
+  "stctl: and al,1fh"                                         \
+  "add al,40h"                                                \
+  "print: mov ah,49h"                                         \
+  "stosw"                                                     \
+  "mov ah,4fh"                                                \
+  "dec bx"                                                    \
+  "jnz nextw"                                                 \
   "endw:" parm[es di][ds si][bx] modify[ax];
 
 /* write normal text (variable attributes), clear remainder */
+
 extern chtype *put_text(chtype *start, const char *s, ushort n, ushort c);
-#  pragma aux put_text =    \
-  "mov ah,0ah"              \
-  "test dx,dx"              \
-  "jle endw"                \
-  "cmp dx,cx"               \
-  "jb partr"                \
-  "mov dx,cx"               \
-  "partr: sub cx,dx"        \
-  "nextw: lodsb"            \
-  "cmp al,20h"              \
-  "jb ctrlc"                \
-  "cmp al,7Fh"              \
-  "jae ctrlc"               \
-  "stosw"                   \
-  "dec dx"                  \
-  "jnz nextw"               \
-  "jmp endw"                \
-  "ctrlc: and al,7Fh"       \
-  "cmp al,20h"              \
-  "jl still"                \
-  "cmp al,7Fh"              \
-  "jl print"                \
-  "still: and al,1fh"       \
-  "add al,40h"              \
-  "print: mov ah,1fh"       \
-  "stosw"                   \
-  "mov ah,0ah"              \
-  "dec dx"                  \
-  "jnz nextw"               \
-  "endw: mov eax,0A200A20h" \
-  "shr cx,1"                \
-  "rep stosd"               \
-  "jnc nocp"                \
-  "stosw"                   \
+#  pragma aux put_text =                                      \
+  "mov ah,0ah"                                                \
+  "test dx,dx"                                                \
+  "jle endw"                                                  \
+  "cmp dx,cx"                                                 \
+  "jb partr"                                                  \
+  "mov dx,cx"                                                 \
+  "partr: sub cx,dx"                                          \
+  "nextw: lodsb"                                              \
+  "cmp al,20h"                                                \
+  "jb ctrlc"                                                  \
+  "cmp al,7Fh"                                                \
+  "jae ctrlc"                                                 \
+  "stosw"                                                     \
+  "dec dx"                                                    \
+  "jnz nextw"                                                 \
+  "jmp endw"                                                  \
+  "ctrlc: and al,7Fh"                                         \
+  "cmp al,20h"                                                \
+  "jl still"                                                  \
+  "cmp al,7Fh"                                                \
+  "jl print"                                                  \
+  "still: and al,1fh"                                         \
+  "add al,40h"                                                \
+  "print: mov ah,1fh"                                         \
+  "stosw"                                                     \
+  "mov ah,0ah"                                                \
+  "dec dx"                                                    \
+  "jnz nextw"                                                 \
+  "endw: mov eax,0A200A20h"                                   \
+  "shr cx,1"                                                  \
+  "rep stosd"                                                 \
+  "jnc nocp"                                                  \
+  "stosw"                                                     \
   "nocp:" value[es di] parm[es di][ds si][dx][cx] modify[ax];
 
 # endif  /* if ASM86 */
@@ -8767,7 +8994,7 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
   while (n--)
     {
       const chtype c = *s++;
-      if (isprint(c))
+      if ( isprint(c) )
         {
           curs_y[curs_col++] = c | attr_print;
         }
@@ -8781,8 +9008,9 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
 # else  /* if DOS */
 
 /* place char on screen */
-#  define put_byte(c) addch((chtype)( c ))
-#  define mv_put_byte(y, x, c) ( move(y, x), put_byte(c))
+
+#  define put_byte(c) addch( (chtype)( c ) )
+#  define mv_put_byte(y, x, c) ( move(y, x), put_byte(c) )
 
 private
 void
@@ -8803,14 +9031,14 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
   while (n--)
     {
       const chtype c = *s++;
-      if (isprint(c))
+      if ( isprint(c) )
         {
           (void)put_byte(c);
         }
       else
         {
           (void)attrset(attr_cntrl);
-          (void)put_byte(toprint(c));
+          (void)put_byte( toprint(c) );
           (void)attrset(attr_print);
         }
     }
@@ -9100,10 +9328,12 @@ del_seg(const int end_col)
   char *const p = BUF(first_col);
 
   /* Adjust buffer */
+
   (void)movelr(p, p + gap, eor[row] - end_col);
   eor[row] -= gap;
 
   /* Adjust screen */
+
   disp_rest();
 }
 
@@ -9128,12 +9358,14 @@ status(void)
   else
     {
       p += sprintf(buf, line_pos + 5, FILE_LINE, fcol);
-      if (( eol = eor[row] ) == EOF)
+      if ( ( eol = eor[row] ) == EOF )
         {
           p = mmovelr5(p, " (EOF");
         }
 
-      elif(eol > fcol) p += sprintf(p, " (%02X", s_buf[row][fcol] & BYTE_MASK);
+      elif(eol > fcol)
+          p += sprintf(p, " (%02X", s_buf[row][fcol] & BYTE_MASK);
+
       else
         {
           p = mmovelr5(p, " (EOR");
@@ -9161,7 +9393,7 @@ status(void)
       ;
     }
 
-  len = ( vssizeof(in_u) - vstell(in_u)) + sop + in_count
+  len = ( vssizeof(in_u) - vstell(in_u) ) + sop + in_count
         + ( len - TEMPLATE_LINE );
   if (len != se_save_eof)
     {
@@ -9169,7 +9401,7 @@ status(void)
       eof_start = COLS - len;
 #if ASM86
       put_status(v_base + eof_start, buf, len);
-#else  /* if ASM86 */
+#else  /* if ASM86  */
       (void)move(STATUS_LINE, eof_start);
       put_seq(buf, len, status_col);
 #endif  /* if ASM86 */
@@ -9178,10 +9410,10 @@ status(void)
   new_eor = eof_start;
   if (eol != EOF)
     {
-      new_eor -= ( len = sprintf(buf, "EOR %d", eol));
+      new_eor -= ( len = sprintf(buf, "EOR %d", eol) );
 #if ASM86
       put_status(v_base + new_eor, buf, len);
-#else  /* if ASM86 */
+#else  /* if ASM86  */
       (void)move(STATUS_LINE, new_eor);
       put_seq(buf, len, status_col);
 #endif  /* if ASM86 */
@@ -9223,12 +9455,13 @@ init(void)
   int len;
 
   /* Setup fixed parts of status line */
+
 #if ASM86
   chtype *const mid = v_base + h_inc + 4;
   const char *p, *last;
   scr_fill(v_base, B_COLS);
   put_status(v_base, "LINE", 4);
-#else  /* if ASM86 */
+#else  /* if ASM86  */
   string buf;
   char *const mid = buf + h_inc + 4;
   const char *p, *last;
@@ -9238,8 +9471,9 @@ init(void)
   se_save_eof = -1;
 
   /* extract basenames */
+
   p = last = get_eos(in_fname);
-  while (p > in_fname && !path_sep(p[-1]))
+  while ( p > in_fname && !path_sep(p[-1]) )
     {
       --p;
     }
@@ -9248,7 +9482,7 @@ init(void)
       p = out_fname;
     }
 
-  if (( len = last - p ) > 15)
+  if ( ( len = last - p ) > 15)
     {
       len = 15;
     }
@@ -9256,16 +9490,18 @@ init(void)
   (void)put_status(mid - 8 - len, p, len);
 
   p = last = get_eos(out_fname);
-  while (p > out_fname && !path_sep(p[-1]))
+
+  while ( p > out_fname && !path_sep(p[-1]) )
     {
       --p;
     }
+
   if (p == last)
     {
       p = out_fname;
     }
 
-  if (( len = last - p ) > 15)
+  if ( ( len = last - p ) > 15 )
     {
       len = 15;
     }
@@ -9299,7 +9535,9 @@ linewrap(void)
   if (e_col + i_col)
     {
       char *const t = e_buff;
+
       /* deal with T.#0 */
+
       get_end();
       e_buff = i_buff;
       i_buff = t;
@@ -9327,7 +9565,7 @@ home_command(const int disp, const int s_start)
 
   noraw();
   
-  if (setjmp(set_err))
+  if ( setjmp(set_err) )
     {
       (void)move_to(sop);
       rc = 1;
@@ -9371,14 +9609,15 @@ home_command(const int disp, const int s_start)
       if (loc2 != NULL)
         {
           m_row = l2rec - START_OF_PAGE + FIRST_LINE;
-          if (m_row >= FIRST_LINE && m_row <= last_line && eor[m_row] != EOF)
+          if (m_row >= FIRST_LINE && \
+              m_row <= last_line && eor[m_row] != EOF)
             {
               const int c_col = col, c_offset = offset;
-              set_col((int)( loc1 - i_buff ));
+              set_col( (int)( loc1 - i_buff ) );
               if (offset != c_offset)
                 {
                   disp_template();
-                  last_offset = offset;  /* stop exec from drawing it again */
+                  last_offset = offset;  /* stop exec drawing it again */
                 }
 
               m_col = col;
@@ -9392,7 +9631,7 @@ home_command(const int disp, const int s_start)
       disp_text();
       if (m_col >= 0)
         {
-          disp_matched_text(m_row, m_col, (int)( loc2 - loc1 ));
+          disp_matched_text( m_row, m_col, (int)( loc2 - loc1 ) );
         }
 
       loc2 = NULL;
@@ -9439,7 +9678,7 @@ get_key2(int *const value)
 
   if (c <= 0xFF)
     {
-      if (( c = u_map[c] ) < SPACE)
+      if ( ( c = u_map[c] ) < SPACE )
         {
           c += 0x40;
         }
@@ -9457,7 +9696,7 @@ private
 ACTION
 hand_quick(int *const value)
 {
-  switch (get_key2(value))
+  switch ( get_key2(value) )
     {
     case DEL:  /* ^Q DEL  Erase to start of line */
     case KEY_DC:
@@ -9489,7 +9728,7 @@ hand_quick(int *const value)
 #if DOS
       *value = getch();
 #else  /* if DOS */
-      if (( *value = getch()) == KEY_ENTER)
+      if ( ( *value = getch() ) == KEY_ENTER )
         {
           *value = CNTRL('M');
         }
@@ -9551,7 +9790,7 @@ hand_block(int *const value)
 {
   const int c = get_key2(value);
 
-  if (se_b1key(c))
+  if ( se_b1key(c) )
     {
       return A_RWX_FILE;
     }
@@ -9571,7 +9810,7 @@ hand_block(int *const value)
       return A_EXIT_EDITOR;
     }
 
-  if (se_b4key(c))
+  if ( se_b4key(c) )
     {
       return A_MISC_CE;
     }
@@ -9591,6 +9830,7 @@ get_seq(int *const value)
   const int c = rgetc();
 
   /* Single WordStar keys */
+
   switch (c)
     {
     case CNTRL('A'):  /* ^A  Word move left */
@@ -9654,7 +9894,7 @@ get_seq(int *const value)
       return A_SEARCH;
 
     case CNTRL('P'):  /* ^Pc Enter control character */
-      *value = CNTRL(getch());
+      *value = CNTRL( getch() );
       return A_CHARACTER;
 
     case CNTRL('M'):  /* ^M  RETURN (split line) */
@@ -9796,13 +10036,16 @@ get_seq(int *const value)
       return A_PAGE_SHIFT;
 
 #endif  /* ifdef KEY_SLEFT */
+
     /* Wordstar "Quick" keys */
+
     case CNTRL('Q'):
       return hand_quick(value);
 
     /* Wordstar Justification keys */
+
     case CNTRL('O'):
-      if (se_jkey(get_key2(value)))
+      if ( se_jkey( get_key2(value) ) )
         {
           return A_JUSTIFY;
         }
@@ -9810,11 +10053,12 @@ get_seq(int *const value)
       return A_C_STAY;
 
     /* Wordstar file & block keys */
+
     case CNTRL('K'):
       return hand_block(value);
 
     default:
-      if (isprint(c))
+      if ( isprint(c) )
         {
           *value = c;  /* Ordinary printing character */
           return A_CHARACTER;
@@ -9840,7 +10084,7 @@ scroll_up(const int line)
   se_deleteln();
   (void)bmovelr(
           &s_buf[line], &s_buf[line + 1],
-          dist * ( sizeof ( char * ) >> B_SIZE ));
+          dist * ( sizeof ( char * ) >> B_SIZE ) );
   (void)wmovelr(&s_eor[line], &s_eor[line + 1], dist);
   (void)wmovelr(&eor[line], &eor[line + 1], dist);
   s_buf[last_line] = p;
@@ -9862,7 +10106,7 @@ scroll_down(const int line)
   se_insertln();
   (void)bmoverl(
           &s_buf[line + 1], &s_buf[line],
-          dist * ( sizeof ( char * ) >> B_SIZE ));
+          dist * ( sizeof ( char * ) >> B_SIZE ) );
   (void)wmoverl(&s_eor[line + 1], &s_eor[line], dist);
   (void)wmoverl(&eor[line + 1], &eor[line], dist);
   s_buf[line] = p;
@@ -9887,7 +10131,8 @@ file_move(int value)
       value = MOVE_ABS;
     }
 
-  /* Optimisations */
+  /* Optimizations */
+
   switch (value)
     {
     case NEXT_LINE:
@@ -9937,6 +10182,7 @@ file_move(int value)
   buf_to_file(value);
 
   /* Call CE to reposition in file */
+
   switch (value)
     {
     case NEXT_LINE:
@@ -9960,7 +10206,7 @@ file_move(int value)
       break;
 
     case MOVE_EOF:
-      (void)move_to(vssizeof(in_u) - ( LINES - MATCH_LINE ));
+      (void)move_to(vssizeof(in_u) - ( LINES - MATCH_LINE ) );
       break;
 
     case MOVE_ABS:
@@ -9970,6 +10216,7 @@ file_move(int value)
   file_to_buf(value);
 
   /* final cursor positioning */
+
   if (value == MOVE_EOF)
     {
       for (row = last_line; eor[row - 1] == EOF; --row)
@@ -9981,6 +10228,7 @@ file_move(int value)
     }
 
   /* Redisplay text */
+
   if (value == PREV_LINE)
     {
       disp_row(FIRST_LINE);
@@ -10059,12 +10307,12 @@ c_down(void)
     }
 
   elif(row == last_line)
-  {
-    if (eor[MATCH_LINE] != EOF)
-      {
-        file_move(NEXT_LINE);
-      }
-  }
+    {
+      if (eor[MATCH_LINE] != EOF)
+        {
+          file_move(NEXT_LINE);
+        }
+    }
   else
     {
       ++row;
@@ -10112,7 +10360,7 @@ se_join(const int del)
       nrow = TEMPLATE_LINE;
     }
 
-  if (( len = eor[nrow] ) == EOF)
+  if ( ( len = eor[nrow] ) == EOF )
     {
       return YES;
     }
@@ -10121,7 +10369,7 @@ se_join(const int del)
 
   if (del)
     {
-      while (len && isspace(*nbs))
+      while ( len && isspace(*nbs) )
         {
           --len, ++nbs;
         }
@@ -10133,7 +10381,7 @@ se_join(const int del)
       return NO;
     }
 
-  if (set_eor(row, j_col + len))
+  if ( set_eor(row, j_col + len) )
     {
       if (row == last_line)
         {
@@ -10174,7 +10422,7 @@ is_sow(char csc p)
 {
   const char c = *p;
 
-  if (p == BUF(0))
+  if ( p == BUF(0) )
     {
       return wordch(c) || punctch(c);
     }
@@ -10194,8 +10442,7 @@ find_forwards(char csc target, const int del)
   const char *p = BUF(j_col + 1), *e;
 
   while (eor[row] != EOF)
-    {
-      /* look on this line */
+    {  /* look on this line */
       for (e = BUF(eor[row]); p < e; ++p)
         {
           if (target != NULL)
@@ -10206,7 +10453,8 @@ find_forwards(char csc target, const int del)
                 }
             }
 
-          elif(is_sow(p)) break;
+          elif( is_sow(p) )
+              break;
         }
 
       if (p < e)  /* found */
@@ -10214,11 +10462,11 @@ find_forwards(char csc target, const int del)
           char csc s = BUF(0);
           if (del)
             {
-              del_seg((int)( p - s ));
+              del_seg( (int)( p - s ) );
             }
           else
             {
-              set_col((int)( p - s ));
+              set_col( (int)( p - s ) );
             }
 
           return *p;
@@ -10281,12 +10529,13 @@ find_backwards(char csc target, const int del)
                   }
               }
 
-            elif(is_sow(p)) break;
+            elif( is_sow(p) )
+                break;
           }
 
         if (p >= e)  /* found */
           {
-            set_col((int)( p - e ));
+            set_col( (int)( p - e ) );
             if (del)
               {
                 del_seg(end_col);
@@ -10335,7 +10584,7 @@ find_char(const int value)
   char target, find_str[3];
   int forwards = YES, count, found;
 
-  if (value == CNTRL('M'))
+  if ( value == CNTRL('M') )
     {
       if (row != COMMAND_LINE)
         {
@@ -10455,12 +10704,12 @@ save_std(void)
       null_fd = open("/dev/null", O_RDWR);
     }
 
-  if (( save_fd_0 = dup(0)) != -1)
+  if ( ( save_fd_0 = dup(0) ) != -1 )
     {
       (void)dup2(null_fd, 0);
     }
 
-  if (( save_fd_2 = dup(2)) != -1)
+  if ( ( save_fd_2 = dup(2) ) != -1 )
     {
       (void)dup2(null_fd, 2);
     }
@@ -10548,7 +10797,7 @@ wmessage(const char *text)
 
   for (lines = 5, start = p = text; *p; ++lines, start = p + 1)
     {
-      if (( p = strchr(start, LFEED)) == NULL)
+      if ( ( p = strchr(start, LFEED) ) == NULL )
         {
           p = get_eos(start);
         }
@@ -10601,7 +10850,7 @@ wmessage(const char *text)
 
   for (i = 2, start = p = text; *p; ++i, ++start)
     {
-      if (( p = strchr(start, LFEED)) == NULL)
+      if ( ( p = strchr(start, LFEED) ) == NULL )
         {
           p = get_eos(start);
         }
@@ -10751,7 +11000,7 @@ page_shift(const int value)
   if (value == RIGHT)
     {
       col += h_inc;
-      if (!shift_right())
+      if ( !( shift_right() ) )
         {
           col = c_col;
         }
@@ -10759,7 +11008,7 @@ page_shift(const int value)
   else
     {
       col -= h_inc;
-      if (!shift_left())
+      if ( !( shift_left() ) )
         {
           col = c_col;
         }
@@ -10839,7 +11088,7 @@ block(const int value)
           return;
         }
 
-      if (set_eor(row, ( c_eor > b_col ? c_eor : b_col ) + save_len))
+      if ( set_eor(row, ( c_eor > b_col ? c_eor : b_col ) + save_len) )
         {
           return;
         }
@@ -10863,7 +11112,9 @@ block(const int value)
       disp_rest();
       return;
     }
+
   /* deal with block rather than segment definition */
+
   if (start_rec != end_rec)
     {
       if (end_rec < start_rec)
@@ -10924,6 +11175,7 @@ block(const int value)
   block_mode = NO;
 
   /* swap if defined in wrong order */
+
   if (end_col < start_col)
     {
       len = end_col;
@@ -10980,14 +11232,15 @@ centre(void)
     }
 
   /* find start and end of line */
+
   ls = sol = BUF(0);
   le = ls + eor[row];
 
-  while (ls < le && isspace(*ls))
+  while ( ls < le && isspace(*ls) )
     {
       ++ls;
     }
-  while (le > sol && isspace(le[-1]))
+  while ( le > sol && isspace(le[-1]) )
     {
       --le;
     }
@@ -10997,13 +11250,17 @@ centre(void)
     }
 
   /* find centre's of margins and line */
+
   m_cen = l_margin + ( r_margin - l_margin ) / 2;
   l_cen = ( ls - sol ) + ( le - ls ) / 2;
+
   /* distance to shift line */
+
   dif = m_cen - l_cen;
   f_char = ls - sol;
 
   /* check limits at each end of line */
+
   if (dif > 0)
     {
       if (E_BUFF_LEN - dif < le - sol)
@@ -11012,9 +11269,10 @@ centre(void)
         }
     }
 
-  elif(f_char + dif < 0) dif = -f_char;
+  elif(f_char + dif < 0)
+      dif = -f_char;
 
-  if (dif == 0 || set_eor(row, ( le - sol ) + dif))
+  if ( dif == 0 || set_eor(row, ( le - sol ) + dif) )
     {
       return;
     }
@@ -11022,6 +11280,7 @@ centre(void)
   len = le - ls;
 
   /* align centres */
+
   if (dif > 0)
     {
       ls = BUF(f_char);
@@ -11034,6 +11293,7 @@ centre(void)
     }
 
   /* redisplay the current line */
+
   disp_line();
 }
 
@@ -11086,10 +11346,10 @@ c_left(void)
     }
 
   elif(row != COMMAND_LINE && FILE_LINE > 0)
-  {
-    c_up();
-    c_eol();
-  }
+    {
+      c_up();
+      c_eol();
+    }
 }
 
 /*
@@ -11154,7 +11414,9 @@ split_line(const int margin)
       eor[row] = 0;
     }
 
-  elif(s_col == 0) open_line();
+  elif(s_col == 0)
+      open_line();
+
   else
     {
       (void)clrtoeol();
@@ -11198,16 +11460,16 @@ wrap_text(void)
   int ws = FILE_COL, we;
   char *const bs = BUF(0);
 
-  while (ws > 0 && !isspace(bs[ws]))
+  while ( ws > 0 && !( isspace(bs[ws]) ) )
     {
       --ws;
     }
   we = ws;
-  while (ws < eor[row] && isspace(bs[ws]))
+  while ( ws < eor[row] && isspace(bs[ws]) )
     {
       ++ws;
     }
-  while (we > 0 && isspace(bs[we]))
+  while ( we > 0 && isspace(bs[we]) )
     {
       --we;
     }
@@ -11232,10 +11494,12 @@ character(const int value)
 #if DOS
   chtype *cb;
 #endif  /* if DOS */
+
   /* past the end of the line, pad with spaces to here */
+
   if (b_col >= c_eor)
     {
-      if (set_eor(row, b_col + 1))
+      if ( set_eor(row, b_col + 1) )
         {
           return;
         }
@@ -11250,19 +11514,20 @@ character(const int value)
     }
 
   elif(expand)
-  {
-    char *bs;
+    {
+      char *bs;
 
-    if (set_eor(row, c_eor + 1))
-      {
-        return;
-      }
+      if ( set_eor(row, c_eor + 1) )
+        {
+          return;
+        }
 
-    /* adjust buffer */
-    bs = BUF(b_col);
-    (void)moverl(bs + 1, bs, c_eor - b_col);
-    (void)insch(SPACE);
-  }
+      /* adjust buffer */
+
+      bs = BUF(b_col);
+      (void)moverl(bs + 1, bs, c_eor - b_col);
+      (void)insch(SPACE);
+    }
 
   *BUF(b_col) = (char)value;
 
@@ -11274,9 +11539,10 @@ character(const int value)
     }
 
   /* adjust screen */
+
 #if DOS
   cb = v_base + row * COLS + col;
-  if (isprint(value))
+  if ( isprint(value) )
     {
       *cb = value | norm_col;
     }
@@ -11286,14 +11552,14 @@ character(const int value)
     }
 
 #else  /* if DOS */
-  if (isprint(value))
+  if ( isprint(value) )
     {
-      (void)put_byte((chtype)value);
+      (void)put_byte( (chtype)value );
     }
   else
     {
       (void)attrset(cntrl_col);
-      (void)put_byte(toprint(value));
+      (void)put_byte( toprint(value) );
       (void)attrset(norm_col);
     }
 
@@ -11344,7 +11610,7 @@ del_c(const int value)
         }
     }
 
-  if (( b_col = FILE_COL ) >= eor[row])
+  if ( ( b_col = FILE_COL ) >= eor[row] )
     {
       if (value == RIGHT)
         {
@@ -11383,8 +11649,8 @@ rest_line(void)
     }
 
   open_line();
-  (void)set_eor(row, pop_length(del_stack));
-  pop_line(&del_stack, BUF(0));
+  (void)set_eor( row, pop_length(del_stack) );
+  pop_line( &del_stack, BUF(0) );
   disp_line();
 }
 
@@ -11457,7 +11723,7 @@ b_tab(void)
   const int c_col = col;
 
   col -= col % screen_tabs ? col % screen_tabs : screen_tabs;
-  if (col < 0 && !shift_left())
+  if ( col < 0 && !( shift_left() ) )
     {
       col = c_col;
     }
@@ -11477,11 +11743,11 @@ c_return(void)
       char *p = BUF(0);
       char csc last = BUF(t_len);
       int len;
-      while (p < last && isspace(*p))
+      while ( p < last && isspace(*p) )
         {
           ++p;
         }
-      if (( len = last - p ) >= STR_LEN)
+      if ( ( len = last - p ) >= STR_LEN )
         {
           se_error(COMM_TOO_LONG);
         }
@@ -11551,26 +11817,26 @@ read_string(Q_MODE qtype)
 
     switch (fun)
       {
-      case A_C_SOL:  /* Move to end of prompt */
+      case A_C_SOL:      /* Move to end of prompt */
         col = c_col;
 
-      default:  /* Ignore all unknown keys */
+      default:           /* Ignore all unknown keys */
         continue;
 
       case A_REST_LINE:  /* Discard this operation */
       case A_EXIT_EDITOR:
         return EOF;
 
-      case A_C_RETURN:  /* End of input */
+      case A_C_RETURN:   /* End of input */
         col = eor[COMMAND_LINE];
         return G_FAIL;
 
-      case A_DEL_LINE:  /* Delete from end of prompt */
+      case A_DEL_LINE:   /* Delete from end of prompt */
         (void)move(COMMAND_LINE, col = c_col);
         del_rest(RIGHT);
         continue;
 
-      case A_DEL_REST:  /* Delete rest of line */
+      case A_DEL_REST:   /* Delete rest of line */
         if (value == RIGHT)
           {
             del_rest(RIGHT);
@@ -11587,7 +11853,7 @@ read_string(Q_MODE qtype)
 
         continue;
 
-      case A_DEL_C:  /* Check for start of line */
+      case A_DEL_C:      /* Check for start of line */
         if (value == LEFT && col <= c_col)
           {
             continue;
@@ -11600,14 +11866,14 @@ read_string(Q_MODE qtype)
             continue;
           }
 
-      case A_YANK:  /* unchanged commands */
+      case A_YANK:       /* unchanged commands */
       case A_BLOCK:
       case A_EXP_MODE:
       case A_C_EOL:
         break;
 
       case A_H_TAB:
-        if (( col / screen_tabs + 1 ) * screen_tabs > last_col)
+        if ( ( col / screen_tabs + 1 ) * screen_tabs > last_col )
           {
             continue;
           }
@@ -11653,7 +11919,7 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
 
 #if ASM86
   put_seq(v_base + COLS, prompt, p_len, query_col, COLS);
-#else  /* if ASM86 */
+#else  /* if ASM86  */
   (void)move(COMMAND_LINE, 0);
   put_seq(prompt, p_len, query_col);
   attrset(norm_col);
@@ -11693,11 +11959,11 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
         }
       else
         {  /* Delete leading and trailing spaces */
-          while (p_len < col && isspace(t_buf[p_len]))
+          while ( p_len < col && isspace(t_buf[p_len]) )
             {
               ++p_len;
             }
-          while (col > p_len && isspace(t_buf[col - 1]))
+          while ( col > p_len && isspace(t_buf[col - 1]) )
             {
               --col;
             }
@@ -11710,7 +11976,8 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
                   rc = G_OK;
                 }
 
-              elif(u_star(buf) == 'Q') rc = EOF;
+              elif(u_star(buf) == 'Q')
+                  rc = EOF;
             }
         }
     }
@@ -11733,7 +12000,9 @@ se_justify(const int value)
 
   switch (value)
     {
+
     /* justify paragraph */
+
     case 'B':
       /* fallthrough */
     case 'Q':
@@ -11742,6 +12011,7 @@ se_justify(const int value)
       break;
 
     /* set left margin */
+
     case 'L':
       if (j_col >= r_margin)
         {
@@ -11755,6 +12025,7 @@ se_justify(const int value)
       break;
 
     /* set right margin */
+
     case 'R':
       if (j_col <= l_margin)
         {
@@ -11768,11 +12039,13 @@ se_justify(const int value)
       break;
 
     /* toggle wordwrap */
+
     case 'W':
       wordwrap = !wordwrap;
       break;
 
     /* set line spacing */
+
     case 'S':
       if (query("New line spacing (0-9):", buf, Q_EDIT) == EOF)
         {
@@ -11783,11 +12056,13 @@ se_justify(const int value)
       break;
 
     /* centre justify current line */
+
     case 'C':
       centre();
       break;
 
     /* toggle right adjust */
+
     case 'J':
       adjust = !adjust;
     }
@@ -11854,7 +12129,9 @@ search(const int value)
           line = 0;
         }
 
-      elif(line > vssizeof(in_u)) line = vssizeof(in_u);
+      elif( line > vssizeof(in_u) )
+          line = vssizeof(in_u);
+
       if (line >= sop && line < sop + text_lines)
         {
           row = line - sop + FIRST_LINE;
@@ -11901,8 +12178,12 @@ search(const int value)
       break;
 
     case 'L':  /* Repeat last search/replace */
-      /* Simply re-execute the main command */
-      /* after moving on to the next line */
+
+      /*
+       * Simply re-execute the main command
+       * after moving on to the next line
+       */
+
       if (eor[row] != EOF)
         {
           nextl = 1;
@@ -11921,7 +12202,7 @@ search(const int value)
   while (run_command(find_com, nextl, NO) == 0 && iter)
     {
       status();
-      if (( rc = query("Replace (y/n) ?", buf, Q_YORN)) == EOF)
+      if ( ( rc = query("Replace (y/n) ?", buf, Q_YORN) ) == EOF )
         {
           break;
         }
@@ -11956,8 +12237,8 @@ exit_editor(const int value)
   switch (value)
     {
     case 'Q':  /* Exit, discarding everything */
-      if (prim_changed
-          && query("File changed, abandon edit (y/n) ?", com, Q_YORN))
+      if ( prim_changed
+          && query("File changed, abandon edit (y/n) ?", com, Q_YORN) )
         {
           return;
         }
@@ -11971,7 +12252,7 @@ exit_editor(const int value)
         com,
         "Save %sfile and exit (y/n) ?",
         prim_changed ? empty : se_fin1);
-      if (query(com, com, Q_YORN))
+      if ( query(com, com, Q_YORN) )
         {
           return;
         }
@@ -11988,7 +12269,7 @@ exit_editor(const int value)
     case 'S':  /* Save the file and return */
       (void)sprintf(
               com, "Save %sfile (y/n) ?", prim_changed ? empty : se_fin1);
-      if (query(com, com, Q_YORN))
+      if ( query(com, com, Q_YORN) )
         {
           return;
         }
@@ -12075,16 +12356,16 @@ make_com:
           return;
         }
 
-      if (nullstr(nlines))
+      if ( nullstr(nlines) )
         {
-          if (nullstr(fname))
+          if ( nullstr(fname) )
             {
               return;
             }
 
           (void)sprintf(com, "S%c\177%s\177,M,TE,X,X", optc, fname);
         }
-      elif(nullstr(fname))
+      elif( nullstr(fname) )
           (void)sprintf(com, "S%c,T%s,X", optc, nlines);
       else
         {
@@ -12153,8 +12434,8 @@ word_count(void)
   rc = wc = pc = cc = lc = sc = nc = 0;
 
   t_u = *in_u;
-  vsrewind(( &t_u ));
-  while (( len = vsgetrec(&t_u, &p)) != EOF)
+  vsrewind( ( &t_u ) );
+  while ( ( len = vsgetrec(&t_u, &p) ) != EOF )
     {
       cc += len;
       ++rc;
@@ -12162,13 +12443,14 @@ word_count(void)
       for (last = p + len; p < last; ++p)
         {
           c = *p;
-          if (!wordch(c))
+          if ( !( wordch(c) ) )
             {
               inword = 0;
             }
 
-          elif(!inword) wc += ( inword = 1 );
-          if (punctch(c))
+          elif(!inword)
+              wc += ( inword = 1 );
+          if ( punctch(c) )
             {
               ++pc;
               switch (c)
@@ -12225,7 +12507,7 @@ misc_ops(const int value)
           return;
         }
 
-      if (chdir(prep_name(buf)) == -1)
+      if ( chdir(prep_name(buf) ) == -1 )
         {
           se_error(FILE_ERROR);
         }
@@ -12263,7 +12545,8 @@ se_loop(int value)
       fun = A_FILE_MOVE;  /* ^QW or ^QZ */
     }
 
-  elif(( fun = get_seq(&value)) == A_REPEAT) return;
+  elif( ( fun = get_seq(&value) ) == A_REPEAT )
+      return;
 
   ++qq_loop;
 
@@ -12272,9 +12555,9 @@ se_loop(int value)
       kbd_check(c);
       if (c != ERR)
         {
-          if (isdigit(c))
+          if ( isdigit(c) )
             {
-              if (( speed = c - '0' ) > 5)
+              if ( ( speed = c - '0' ) > 5 )
                 {
                   speed <<= 2;
                 }
@@ -12288,8 +12571,8 @@ se_loop(int value)
       c_orec = o_rec, c_row = row, c_col = col;
       c_in_s = in_stack, c_del_s = del_stack;
       se_execute(fun, value);
-      if (c_orec == o_rec && c_row == row && c_col == col && c_in_s == in_stack
-          && c_del_s == del_stack)
+      if (c_orec == o_rec && c_row == row && c_col == col \
+           && c_in_s == in_stack && c_del_s == del_stack)
         {
           break;
         }
@@ -12297,7 +12580,7 @@ se_loop(int value)
 #if UNIX
       (void)refresh();
 #else  /* if UNIX */
-      bios_gotoxy((byte)curs_row, (byte)curs_col);
+      bios_gotoxy( (byte)curs_row, (byte)curs_col );
 #endif  /* if UNIX */
       if (speed > 0)
         {
@@ -12525,12 +12808,14 @@ Screen_ed(void)
 
   linewrap();
   file_to_buf(SE_ENTER);
+
   /* initialize tracking variables */
+
   eor[row = COMMAND_LINE] = lon = col = text_col = text_offset = offset = 0;
   text_row = FIRST_LINE;
   init();
 
-  if (setjmp(se_err))
+  if ( setjmp(se_err) )
     {
       (void)move(row, col);
     }
@@ -12578,7 +12863,7 @@ free_prog(VERB_LIST *const ptr)
         }
 
       elif(p->o2.e != NULL) free_expr(p->o2.e);
-      last = p;
+          last = p;
       p = p->next;
     }
   while ( p != NULL );
@@ -12643,7 +12928,7 @@ hex_print(void)
 
   new_line();
 
-  if (( len = make_line(buf)) == 0)
+  if ( ( len = make_line(buf) ) == 0 )
     {
       say("LX: empty line.\n");
       return;
@@ -12651,8 +12936,8 @@ hex_print(void)
 
   for (first = buf, rec_end = buf + len; first < rec_end; first += 16)
     {
-      (void)fprintf(vdu, "%5d  |  ", (int)( first - buf ));
-      if (( last = first + 16 ) > rec_end)
+      (void)fprintf( vdu, "%5d  |  ", (int)( first - buf ) );
+      if ( ( last = first + 16 ) > rec_end )
         {
           last = rec_end;
         }
@@ -12664,7 +12949,7 @@ hex_print(void)
 
       for (p = first; p < last; ++p)
         {
-          if (iscntrl(*p))
+          if ( iscntrl(*p) )
             {
               *p = '.';
             }
@@ -12691,7 +12976,7 @@ get_space(const int minus, const int comm)
 
   if (minus)
     {  /* scan backwards from current pos */
-      while (col > 0 && isspace(i_buff[col - 1]))
+      while ( col > 0 && isspace(i_buff[col - 1]) )
         {
           --col;
         }
@@ -12702,7 +12987,7 @@ get_space(const int minus, const int comm)
     }
   else
     {
-      while (col < i_eor && isspace(i_buff[col]))
+      while ( col < i_eor && isspace(i_buff[col]) )
         {
           ++col;
         }
@@ -12794,7 +13079,7 @@ alter_end(int last, const int comm)
           return;
         }
 
-      while (g_rec < last - 1 && fill_buff())
+      while ( g_rec < last - 1 && fill_buff() )
         {
           n_print(i_buff, i_eor, NO);
         }
@@ -12875,7 +13160,7 @@ printline(char *ptr)
     {
       char *p, c;
       *ptr++ = (char)( buff_sec + '0' );
-      if (( len = make_line(buf) - sec ) > L_LEN)
+      if ( ( len = make_line(buf) - sec ) > L_LEN )
         {
           len = L_LEN;
         }
@@ -12887,7 +13172,8 @@ printline(char *ptr)
           c = '<';
         }
 
-      elif(e_col > sec + L_LEN) c = '>';
+      elif(e_col > sec + L_LEN)
+          c = '>';
       else
         {
           c = SPACE;
@@ -12907,10 +13193,10 @@ hist_write(char csc comm)
 {
   int len;
 
-  if (hist_top == NULL || ( len = *(short *)( hist_top + 1 )) != strlen(comm)
-      || !ecmp(comm, (short *)( hist_top + 1 ) + 1, len))
+  if ( hist_top == NULL || ( len = *(short *)( hist_top + 1 ) )
+      != strlen(comm) || !ecmp(comm, (short *)( hist_top + 1 ) + 1, len) )
     {
-      push_line(&hist_top, comm, strlen(comm));
+      push_line( &hist_top, comm, strlen(comm) );
     }
 }
 
@@ -12938,7 +13224,7 @@ private
 void
 do_ins(char csc str, const int len)
 {
-  if ((unsigned long)e_col + len > E_BUFF_LEN)
+  if ( (unsigned long)e_col + len > E_BUFF_LEN )
     {
       g_err(LINE_TOO_LONG, NULL);
     }
@@ -12962,7 +13248,7 @@ ins(const word disp, const char *str, int len)
 
   if (len > 0)
     {
-      while (( split = (const char *)memchr(str, LFEED, len)) != NULL)
+      while ( ( split = (const char *)memchr(str, LFEED, len) ) != NULL )
         {
           l = split - str;
           if (scr)
@@ -13032,12 +13318,12 @@ block_insert(const word ch, const word header)
 
   repeat
   {
-    if (get_com(e_buff, prompt))
+    if ( get_com(e_buff, prompt) )
       {
         g_err(EOF_INSERT, NULL);
       }
 
-    if (( e_col = strlen(e_buff)) == 0)
+    if ( ( e_col = strlen(e_buff) ) == 0)
       {
         return;
       }
@@ -13060,7 +13346,7 @@ ABR(VERB csc opts)
   int len1 = opts->o1.v, len2 = opts->o2.v;
   LINE buf;
 
-  if (findstr(opts->o1.s, len1, opts->o1.q, 'T'))
+  if ( findstr(opts->o1.s, len1, opts->o1.q, 'T') )
     {
       if (depth)
         {
@@ -13082,7 +13368,8 @@ ABR(VERB csc opts)
       altr_line(len1, 'P');
     }
 
-  elif(opts->comm == 'A') altr_line(len1, 'T');
+  elif(opts->comm == 'A')
+      altr_line(len1, 'T');
 
   ins(0, opts->o1.q == 'r' ? buf : opts->o2.s, len2);
   loc2 = NULL;
@@ -13136,7 +13423,7 @@ Verify(VERB csc opts)
 
   if (opts->dot)
     {
-      if (( opt = opts->o2.q ) & OP_CALC)
+      if ( ( opt = opts->o2.q ) & OP_CALC )
         {
           val = (int)Evaluate(opts->o2.e, C_ENDP)->opval.i;
         }
@@ -13150,10 +13437,10 @@ Verify(VERB csc opts)
         case 'S':
           if (opts->o2.v)
             {
-              return !( i_col > 0 || isspace(i_buff[i_col - 1]));
+              return !( i_col > 0 || isspace(i_buff[i_col - 1]) );
             }
 
-          return !( i_col < i_eor || isspace(i_buff[i_col]));
+          return !( i_col < i_eor || isspace(i_buff[i_col]) );
 
         case OP_EOF:
           return i_col < i_eor;
@@ -13255,7 +13542,7 @@ do_recs:
           break;
 
         case STR_END:
-          if (findstr(opts->o1.s, val, opt, comm))
+          if ( findstr(opts->o1.s, val, opt, comm) )
             {
               if (comm == 'L')
                 {
@@ -13287,7 +13574,7 @@ do_recs:
               g_err(B_BOFFILE, opts->errp);
             }
 
-          if (( val <= g_rec || g_rec == -1 ) && comm != 'P')
+          if ( ( val <= g_rec || g_rec == -1 ) && comm != 'P' )
             {
               (void)wrapround();
             }
@@ -13301,7 +13588,7 @@ do_recs:
 
   if (opts->dot)
     {
-      if (( opt = opts->o2.q ) & OP_CALC)
+      if ( ( opt = opts->o2.q ) & OP_CALC )
         {
           val = (int)Evaluate(opts->o2.e, C_ENDP)->opval.i;
         }
@@ -13322,7 +13609,7 @@ do_recs:
 
         case 'G':
         case 'r':
-          if (findstr(opt2, val, opt, comm))
+          if ( findstr(opt2, val, opt, comm) )
             {
               if (depth)
                 {
@@ -13347,7 +13634,7 @@ do_recs:
           break;
 
         case OR_END:
-          if ((unsigned long)e_col >= val)
+          if ( (unsigned long)e_col >= val )
             {
               break;
             }
@@ -13396,14 +13683,14 @@ end_line(void)
 {
   const char *p = i_buff, *const last = p + i_eor;
 
-  if (*p == '.' || iscntrl(*p))
+  if ( *p == '.' || iscntrl(*p) )
     {
       return YES;
     }
 
   while (p < last)
     {
-      if (isspace(*p))
+      if ( isspace(*p) )
         {
           ++p;
         }
@@ -13427,11 +13714,11 @@ pad(char csc c_type)
   *const rm = eb + t_margin, *ec = eb + e_col,
     *p = left_right ? lm : ec;
 
-  while (ec <= rm && ( left_right ? ++p < ec : --p > lm ))
+  while ( ec <= rm && ( left_right ? ++p < ec : --p > lm ) )
     {
-      if (isspace(*p)
+      if ( isspace(*p)
           && ( c_type == NULL ? !isspace(p[-1])
-                           : strchr(c_type, p[-1]) != NULL ))
+                           : strchr(c_type, p[-1]) != NULL ) )
         {
           (void)moverl(p + 1, p, ec++ - p);
         }
@@ -13450,15 +13737,16 @@ int
 pack(void)
 {
   char *const eb = e_buff, *const ib = i_buff;
-  const char *ip = ib + i_col,  /* current input column */
+  const char *ip = ib + i_col,  /* current input column        */
     *last = ib + i_eor,         /* end of current input buffer */
-    *i_start,                   /* start of cur. input word */
-    *limit;                     /* pointer to right margin */
-  char *e_start,                /* start of cur. output word */
-    *ep = eb + e_col;           /* current output column */
+    *i_start,                   /* start of cur. input word    */
+    *limit;                     /* pointer to right margin     */
+  char *e_start,                /* start of cur. output word   */
+    *ep = eb + e_col;           /* current output column       */
 
   /* delete trailing spaces */
-  while (last > ib && isspace(last[-1]))
+
+  while ( last > ib && isspace(last[-1]) )
     {
       --last;
     }
@@ -13467,8 +13755,10 @@ pack(void)
 
   do
     {
+
       /* skip leading spaces */
-      while (ip < last && isspace(*ip))
+
+      while ( ip < last && isspace(*ip) )
         {
           ++ip;
         }
@@ -13479,12 +13769,14 @@ pack(void)
         }
 
       /* record start of word */
+
       i_start = ip, e_start = ep;
 
       /* copy a word */
-      while (ip < last && ep <= limit && !isspace(*ip))
+
+      while ( ip < last && ep <= limit && !( isspace(*ip) ) )
         {
-          if (iscntrl(*ip))
+          if ( iscntrl(*ip) )
             {
               ++limit, ++t_margin;
             }
@@ -13493,6 +13785,7 @@ pack(void)
         }
 
       /* add space between words */
+
       if (ep <= limit)
         {
           *ep++ = SPACE;
@@ -13507,39 +13800,41 @@ pack(void)
   while ( ep <= limit );
 
   /* output line full */
+
   if (e_start == eb + l_margin && ep[-1] != '-')
     {  /* word too long for margins, ignore limit */
-      while (ip < last && !isspace(*ip))
+      while ( ip < last && !( isspace(*ip) ) )
         {
           *ep++ = *ip++;
         }
     }
 
   elif(!isspace(*ip) && ep[-1] != '-')  /* end of word */
-  {  /* in middle of word - back up to start */
-    while (ip < last && iscntrl(*ip))
-      {
-        *ep++ = *ip++;
-      }
-    if (!isspace(*ip) && ip < last)
-      {
-        while (--ip >= i_start)
-          {
-            if (iscntrl(*ip))
-              {
-                --t_margin;
-              }
-          }
-        ep = e_start;
-        ip = i_start;
-      }
-  }
+    {  /* in middle of word - back up to start */
+      while ( ip < last && iscntrl(*ip) )
+        {
+          *ep++ = *ip++;
+        }
+      if (!isspace(*ip) && ip < last)
+        {
+          while (--ip >= i_start)
+            {
+              if ( iscntrl(*ip) )
+                {
+                  --t_margin;
+                }
+            }
+          ep = e_start;
+          ip = i_start;
+        }
+    }
 
   e_col = ep - eb;
   i_col = ip - ib;
 
   /* delete any trailing blanks */
-  while (e_col > 0 && isspace(eb[e_col - 1]))
+
+  while ( e_col > 0 && isspace(eb[e_col - 1]) )
     {
       --e_col;
     }
@@ -13559,9 +13854,10 @@ justify(void)
   int i;
 
   /* skip blank lines etc */
-  while (end_line())
+
+  while ( end_line() )
     {
-      if (!add_line('T'))
+      if ( !(add_line('T') ) )
         {
           return;
         }
@@ -13570,7 +13866,7 @@ justify(void)
   if (i_col > 0)
     {
       char csc ib = i_buff;
-      while (i_col < i_eor && !isspace(ib[i_col]))
+      while ( i_col < i_eor && !isspace(ib[i_col]) )
         {
           eb[e_col++] = ib[i_col++];
         }
@@ -13589,7 +13885,7 @@ justify(void)
   repeat
   {
     t_margin = r_margin;
-    if (pack())  /* output line full */
+    if ( pack() )  /* output line full */
       {
         if (e_col <= l_margin)
           {
@@ -13623,7 +13919,7 @@ justify(void)
       }
     else  /* input line exhausted */
       {
-        if (!fill_buff() || end_line())
+        if ( !( fill_buff() ) || end_line() )
           {
             break;
           }
@@ -13667,7 +13963,7 @@ Join(VERB csc opts)
 
   if (next)
     {
-      if (!fill_buff())
+      if ( !( fill_buff() ) )
         {
           return G_FAIL;
         }
@@ -13675,7 +13971,7 @@ Join(VERB csc opts)
       i_col = i_eor;
       sp = i_buff;
       ep = sp + i_eor;
-      while (ep > sp && isspace(ep[-1]))
+      while ( ep > sp && isspace(ep[-1]) )
         {
           --ep;
         }
@@ -13686,7 +13982,7 @@ Join(VERB csc opts)
       ep = ec;
     }
 
-  while (sp < ep && isspace(*sp))
+  while ( sp < ep && isspace(*sp) )
     {
       ++sp;
     }
@@ -13696,7 +13992,7 @@ Join(VERB csc opts)
       const int len = ep - sp;
       *ec++ = SPACE;
       e_col = ( ec - eb ) + len;
-      if ((unsigned long)e_col > E_BUFF_LEN)
+      if ( (unsigned long)e_col > E_BUFF_LEN )
         {
           g_err(LINE_TOO_LONG, NULL);
         }
@@ -13715,13 +14011,13 @@ private
 void
 Insert(VERB csc opts)
 {
-  char ch_delim;
-  const char *s1p = opts->o1.s;
+  char   ch_delim;
+  const  char *s1p = opts->o1.s;
   static char prompt[3] = " x";
-  int len;
+  int    len;
   time_t tm;
-  const TOKEN *res;
-  const word disp = ( opts->comm == 'D' );
+  const  TOKEN *res;
+  const  word disp = ( opts->comm == 'D' );
   string ss1;
 
   if (disp)
@@ -13789,7 +14085,7 @@ Insert(VERB csc opts)
 #if UNIX && !defined(OMIT_POPEN)
     case '!':
       vsunlink(out_u);
-      if (( len = Proc_to_mem(out_u, s1p)) == EOF)
+      if ( ( len = Proc_to_mem(out_u, s1p) ) == EOF )
         {
           g_err(SYS_COM_FAIL, opts->errp);
         }
@@ -13801,7 +14097,7 @@ Insert(VERB csc opts)
     }
 
   ch_delim = *s1p++;
-  if (gdss(ss1, &len, &s1p))
+  if ( gdss(ss1, &len, &s1p) )
     {
       if (depth | fscreen)
         {
@@ -13812,7 +14108,7 @@ Insert(VERB csc opts)
       prompt[1] = ch_delim;
       repeat
       {
-        if (get_com(ss1, prompt))
+        if ( get_com(ss1, prompt) )
           {
             g_err(EOF_INSERT, opts->errp);
           }
@@ -13832,7 +14128,7 @@ Insert(VERB csc opts)
       while (*s1p++ == ch_delim)
         {
           ins(disp + 2, ss1, len);
-          if (gdss(ss1, &len, &s1p))
+          if ( gdss(ss1, &len, &s1p) )
             {
               g_err(UP_DELIM, opts->o1.s);
             }
@@ -13845,7 +14141,7 @@ private
 void
 Exit(void)
 {
-  VERB xit_opts;
+  VERB  xit_opts;
   const FILE_LIST *fptr;
 
   while (f_list != NULL)
@@ -13895,7 +14191,7 @@ Exit(void)
       (void)fprintf(vdu, ps_name, ft_in, in_fname);
       print_size(infile_recs);
       (void)fprintf(vdu, ps_name, ft_out, out_fname);
-      print_size(vstell(out_u));
+      print_size( vstell(out_u) );
 #if UNIX
       say("Edit Finished.");
 #else  /* if UNIX */
@@ -13930,28 +14226,28 @@ Details(void)
     {
       if (p->disp == 'M')
         {
-          if (isprimary(old_in))
+          if ( isprimary(old_in) )
             {
               prim_in = old_in;
             }
 
           print_i_size(ft_merge, p->name, old_in);
           old_in = p->old_u;
-          if (isprimary(old_in))
+          if ( isprimary(old_in) )
             {
               prim_in = old_in;
             }
         }
       else
         {
-          if (isprimary(old_out))
+          if ( isprimary(old_out) )
             {
               prim_out = old_out;
             }
 
           print_o_size("Save", p->name, old_out);
           old_out = p->old_u;
-          if (isprimary(old_out))
+          if ( isprimary(old_out) )
             {
               prim_out = old_out;
             }
@@ -13990,7 +14286,12 @@ Numbers(VERB csc opts)
   else
     {
       ++l_numbers;
-      (void)sprintf(n_format, "%%%.*sl%c", opts->o1.v, opts->o1.s, opts->o2.v);
+      (void)sprintf(
+              n_format,
+              "%%%.*sl%c",
+              opts->o1.v,
+              opts->o1.s,
+              opts->o2.v);
     }
 }
 
@@ -14000,17 +14301,17 @@ private
 void
 Window(void)
 {
-  UNIT t_in = *in_u, t_out = *out_u;
-  int len, last, start;
+  UNIT  t_in = *in_u, t_out = *out_u;
+  int   len, last, start;
   const int c_g_rec = g_rec, c_eof = vssizeof(in_u);
   const byte *rec;
-  LINE buf;
+  LINE  buf;
 
   term();
   new_line();
 
   last = vstell(out_u);
-  if (( start = last - 8 ) < 0)
+  if ( ( start = last - 8 ) < 0 )
     {
       start = 0;
     }
@@ -14041,7 +14342,7 @@ Window(void)
       len = make_line(buf);
       n_print(buf, len, YES);
 
-      if (( last = start + 8 ) > c_eof)
+      if ( ( last = start + 8 ) > c_eof )
         {
           last = c_eof;
         }
@@ -14072,8 +14373,8 @@ List(VERB csc opts)
   const MACRO *macptr;
   SAVE_AREA l_save;
   stack *p;
-  LINE buf;
-  int len;
+  LINE  buf;
+  int   len;
 
   if (opts->o1.q != L_LOFF)
     {
@@ -14095,10 +14396,10 @@ List(VERB csc opts)
       break;
 
     case 'H':
-      for (p = hist_top; p != NULL; p = (stack *)( *p ))
+      for ( p = hist_top; p != NULL; p = (stack *)( *p ) )
         {
           short csc start = (short *)( p + 1 );
-          (void)fprintf(vdu, "%.*s\n", *start, (char *)( start + 1 ));
+          (void)fprintf( vdu, "%.*s\n", *start, (char *)( start + 1 ) );
         }
 
       break;
@@ -14215,7 +14516,7 @@ private
 void
 Oldfile(VERB csc opts)
 {
-  const char *nf = opts->o1.s;
+  const  char *nf = opts->o1.s;
   static char *old_new;
 
   if (f_list != NULL)
@@ -14230,7 +14531,7 @@ Oldfile(VERB csc opts)
           g_err(NO_RE_READ, opts->errp);
         }
 
-      if (( nf = in_fname ) == no_file)
+      if ( ( nf = in_fname ) == no_file )
         {
           nf = in_fname = out_fname;
         }
@@ -14238,7 +14539,7 @@ Oldfile(VERB csc opts)
   else
     {
       rlsevec(old_new);
-      out_fname = in_fname = old_new = getbuf(size(nf));
+      out_fname = in_fname = old_new = getbuf( size(nf) );
       (void)zmovelr(old_new, nf);
     }
 
@@ -14319,7 +14620,7 @@ verb(VERB csc v)
       break;
 
     case 'V':
-      if (( rc = Verify(v)) != G_OK && !depth)
+      if ( ( rc = Verify(v) ) != G_OK && !depth )
         {
           g_err(VERIFY_FAIL, v->errp);
         }
@@ -14353,7 +14654,7 @@ verb(VERB csc v)
 #if !defined(OMIT_SYSTEM)
     case '!':
       term();
-      (void)!system(prep_name(v->o1.s));
+      (void)!system( prep_name(v->o1.s) );
       break;
 #endif  /* if !defined(OMIT_SYSTEM) */
 
@@ -14407,7 +14708,7 @@ while_loop(VERB csc vptr, VERB csc prog)
 
   while (Verify(vptr) != endc)
     {
-      if (George(prog))
+      if ( George(prog) )
         {
           return G_FAIL;
         }
@@ -14419,7 +14720,7 @@ private
 int
 rec_loop(VERB csc vptr, VERB csc prog)
 {
-  int val;
+  int   val;
   const word opt = vptr->o1.q;
 
   if (opt & OP_CALC)
@@ -14453,7 +14754,7 @@ rec_loop(VERB csc vptr, VERB csc prog)
 
       while (g_rec < val && !g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14463,7 +14764,7 @@ rec_loop(VERB csc vptr, VERB csc prog)
     case OR_END:
       while (o_rec < val)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14473,7 +14774,7 @@ rec_loop(VERB csc vptr, VERB csc prog)
     case R_TIMES:
       while (val--)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14483,7 +14784,7 @@ rec_loop(VERB csc vptr, VERB csc prog)
     case OP_EOF:
       while (!g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14493,7 +14794,7 @@ rec_loop(VERB csc vptr, VERB csc prog)
     case STR_END:
       while (findstr(vptr->o1.s, val, opt, 'V') && !g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14507,7 +14808,7 @@ private
 int
 line_loop(VERB csc vptr, VERB csc prog)
 {
-  int val;
+  int  val;
   const word opt = vptr->o2.q;
 
   if (opt & OP_CALC)
@@ -14541,7 +14842,7 @@ line_loop(VERB csc vptr, VERB csc prog)
 
       while (i_col < val && i_col < i_eor && !g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14551,7 +14852,7 @@ line_loop(VERB csc vptr, VERB csc prog)
     case OR_END:
       while (e_col <= val && !g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14561,7 +14862,7 @@ line_loop(VERB csc vptr, VERB csc prog)
     case OP_EOF:
       while (i_col < i_eor && !g_eof)
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14574,9 +14875,9 @@ line_loop(VERB csc vptr, VERB csc prog)
           g_err(NO_BACK, vptr->errp);
         }
 
-      while (i_col < i_eor && !g_eof && isspace(i_buff[i_col]))
+      while ( i_col < i_eor && !g_eof && isspace(i_buff[i_col]) )
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14585,9 +14886,9 @@ line_loop(VERB csc vptr, VERB csc prog)
 
     case 'G':
     case 'r':
-      while (i_col < i_eor && !g_eof && findstr(vptr->o2.s, val, opt, 'V'))
+      while ( i_col < i_eor && !g_eof && findstr(vptr->o2.s, val, opt, 'V') )
         {
-          if (George(prog))
+          if ( George(prog) )
             {
               return G_FAIL;
             }
@@ -14605,25 +14906,30 @@ private
 int
 George(const VERB *v)
 {
-  int rc = G_OK;
+  int   rc = G_OK;
   const VERB *prog;
 
   while (v != NULL)
     {
       switch (v->comm)
         {
+
         /* deal with repetition first */
+
         case '(':
           prog = v->next;
           v = v->cpar;
+
           /* indicate in repetition */
+
           ++depth;
           if (v->o1.q & LOOP_MASK)
             {
               rc = while_loop(v, prog);
             }
 
-          elif(v->dot) rc = line_loop(v, prog);
+          elif(v->dot)
+              rc = line_loop(v, prog);
           else
             {
               rc = rec_loop(v, prog);
@@ -14647,6 +14953,7 @@ George(const VERB *v)
         }
 
       /* skip to conditional on failure */
+
       if (rc != G_OK && depth)
         {
           do
@@ -14667,6 +14974,7 @@ George(const VERB *v)
         }
 
       /* otherwise move on to next verb */
+
       v = v->next;
     }
 
@@ -14687,6 +14995,7 @@ Line_ed(char *ptr)
   char ch, *h_eor, *h_ptr;
 
   /* execute a t.e */
+
   get_end();
   h_eor = e_buff + e_col;
   h_ptr = e_buff + buff_sec * L_LEN;
@@ -14701,16 +15010,19 @@ Line_ed(char *ptr)
             *h_eor++ = SPACE;
           }
 
-        /* bump pointer */ continue;
+        /* bump pointer */
 
-      case '-':
-        /* look for more - together */
+        continue;
+
+      case '-':  /* look for more - together */
         n = 1;
         while (*ptr++ == '-')
           {
             ++n;
           }
+
         --ptr;
+
         if (h_ptr > h_eor)
           {
             continue;
@@ -14722,13 +15034,15 @@ Line_ed(char *ptr)
           }
 
         /* adjust pointer */
+
         h_eor -= n;
+
         /* adjust buffer */
-        (void)movelr(h_ptr, h_ptr + n, (int)( h_eor - h_ptr ));
+
+        (void)movelr( h_ptr, h_ptr + n, (int)( h_eor - h_ptr ) );
         continue;
 
-      case '^':
-        /* insert text or split line */
+      case '^':  /* insert text or split line */
         if (*ptr == EOS)  /* split */
           {
             if (h_ptr >= h_eor)
@@ -14739,7 +15053,7 @@ Line_ed(char *ptr)
             e_col = h_ptr - e_buff;
             h_eor -= e_col;
             out_buff();
-            (void)movelr(e_buff, h_ptr, (int)( h_eor - e_buff ));
+            (void)movelr( e_buff, h_ptr, (int)( h_eor - e_buff ) );
             buff_sec = 0;
             break;
           }
@@ -14751,7 +15065,7 @@ Line_ed(char *ptr)
           }
         else
           {
-            (void)moverl(h_ptr + len, h_ptr, (int)( h_eor - h_ptr ));
+            (void)moverl( h_ptr + len, h_ptr, (int)( h_eor - h_ptr ) );
             (void)movelr(h_ptr, ptr, len);
             h_eor += len;
           }
@@ -14759,7 +15073,7 @@ Line_ed(char *ptr)
         break;
 
       case ESC:
-        if (( ch = *ptr++ ) != EOS)
+        if ( ( ch = *ptr++ ) != EOS )
           {
             goto put_it_in;
           }
@@ -14772,8 +15086,7 @@ Line_ed(char *ptr)
         /* fallthrough */
 
       default:
-put_it_in:
-        /* replace chars on the line */
+put_it_in:  /* replace chars on the line */
         *h_ptr++ = ch;
         if (h_ptr > h_eor)
           {
@@ -14782,8 +15095,7 @@ put_it_in:
 
         continue;
 
-      case '!':
-        /* replace */
+      case '!':  /* replace */
         h_eor = mzmovelr(h_ptr, ptr);
       }
 
@@ -14791,6 +15103,7 @@ put_it_in:
   }
 
   /* end of command line so wrap up to return to george */
+
   e_col = h_eor - e_buff;
 }
 
@@ -14808,7 +15121,7 @@ Drive(const int level)
   int save, rc = 0, len, done = NO;
   string comm;
 
-  if (level == 0 && ( rc = setjmp(set_err)) == NO)
+  if (level == 0 && ( rc = setjmp(set_err) ) == NO)
     {
       /* startup */
 #if !defined(__MINGW32__) && !defined(OMIT_SIGNAL)
@@ -14817,6 +15130,7 @@ Drive(const int level)
       (void)signal(SIGTERM, g_intr);
       (void)signal(SIGUSR1, g_intr);
       (void)signal(SIGUSR2, g_intr);
+
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
           (void)signal(SIGHUP, SIG_IGN);
@@ -14835,7 +15149,8 @@ Drive(const int level)
     }
 
   elif(rc != 0)  /* failure */
-  pop_com_stack(&com_stack);
+      pop_com_stack(&com_stack);
+
   else
     {  /* new instance */
       VERB_LIST *p = com_stack_ptr->next;
@@ -14873,7 +15188,7 @@ Drive(const int level)
     else
       {
         printline(comm);
-        if (get_com(comm, comm))
+        if ( get_com(comm, comm) )
           {
             break;
           }
@@ -14889,7 +15204,7 @@ Drive(const int level)
         /* fallthrough */
 
       case '=':
-        if (( len = hist_recall(comm)) > 0)
+        if ( ( len = hist_recall(comm) ) > 0 )
           {
             comm[len] = EOS;
             if (!fscreen && lon)
@@ -14912,7 +15227,7 @@ Drive(const int level)
           }
       }
 
-    if (( ch = u_star(comm)) == ';')
+    if ( ( ch = u_star(comm) ) == ';' )
       {
         continue;
       }
@@ -14922,7 +15237,7 @@ Drive(const int level)
         switch (ch)
           {
           case '$':
-            if (isdigit(comm[1]))
+            if ( isdigit(comm[1]) )
               {
                 buff_sec = comm[1] - '0';
               }
@@ -14955,7 +15270,8 @@ Drive(const int level)
           }
       }
 
-    elif(ch == '$' || ch == EOS) continue;
+    elif(ch == '$' || ch == EOS)
+        continue;
 
     save = level < D_USE_FILE && ch != 'H' && ch != 'F';
     if (save)
@@ -15002,11 +15318,11 @@ main(int i, char csc * argv)
 
   (void)cvstring;
   i = 0;  /* scan .argtype */
-  while (( p = *++argv ) != NULL)
+  while ( ( p = *++argv ) != NULL )
     {
       if (p[0] == '-' && p[1] != EOS)
         {
-          switch (u_star(++p))
+          switch ( u_star(++p) )
             {
             case 'B':  /* binary */
               ++bin_mode;
@@ -15022,7 +15338,7 @@ main(int i, char csc * argv)
                   p = *++argv;
                 }
 
-              if (( screen_tabs = atoi(p)) <= 0)
+              if ( ( screen_tabs = atoi(p) ) <= 0 )
                 {
                   screen_tabs = TAB_WIDTH;
                 }
@@ -15031,18 +15347,20 @@ main(int i, char csc * argv)
 
             case 'V':  /* display version */
 #if defined(NCURSES_VERSION) || defined(PDCURSES)
-              sprintf(cvstring,
-                      "%s using %s", VERSION_STRING, curses_version());
+              sprintf( cvstring,
+                       "%s using %s",
+                       VERSION_STRING,
+                       curses_version() );
 # if DOS
               putstr(
-# else  /* if DOS */
+# else  /* if DOS  */
               say(
 # endif  /* if DOS */
                 cvstring);
 #else  /* if defined(NCURSES_VERSION) || defined(PDCURSES) */
 # if DOS
               putstr(
-# else  /* if DOS */
+# else  /* if DOS  */
               say(
 # endif  /* if DOS */
                 VERSION_STRING);
@@ -15091,12 +15409,12 @@ main(int i, char csc * argv)
       out_fname = files[1];
     }
 
-  if (equal1(in_fname, '-'))
+  if ( equal1(in_fname, '-') )
     {
       i_mode = 'F';
     }
 
-  if (equal1(out_fname, '-'))
+  if ( equal1(out_fname, '-') )
     {
       o_mode = 'F';
     }
@@ -15129,15 +15447,18 @@ main(int i, char csc * argv)
     }
 
   /* get initial buffers */
+
   in_u->list = cp = (PAGE_PTR *)getvec(PAGE_SIZE * 2 + E_BUFF_SIZE * 2);
   in_u->rec_start = (byte *)( cp + PPP );
   i_buff = (char *)( cp + PPP * 2 );
   e_buff = i_buff + E_BUFF_SIZE;
 
   /* load input file */
+
   vsprimary();
 
   /* load command file if from stdin */
+
   if (!i && i_mode != 'F' && Disk_to_mem(empty, trans_u = vsopen(), 'F') > 0)
     {
       vsreopen(trans_u);
