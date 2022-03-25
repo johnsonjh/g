@@ -172,7 +172,7 @@ ifdef DEBUG
   CFLAGS     += -Wall -Wextra -DDEBUG=1 -g
 else
   ifeq ($(_SUNOS),1)
-    OPTFLAGS ?= -O
+    OPTFLAGS ?= -O -xspace
   endif # _SUNOS
   OPTFLAGS   ?= -Os
   CFLAGS     += $(OPTFLAGS) $(STACK_FLAGS) -Wno-int-to-pointer-cast
