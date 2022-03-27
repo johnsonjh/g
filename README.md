@@ -106,7 +106,7 @@ Future plans for ***`G`***:
 
 ## Binaries
 
-* [***`G`***  V4.7.3 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g473_x86.exe), 16-bit 8086, G-Curses
+* [***`G`***  V4.7.4β for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g474_x86.exe), 16-bit 8086, G-Curses
 * [***`G`***  V4.7.3 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g473_386.exe), 16-bit 80386, Fast-Curses
 * [***`G`***  V4.7.3 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g473_pro.exe), 32-bit 80386, DPMI, G-Curses
 * [***`G`***  V4.7.3 for PC DOS](https://github.com/johnsonjh/g/raw/master/bin/DOS/g473_cws.exe), 32-bit 80386, DPMI, PdCursesMod
