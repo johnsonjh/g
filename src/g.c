@@ -55,7 +55,7 @@ extern unsigned _stklen = 32767;
 #endif  /* ifndef TINY_G */
 
 #ifndef FULL_G
-#define FULL_G ( TINY_G == 0 )
+# define FULL_G ( TINY_G == 0 )
 #endif  /* ifndef FULL_G */
 
 #if DOS
@@ -132,7 +132,7 @@ extern unsigned _stklen = 32767;
 #include <setjmp.h>
 
 #if !defined(OMIT_SIGNAL)
-#include <signal.h>
+# include <signal.h>
 #endif  /* if !defined(OMIT_SIGNAL) */
 
 #include <stdio.h>
@@ -5036,7 +5036,7 @@ serial_read(UNIT *const vs_u, const int fd)
  *  Read and write to/from a process
  */
 
-#if !defined(OMIT_POPEN)
+# if !defined(OMIT_POPEN)
 private
 int
 Mem_to_proc(UNIT *const vs_u, char csc comm)
@@ -5079,7 +5079,7 @@ Proc_to_mem(UNIT *const vs_u, char csc comm)
 
   return rc != 0 ? EOF : (int)vstell(vs_u);
 }
-#endif  /* if !defined(OMIT_POPEN) */
+# endif  /* if !defined(OMIT_POPEN) */
 
 #endif  /* if UNIX */
 
@@ -5504,13 +5504,13 @@ g_intr(int sig)
     }
   (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
   save_work(mess);
-#if !defined(OMIT_POPEN)
+#  if !defined(OMIT_POPEN)
   if ( ( fp = popen("exec mail $LOGNAME", write_only) ) != NULL )
     {
       (void)fprintf(fp, "\n%s", mess);
       (void)pclose(fp);
     }
-#endif  /* if !defined(OMIT_POPEN) */
+#  endif  /* if !defined(OMIT_POPEN) */
 
   term();
   _exit(1);
