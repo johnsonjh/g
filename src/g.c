@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "G 4.7.4-dev (2022-03-23)"
+#define VERSION_STRING     "G 4.7.4-dev (2022-03-27)"
 
 #ifdef DOS
 # define UNIX              0
@@ -53,7 +53,10 @@ extern unsigned _stklen = 32767;
 #  define TINY_G  0
 # endif  /* if DOS */
 #endif  /* ifndef TINY_G */
+
+#ifndef FULL_G
 #define FULL_G ( TINY_G == 0 )
+#endif  /* ifndef FULL_G */
 
 #if DOS
 # ifndef ASM86
@@ -137,11 +140,11 @@ extern unsigned _stklen = 32767;
 #include <string.h>
 #include <time.h>
 
-#ifdef __BORLANDC__
+#if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) )
 # include <io.h>
 #else
 # include <unistd.h>
-#endif  /* ifdef __BORLANDC__ */
+#endif  /* if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) ) */
 
 #if DOS
 # if defined(__BORLANDC__)
@@ -519,11 +522,11 @@ extern void  bios_wait(   void   );
 
 # if DOS
 #  ifndef __DJGPP__
-#   ifdef __BORLANDC__
+#   if defined(__BORLANDC__) || defined(_MSC_VER)
 #    include <bios.h>
 #   else
 #    include <i86.h>
-#   endif  /* ifdef __BORLANDC__ */
+#   endif  /* if defined(__BORLANDC__) || defined(_MSC_VER) */
 #  endif  /* ifndef __DJGPP__ */
 # endif  /* if DOS */
 
@@ -8680,15 +8683,17 @@ move_to(int line)
 private
 short curs_row, curs_col;
 
-# if TINY_G && !defined(WCL386)
+# if ( TINY_G && !defined(WCL386) ) \
+    || ( DOS && defined(_MSC_VER) )
 private
 chtype *near v_base = (chtype *)0xb8000000;
-#  define call_bios int86  /* need _int86 for MSVC? */
-# else  /* if TINY_G && !defined(WCL386)  */
+#  define call_bios int86
+# else
 private
 chtype *v_base = (chtype *)0xb8000;
 #  define call_bios int386
-# endif  /* if TINY_G && !defined(WCL386) */
+# endif  /* if ( TINY_G && !defined(WCL386) )
+              || ( DOS && defined(_MSC_VER) ) */
 
 private
 chtype *near h_base, *near t_base;
