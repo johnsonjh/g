@@ -72,8 +72,8 @@
 
 * A **C** compiler is required. *Oracle* **Developer Studio**, *LLVM*
   **Clang**, *AMD* **AOCC**, *GNU* **GCC**, *IBM* **XLC**/**OpenXL**,
-  *Intel* **ICX**/**ICC**, **DJGPP**, **Microsoft C**, **OpenWatcom**,
-  **Borland C**, and **PCC** are currently known to work.
+  *Intel* **ICX**/**ICC**, **DJGPP**, **Microsoft C**/**MSVC**,
+  **OpenWatcom**, **Borland C**, and **PCC** are currently known to work.
 
 * The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
   or later) is available. **GNU** **Make** is helpful, but is not required

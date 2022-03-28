@@ -42,7 +42,7 @@
 #  * DOS (Borland C 5.02, 8086):
 #     bcc -1- -2- -3- -DDOS=1 -UUNIX -Os -ml -a2 -d g.c
 #
-#  * DOS (Microsoft C/C++ 7.0, 8086):
+#  * DOS (Microsoft C/C++ 7.0/8.00a, 8086):
 #     cl /Gs /Gy -DDOS=1 -UUNIX /AL /Os /G0 /c G.C
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
