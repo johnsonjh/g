@@ -48,7 +48,7 @@
 #
 #  * DOS (Watcom C 10, 386):
 #     wasm crt0 -bt=DOS -ml -2r_
-#     wcl -DDOS=1 -4 -7 -fp3 -ml -zp2 -oaosilm @g.lnk \
+#     wcl -DDOS=1 -4 -7 -fp3 -ml -zp2 -oaosilm @g.lkr \
 #       -fe=g.exe crt0.obj g.c
 #
 #  * Use `-DDEBUG=1` to enable extra debugging checks
@@ -251,7 +251,7 @@ endif # DEBUG
 
 .PHONY: $(OUT)86 owc16
 .NOTPARALLEL: $(OUT)86 owc16 $(OUT)86.exe
-$(OUT)86 owc16 $(OUT)86.exe: g.lnk
+$(OUT)86 owc16 $(OUT)86.exe: g.lkr
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -259,7 +259,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -l=DOS -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lnk  \
+             -l=DOS -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lkr  \
                $(WATDBG) -zp2 -fe=$(OUT)86.exe $(SRC) &&               \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -268,7 +268,7 @@ endif # !V
 
 .PHONY: $(OUT)386r owc386r
 .NOTPARALLEL: $(OUT)386r owc386r $(OUT)386r.exe
-$(OUT)386r owc386r $(OUT)386r.exe: g.lnk
+$(OUT)386r owc386r $(OUT)386r.exe: g.lkr
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -276,7 +276,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -l=DOS -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lnk  \
+             -l=DOS -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lkr  \
                $(WATDBG) -zp2 -fe=$(OUT)386r.exe $(SRC) &&             \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -285,7 +285,7 @@ endif # !V
 
 .PHONY: $(OUT)386p owc386p
 .NOTPARALLEL: $(OUT)386p owc386p $(OUT)386p.exe
-$(OUT)386p owc386p $(OUT)386p.exe: g.lnk
+$(OUT)386p owc386p $(OUT)386p.exe: g.lkr
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(WCL386):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -293,7 +293,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
          PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
-          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi -zm @g.lnk  \
+          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi -zm @g.lkr  \
            -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
             $(RM) -f "./g.o" 2> /dev/null
 
@@ -302,7 +302,7 @@ endif # !V
 
 .PHONY: $(OUT)286p owc286p
 .NOTPARALLEL: $(OUT)286p owc286p $(OUT)286p.exe
-$(OUT)286p owc286p $(OUT)286p.exe: gos2.lnk
+$(OUT)286p owc286p $(OUT)286p.exe: gos2.lkr
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(WATWCL):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -311,7 +311,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"     \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                     \
-           -l=OS2 -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lnk           \
+           -l=OS2 -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lkr           \
             -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -fe=$(OUT)286p.exe \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
               2> /dev/null
@@ -321,7 +321,7 @@ endif # !V
 
 .PHONY: $(OUT)os2p owcos2p
 .NOTPARALLEL: $(OUT)os2p owcos2p $(OUT)os2p.exe
-$(OUT)os2p owcos2p $(OUT)os2p.exe: gos2.lnk
+$(OUT)os2p owcos2p $(OUT)os2p.exe: gos2.lkr
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(WCL386):\t\t%s\n' "$(SRC)"
 endif # !V
@@ -330,7 +330,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"       \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                     \
-           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lnk      \
+           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lkr      \
             -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe     \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
               2> /dev/null
