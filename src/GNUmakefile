@@ -173,8 +173,8 @@ endif # DEBUG
 # Link-time optimization and garbage collection
 
 ifdef LTO
-  CFLAGS    += -flto
-  LDFLAGS   += -flto
+  CFLAGS    += -flto=auto
+  LDFLAGS   += -flto=auto
 endif # LTO
 
 ifdef LGC
@@ -259,7 +259,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -l=DOS -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lkr  \
+             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lkr         \
                $(WATDBG) -zp2 -fe=$(OUT)86.exe $(SRC) &&               \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -276,7 +276,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -l=DOS -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lkr  \
+             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lkr         \
                $(WATDBG) -zp2 -fe=$(OUT)386r.exe $(SRC) &&             \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -308,12 +308,12 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g286p.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"     \
-          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                     \
-           -l=OS2 -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lkr           \
-            -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -fe=$(OUT)286p.exe \
-             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                             \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"  \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                  \
+           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lkr -k32767       \
+            $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -fe=$(OUT)286p.exe      \
+             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"         \
               2> /dev/null
 
 ###############################################################################
@@ -327,12 +327,12 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./gos2p.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"       \
-          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                     \
-           -l=OS2V2 -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lkr      \
-            -k32767 $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe     \
-             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"            \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                            \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"   \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                 \
+           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lkr -k32767   \
+            $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe         \
+             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"        \
               2> /dev/null
 
 ###############################################################################
