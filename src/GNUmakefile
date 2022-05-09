@@ -46,10 +46,6 @@
 #     cl /Gs /Gy -DDOS=1 -UUNIX /AL /Os /G0 /c G.C
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
-#  * DOS (Watcom C 10, 386):
-#     wcl -DDOS=1 -4 -7 -fp3 -ml -zp2 -oaosilm @g.lkr \
-#       -k32767 -fe=g.exe crt0.obj g.c
-#
 #  * Use `-DDEBUG=1` to enable extra debugging checks
 #  * Use `-DCOLOUR=0` for older curses implementations
 #
