@@ -2,7 +2,7 @@
 
 * First implementation of context editor kernel by Roger McCalman and
   Robert Ash, October 1981 - February 1982, at Aberystwyth University,
-  originally weitten in 'B' for Honeywell-6000 GCOS-3/TSS
+  originally written in 'B' for Honeywell-6000 GCOS-3/TSS
 * All further development by Jeremy Hall. Reading, England
 * Ported to UNIX (Amdahl UTS/V), August 1984 - May 1985. In the
   process it was translated to 'C' and re-written to include an
