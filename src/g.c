@@ -1352,15 +1352,17 @@ void Exit(void);
 private
 void Drive(const int);
 
-#if defined(__WATCOMC__) && !defined(__OS2__)
-# pragma aux main     aborts;
-# pragma aux Quit     aborts;
-# pragma aux Exit     aborts;
-# pragma aux g_err    aborts;
-# pragma aux g_intr   aborts;
-# pragma aux se_error aborts;
-# pragma aux _exit    aborts;
-#endif  /* if defined(__WATCOMC__) && !defined(__OS2__) */
+#if 0
+# if defined(__WATCOMC__) && !defined(__OS2__)
+#  pragma aux main     aborts;
+#  pragma aux Quit     aborts;
+#  pragma aux Exit     aborts;
+#  pragma aux g_err    aborts;
+#  pragma aux g_intr   aborts;
+#  pragma aux se_error aborts;
+#  pragma aux _exit    aborts;
+# endif  /* if defined(__WATCOMC__) && !defined(__OS2__) */
+#endif  /* 0 */
 
 #define FBSTR       \
   private           \

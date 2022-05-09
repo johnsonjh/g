@@ -47,15 +47,11 @@
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
 #  * DOS (Watcom C 10, 386):
-#     wasm crt0 -bt=DOS -ml -2r_
 #     wcl -DDOS=1 -4 -7 -fp3 -ml -zp2 -oaosilm @g.lkr \
-#       -fe=g.exe crt0.obj g.c
+#       -k32767 -fe=g.exe crt0.obj g.c
 #
 #  * Use `-DDEBUG=1` to enable extra debugging checks
 #  * Use `-DCOLOUR=0` for older curses implementations
-#
-#  For Watcom DOS builds, crt0.asm is optional. It's smaller and faster than
-#  the default. If it isn't used, -k32767 must be added to set the stack size.
 #
 #  For MS C (real-mode DOS), the compiler produces compact code, so a full
 #  (non-"TINY_G") build may be practical; add -DFULL_G=1 to the cl invocation.
@@ -259,7 +255,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi -zm @g.lkr         \
+             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr             \
                $(WATDBG) -zp2 -fe=$(OUT)86.exe $(SRC) &&               \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -276,7 +272,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi -zm @g.lkr         \
+             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr             \
                $(WATDBG) -zp2 -fe=$(OUT)386r.exe $(SRC) &&             \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -293,7 +289,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
          PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
-          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi -zm @g.lkr  \
+          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -fpi @g.lkr      \
            -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
             $(RM) -f "./g.o" 2> /dev/null
 
@@ -311,7 +307,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                             \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"  \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                  \
-           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi -zm @gos2.lkr -k32767       \
+           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767           \
             $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -fe=$(OUT)286p.exe      \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"         \
               2> /dev/null
@@ -330,7 +326,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                            \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"   \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                 \
-           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi -zm @gos2.lkr -k32767   \
+           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767       \
             $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -fe=$(OUT)os2p.exe         \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"        \
               2> /dev/null
