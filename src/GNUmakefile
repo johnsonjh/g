@@ -252,7 +252,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
              -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr             \
-               $(WATDBG) -zp2 -j -fe=$(OUT)86.exe $(SRC) &&            \
+               $(WATDBG) -zp2 -j -s -fe=$(OUT)86.exe $(SRC) &&         \
                  $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -269,7 +269,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
              -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr             \
-               $(WATDBG) -zp2 -j -fe=$(OUT)386r.exe $(SRC) &&          \
+               $(WATDBG) -zp2 -j -s -fe=$(OUT)386r.exe $(SRC) &&       \
                  $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -284,7 +284,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
-         PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386)     \
+         PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386) -s  \
           -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -j -fpi @g.lkr   \
            -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
             $(RM) -f "./g.o" 2> /dev/null
@@ -303,7 +303,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                             \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"  \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                  \
-           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767           \
+           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767 -s        \
             $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -j -fe=$(OUT)286p.exe   \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"         \
               2> /dev/null
@@ -322,7 +322,7 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                            \
          INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"   \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                 \
-           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767       \
+           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767 -s    \
             $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -j -fe=$(OUT)os2p.exe      \
              $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"        \
               2> /dev/null
