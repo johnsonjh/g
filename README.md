@@ -71,9 +71,10 @@
   **PdCursesMod**, **NetBSD** **Curses**, and **NCurses** are known to work.
 
 - A **C** compiler is required. _Oracle_ **Developer Studio**, _LLVM_
-  **Clang**, _AMD_ **AOCC**, _GNU_ **GCC**, _IBM_ **XLC**/**OpenXL**,
-  _Intel_ **ICX**/**ICC**, **DJGPP**, **Microsoft C**/**MSVC**,
-  **OpenWatcom V2**, **Borland C**, and **PCC** are currently known to work.
+  **Clang**, _AMD_ **AOCC**, _GNU_ **GCC**, _IBM_ **XLC**, _IBM_ **OpenXL**,
+  _Intel_ **ICX**, _Intel_ **ICC**, **DJGPP**, **Microsoft C** / **MSVC**,
+  **Watcom C/C++**, **OpenWatcom V2**, **Borland C**, and **PCC** are
+  currently known to work.
 
 - The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
   or later) is available. **GNU** **Make** is helpful, but is not required
