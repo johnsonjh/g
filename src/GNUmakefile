@@ -330,6 +330,9 @@ endif # !V
 ###############################################################################
 # DJGPP Compilation: 32-bit DOS, 386 (Protected mode)
 
+CFLAGZ  := $(patsubst %-flto=auto,%-flto,$(CFLAGS))
+LDFLAGZ := $(patsubst %-flto=auto,%-flto,$(LDFLAGS))
+
 .PHONY: $(OUT)386 djgpp
 $(OUT)386 djgpp $(OUT)386.exe:                                                \
                               $(CWSDPMI_STUB)                                 \
@@ -343,7 +346,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "g386.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_CCOMP)"        \
-         -march=i386 -Wno-attributes $(CFLAGS) $(SRC) -o gt.exe $(LDFLAGS) && \
+         -march=i386 -Wno-attributes $(CFLAGZ) $(SRC) -o gt.exe $(LDFLAGZ) && \
           $(RM) -f "./gt" &&                                                  \
            "$(DJGPP_GHOME)/bin/$(DJGPP_GARCH)$(DJGPP_STRIP)" -s "./gt.exe" && \
              $(DJGPP_ECOFF) "./gt.exe" && $(RM) -f "./gt.exe" &&              \
