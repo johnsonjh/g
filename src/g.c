@@ -6812,7 +6812,7 @@ private
 char *
 itoh(const long n)
 {
-  static char hbuf[9] = "0";
+  static char hbuf[18] = "0";
 
   return sprintf(hbuf + 1, "%lX", n) & ODD_MASK ? hbuf : hbuf + 1;
 }
