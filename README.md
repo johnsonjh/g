@@ -97,7 +97,6 @@
 
 Future plans for **_`G`_**:
 
-- Support building only line-mode editor (for constrained systems)
 - Overhauled documentation
 - Improved online help viewer
 - Proper Windows console support
