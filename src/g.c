@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "G 4.7.4-dev (2022-05-09)"
+#define VERSION_STRING     "4.7.4-dev (2022-05-10)"
 
 #ifdef DOS
 # define UNIX              0
@@ -15353,6 +15353,12 @@ main(int i, char csc * argv)
               continue;
 
             case 'V':  /* display version */
+#if TINY_G
+              fprintf(vdu, "Tiny G ");
+#else
+              fprintf(vdu, "G ");
+#endif  /* if TINY_G */
+
 #if defined(NCURSES_VERSION) || defined(PDCURSES)
               sprintf( cvstring,
                        "%s using %s",
