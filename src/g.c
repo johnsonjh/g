@@ -48,7 +48,7 @@ extern unsigned _stklen = 32767;
 
 #ifndef TINY_G
 # if DOS
-#  define TINY_G  1  /* small buffers etc for real mode DOS */
+#  define TINY_G  1  /* small buffers */
 # else  /* if DOS */
 #  define TINY_G  0
 # endif  /* if DOS */
