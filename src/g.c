@@ -52,7 +52,15 @@ extern unsigned _stklen = 32767;
 # else  /* if DOS */
 #  define TINY_G  0
 # endif  /* if DOS */
+
 #endif  /* ifndef TINY_G */
+
+#ifdef LINE_G
+# undef TINY_G
+# define TINY_G   0
+# undef FULL_G
+# define FULL_G   1
+#endif  /* ifdef LINE_G */
 
 #ifndef FULL_G
 # define FULL_G ( TINY_G == 0 )
@@ -359,161 +367,163 @@ extern char *get_eos(     const char *s);
 extern char *tab_fill(    void *start);
 extern void  bios_wait(   void   );
 
-# pragma aux bios_wait =                                   \
-  "xor ah,ah"                                              \
+# pragma aux bios_wait =                                    \
+  "xor ah,ah"                                               \
   "int 16h" modify[ah];
 
-# pragma aux get_eos =                                     \
-  "xor al,al"                                              \
-  "or cx,-1"                                               \
-  "repne scasb"                                            \
+# pragma aux get_eos =                                      \
+  "xor al,al"                                               \
+  "or cx,-1"                                                \
+  "repne scasb"                                             \
   "dec di" parm[es di] value[es di] modify[cx al];
 
-# pragma aux wfill =                                       \
+# ifndef LINE_G
+#  pragma aux wfill =                                       \
   "rep stosw" parm[es di][ax][cx];
+# endif  /* ifndef LINE_G */
 
-# pragma aux movelr =                                      \
+# pragma aux movelr =                                       \
   "rep movsb" parm[es di][ds si][cx];
 
-# pragma aux mmovelr =                                     \
+# pragma aux mmovelr =                                      \
   "rep movsb" parm[es di][ds si][cx] value[es di];
 
-# pragma aux cwmovelr =                                    \
-  "shr cx,1"                                               \
-  "rep movsw"                                              \
-  "jnc nocp"                                               \
-  "movsb"                                                  \
+# pragma aux cwmovelr =                                     \
+  "shr cx,1"                                                \
+  "rep movsw"                                               \
+  "jnc nocp"                                                \
+  "movsb"                                                   \
   "nocp:" parm[es di][ds si][cx];
 
-# pragma aux cwmmovelr =                                   \
-  "shr cx,1"                                               \
-  "rep movsw"                                              \
-  "jnc nocp"                                               \
-  "movsb"                                                  \
+# pragma aux cwmmovelr =                                    \
+  "shr cx,1"                                                \
+  "rep movsw"                                               \
+  "jnc nocp"                                                \
+  "movsb"                                                   \
   "nocp:" parm[es di][ds si][cx] value[es di];
 
-# pragma aux movelrz =                                     \
-  "rep movsb"                                              \
-  "xor al,al"                                              \
+# pragma aux movelrz =                                      \
+  "rep movsb"                                               \
+  "xor al,al"                                               \
   "stosb" parm[es di][ds si][cx] modify[al];
 
-# pragma aux tmovelr =                                     \
-  "cmp cx,0"                                               \
-  "jbe nocp"                                               \
-  "rep movsb"                                              \
+# pragma aux tmovelr =                                      \
+  "cmp cx,0"                                                \
+  "jbe nocp"                                                \
+  "rep movsb"                                               \
   "nocp:" parm[es di][ds si][cx];
 
-# pragma aux zmovelr =                                     \
-  "nc: lodsb"                                              \
-  "stosb"                                                  \
-  "test al,al"                                             \
+# pragma aux zmovelr =                                      \
+  "nc: lodsb"                                               \
+  "stosb"                                                   \
+  "test al,al"                                              \
   "jnz nc" parm[es di][ds si] modify[al];
 
-# pragma aux mzmovelr =                                    \
-  "nc: lodsb"                                              \
-  "stosb"                                                  \
-  "test al,al"                                             \
-  "jnz nc"                                                 \
+# pragma aux mzmovelr =                                     \
+  "nc: lodsb"                                               \
+  "stosb"                                                   \
+  "test al,al"                                              \
+  "jnz nc"                                                  \
   "dec di" parm[es di][ds si] modify[al] value[es di];
 
-# pragma aux cmovelr =                                     \
-  "or cx,-1"                                               \
-  "xor al,al"                                              \
-  "repne scasb"                                            \
-  "dec di"                                                 \
-  "nc: lodsb"                                              \
-  "stosb"                                                  \
-  "test al,al"                                             \
+# pragma aux cmovelr =                                      \
+  "or cx,-1"                                                \
+  "xor al,al"                                               \
+  "repne scasb"                                             \
+  "dec di"                                                  \
+  "nc: lodsb"                                               \
+  "stosb"                                                   \
+  "test al,al"                                              \
   "jnz nc" parm[es di][ds si] modify[cx al];
 
-# pragma aux mcmovelr =                                    \
-  "or cx,-1"                                               \
-  "xor al,al"                                              \
-  "repne scasb"                                            \
-  "dec di"                                                 \
-  "nc: lodsb"                                              \
-  "stosb"                                                  \
-  "test al,al"                                             \
-  "jnz nc"                                                 \
+# pragma aux mcmovelr =                                     \
+  "or cx,-1"                                                \
+  "xor al,al"                                               \
+  "repne scasb"                                             \
+  "dec di"                                                  \
+  "nc: lodsb"                                               \
+  "stosb"                                                   \
+  "test al,al"                                              \
+  "jnz nc"                                                  \
   "dec di" parm[es di][ds si] modify[cx al] value[es di];
 
-# pragma aux bmovelr =                                     \
+# pragma aux bmovelr =                                      \
   "rep movsd" parm[es di][ds si][cx];
 
-# pragma aux mmovelr4 =                                    \
+# pragma aux mmovelr4 =                                     \
   "movsd" parm[es di][ds si] value[es di];
 
-# pragma aux movelr5 =                                     \
-  "movsd"                                                  \
+# pragma aux movelr5 =                                      \
+  "movsd"                                                   \
   "movsb" parm[es di][ds si];
 
-# pragma aux mmovelr5 =                                    \
-  "movsd"                                                  \
+# pragma aux mmovelr5 =                                     \
+  "movsd"                                                   \
   "movsb" parm[es di][ds si] value[es di];
 
-# pragma aux bzero =                                       \
-  "xor eax,eax"                                            \
+# pragma aux bzero =                                        \
+  "xor eax,eax"                                             \
   "rep stosd" parm[es di][cx] modify[ax];
 
-# pragma aux bmoverl =                                     \
-  "mov dx,cx"                                              \
-  "shl dx,2"                                               \
-  "add di,dx"                                              \
-  "add si,dx"                                              \
-  "sub di,4"                                               \
-  "sub si,4"                                               \
-  "std"                                                    \
-  "rep movsd"                                              \
+# pragma aux bmoverl =                                      \
+  "mov dx,cx"                                               \
+  "shl dx,2"                                                \
+  "add di,dx"                                               \
+  "add si,dx"                                               \
+  "sub di,4"                                                \
+  "sub si,4"                                                \
+  "std"                                                     \
+  "rep movsd"                                               \
   "cld" parm[es di][ds si][cx] modify[dx];
 
-# pragma aux tab_fill =                                    \
-  "mov eax,20202020h"                                      \
-  "stosd"                                                  \
+# pragma aux tab_fill =                                     \
+  "mov eax,20202020h"                                       \
+  "stosd"                                                   \
   "stosd" parm[es di] modify[ax] value[es di];
 
-# pragma aux wmovelr =                                     \
+# pragma aux wmovelr =                                      \
   "rep movsw" parm[es di][ds si][cx];
 
-# pragma aux moverl =                                      \
-  "add di,cx"                                              \
-  "add si,cx"                                              \
-  "dec di"                                                 \
-  "dec si"                                                 \
-  "std"                                                    \
-  "rep movsb"                                              \
+# pragma aux moverl =                                       \
+  "add di,cx"                                               \
+  "add si,cx"                                               \
+  "dec di"                                                  \
+  "dec si"                                                  \
+  "std"                                                     \
+  "rep movsb"                                               \
   "cld" parm[es di][ds si][cx];
 
-# pragma aux wmoverl =                                     \
-  "add di,cx"                                              \
-  "add di,cx"                                              \
-  "add si,cx"                                              \
-  "add si,cx"                                              \
-  "sub di,2"                                               \
-  "sub si,2"                                               \
-  "std"                                                    \
-  "rep movsw"                                              \
+# pragma aux wmoverl =                                      \
+  "add di,cx"                                               \
+  "add di,cx"                                               \
+  "add si,cx"                                               \
+  "add si,cx"                                               \
+  "sub di,2"                                                \
+  "sub si,2"                                                \
+  "std"                                                     \
+  "rep movsw"                                               \
   "cld" parm[es di][ds si][cx];
 
-# pragma aux space_fill =                                  \
-  "mov al,32"                                              \
+# pragma aux space_fill =                                   \
+  "mov al,32"                                               \
   "rep stosb" parm[es di][cx] modify[al];
 
-# pragma aux mspace_fill =                                 \
-  "mov al,32"                                              \
+# pragma aux mspace_fill =                                  \
+  "mov al,32"                                               \
   "rep stosb" parm[es di][cx] modify[al] value[es di];
 
-# pragma aux ecmp =                                        \
-  "xor ax,ax"                                              \
-  "or cx,cx"                                               \
-  "repe cmpsb"                                             \
-  "jne neq"                                                \
-  "inc ax"                                                 \
+# pragma aux ecmp =                                         \
+  "xor ax,ax"                                               \
+  "or cx,cx"                                                \
+  "repe cmpsb"                                              \
+  "jne neq"                                                 \
+  "inc ax"                                                  \
   "neq:" parm[es di][ds si][cx] value[ax];
 
-# pragma aux size =                                        \
-  "xor al,al"                                              \
-  "or cx,-1"                                               \
-  "repnz scasb"                                            \
+# pragma aux size =                                         \
+  "xor al,al"                                               \
+  "or cx,-1"                                                \
+  "repnz scasb"                                             \
   "not cx" parm[es di] value[cx] modify[al];
 
 # define save_jbuf(d, s) wmovelr(d, s, 13)
@@ -530,6 +540,7 @@ extern void  bios_wait(   void   );
 #  endif  /* ifndef __DJGPP__ */
 # endif  /* if DOS */
 
+# ifndef LINE_G
 private
 void
 wfill(void *s, const short v, int len)
@@ -541,6 +552,7 @@ wfill(void *s, const short v, int len)
       *p++ = v;
     }
 }
+# endif  /* ifndef LINE_G */
 
 # define movelr(a, b, n)                           \
     memcpy( (void *)( a ),                         \
@@ -659,10 +671,10 @@ wfill(void *s, const short v, int len)
 
 typedef struct _pp
 {
-  byte *base;     /* Memory address of page       */
-  word rec;       /* Record number of last record */
-  ushort linked,  /* Shared page index            */
-    end_pos;      /* One past last byte           */
+  byte *base;       /* Memory address of page       */
+  word rec;         /* Record number of last record */
+  ushort linked,    /* Shared page index            */
+    end_pos;        /* One past last byte           */
 } PAGE_PTR;
 
 typedef struct _unit
@@ -840,8 +852,8 @@ TOKEN;
 /* Standard files */
 
 #define vdu    stderr
-#define kbd_fd 0
-#define vdu_fd 2
+#define kbd_fd      0
+#define vdu_fd      2
 
 /* screen action on return from CE */
 
@@ -1030,29 +1042,32 @@ void napms(const unsigned long);
 
 /* specials for UNIX curses.h */
 
-# define PERFORMANCE 1
-# define CURS_PERFORMANCE
-# define NCC         8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2)  */
-# ifndef L_ctermid
-#  define L_ctermid  1  /* so curses defines SYSV and not index and bcopy */
-# endif  /* ifndef L_ctermid */
+# ifndef LINE_G
+#  define PERFORMANCE 1
+#  define CURS_PERFORMANCE
+#  define NCC         8  /* kludge for termio.h (_XOPEN_SOURCE on SVR4.2)  */
+#  ifndef L_ctermid
+#   define L_ctermid  1  /* so curses defines SYSV and not index and bcopy */
+#  endif  /* ifndef L_ctermid */
 
-# ifdef _HPUX_SOURCE
-#  include <curses_colr/curses.h>
-# else  /* ifdef _HPUX_SOURCE  */
-#  include <curses.h>
-# endif  /* ifdef _HPUX_SOURCE */
+#  ifdef _HPUX_SOURCE
+#   include <curses_colr/curses.h>
+#  else  /* ifdef _HPUX_SOURCE  */
+#   include <curses.h>
+#  endif  /* ifdef _HPUX_SOURCE */
+# endif  /* ifndef LINE_G */
 
 /* specials for AIX */
 
-# ifndef ACS_HLINE
-#  define ACS_HLINE      '-'
-#  define ACS_VLINE      '|'
-#  define ACS_ULCORNER   '+'
-#  define ACS_URCORNER   '+'
-#  define ACS_LLCORNER   '+'
-#  define ACS_LRCORNER   '+'
-#  define wtimeout(w, t) ( ( w )->_nodelay = ( t ) )
+# ifndef LINE_G
+#  ifndef ACS_HLINE
+#   define ACS_HLINE      '-'
+#   define ACS_VLINE      '|'
+#   define ACS_ULCORNER   '+'
+#   define ACS_URCORNER   '+'
+#   define ACS_LLCORNER   '+'
+#   define ACS_LRCORNER   '+'
+#   define wtimeout(w, t) ( ( w )->_nodelay = ( t ) )
 
 private
 int
@@ -1062,17 +1077,18 @@ rgetc(void)
   return getch();
 }
 
-# else  /* ifndef ACS_HLINE  */
-#  define rgetc() getch()
-# endif  /* ifndef ACS_HLINE */
+#  else  /* ifndef ACS_HLINE  */
+#   define rgetc() getch()
+#  endif  /* ifndef ACS_HLINE */
 
-# ifndef COLOUR
-#  ifdef COLOR_PAIR
-#   define COLOUR 1
-#  else  /* ifdef COLOR_PAIR  */
-#   define COLOUR 0
-#  endif  /* ifdef COLOR_PAIR */
-# endif  /* ifndef COLOUR */
+#  ifndef COLOUR
+#   ifdef COLOR_PAIR
+#    define COLOUR 1
+#   else  /* ifdef COLOR_PAIR  */
+#    define COLOUR 0
+#   endif  /* ifdef COLOR_PAIR */
+#  endif  /* ifndef COLOUR */
+# endif  /* ifndef LINE_G */
 
 #endif  /* if DOS */
 
@@ -1080,24 +1096,28 @@ rgetc(void)
 
 /* Action codes */
 
-#define NEXT_LINE  1   /* Move window down one record       */
-#define PREV_LINE  2   /* Move window up one record         */
-#define NEXT_PAGE  3   /* Move window down one 20 line page */
-#define PREV_PAGE  4   /* Move window up one page           */
-#define MOVE_TOF   5   /* Move to start of file             */
-#define MOVE_EOF   6   /* Move to end of file               */
-#define MOVE_ABS   7   /* Move direct to absolute line      */
-#define SE_ENTER   8   /* Do T.#0 and fill buffer           */
-#define SE_LEAVE   9   /* Leave S.E and write ALL text back */
-#define PEEK_LINE 10   /* Push line direct from file to stk */
+#ifndef LINE_G
+# define NEXT_LINE  1   /* Move window down one record       */
+# define PREV_LINE  2   /* Move window up one record         */
+# define NEXT_PAGE  3   /* Move window down one 20 line page */
+# define PREV_PAGE  4   /* Move window up one page           */
+# define MOVE_TOF   5   /* Move to start of file             */
+# define MOVE_EOF   6   /* Move to end of file               */
+# define MOVE_ABS   7   /* Move direct to absolute line      */
+# define SE_ENTER   8   /* Do T.#0 and fill buffer           */
+# define SE_LEAVE   9   /* Leave S.E and write ALL text back */
+# define PEEK_LINE 10   /* Push line direct from file to stk */
+#endif  /* ifndef LINE_G */
 
 /* Screen and command buffer definition */
 
-#define STATUS_LINE   0
-#define COMMAND_LINE  1
-#define TEMPLATE_LINE 2
-#define FIRST_LINE    3
-#define MATCH_LINE    6
+#ifndef LINE_G
+# define STATUS_LINE   0
+# define COMMAND_LINE  1
+# define TEMPLATE_LINE 2
+# define FIRST_LINE    3
+# define MATCH_LINE    6
+#endif  /* ifndef LINE_G */
 
 /* Screen attributes */
 
@@ -1105,30 +1125,32 @@ rgetc(void)
 
 /* colour & mono */
 
-# define found_col  0x4F00    /* matched text           */
-# define cntrl_col  0x1F00    /* control characters     */
-# define eof_col    0x0F00    /* EOF marker             */
-# define scale_col  0x0E00    /* the scale line         */
-# define status_col 0x0B00    /* the status line        */
-# define norm_col   0x0A00    /* normal text            */
-# define query_col  0x0C00    /* query                  */
-# define marg_col   0x0D00    /* margins                */
-# define found_ctrl 0x4900    /* matched binary         */
-# define norm_space 0x0A20    /* normal text space char */
+# ifndef LINE_G
+#  define found_col  0x4F00     /* matched text           */
+#  define cntrl_col  0x1F00     /* control characters     */
+#  define eof_col    0x0F00     /* EOF marker             */
+#  define scale_col  0x0E00     /* the scale line         */
+#  define status_col 0x0B00     /* the status line        */
+#  define norm_col   0x0A00     /* normal text            */
+#  define query_col  0x0C00     /* query                  */
+#  define marg_col   0x0D00     /* margins                */
+#  define found_ctrl 0x4900     /* matched binary         */
+#  define norm_space 0x0A20     /* normal text space char */
+# endif  /* ifndef LINE_G */
 
 #else  /* if DOS */
 
 /* colour */
 
-# define FOUND_COL  COLOR_PAIR(1)  /* matched text       */
-# define CNTRL_COL  COLOR_PAIR(2)  /* control characters */
-# define EOF_COL    COLOR_PAIR(3)  /* EOF marker         */
-# define SCALE_COL  COLOR_PAIR(4)  /* the scale line     */
-# define STATUS_COL COLOR_PAIR(5)  /* the status line    */
-# define NORM_COL   COLOR_PAIR(6)  /* normal text        */
-# define QUERY_COL  COLOR_PAIR(7)  /* query              */
-# define MARG_COL   COLOR_PAIR(8)  /* margins            */
-# define FOUND_CTRL COLOR_PAIR(9)  /* matched binary     */
+# define FOUND_COL  COLOR_PAIR(1)   /* matched text       */
+# define CNTRL_COL  COLOR_PAIR(2)   /* control characters */
+# define EOF_COL    COLOR_PAIR(3)   /* EOF marker         */
+# define SCALE_COL  COLOR_PAIR(4)   /* the scale line     */
+# define STATUS_COL COLOR_PAIR(5)   /* the status line    */
+# define NORM_COL   COLOR_PAIR(6)   /* normal text        */
+# define QUERY_COL  COLOR_PAIR(7)   /* query              */
+# define MARG_COL   COLOR_PAIR(8)   /* margins            */
+# define FOUND_CTRL COLOR_PAIR(9)   /* matched binary     */
 
 /* monochrome */
 
@@ -1136,41 +1158,47 @@ rgetc(void)
 #  define A_NORMAL 0
 # endif  /* ifndef A_NORMAL */
 
-# define M_FOUND_COL  A_REVERSE    /* matched text       */
-# define M_CNTRL_COL  A_REVERSE    /* control characters */
-# define M_EOF_COL    A_BOLD       /* EOF marker         */
-# define M_SCALE_COL  A_NORMAL     /* the scale line     */
-# define M_STATUS_COL A_NORMAL     /* the status line    */
-# define M_NORM_COL   A_NORMAL     /* normal text        */
-# define M_QUERY_COL  A_BOLD       /* query              */
-# define M_MARG_COL   A_BOLD       /* margins            */
-# define M_FOUND_CTRL A_REVERSE    /* matched binary     */
+# define M_FOUND_COL  A_REVERSE     /* matched text       */
+# define M_CNTRL_COL  A_REVERSE     /* control characters */
+# define M_EOF_COL    A_BOLD        /* EOF marker         */
+# define M_SCALE_COL  A_NORMAL      /* the scale line     */
+# define M_STATUS_COL A_NORMAL      /* the status line    */
+# define M_NORM_COL   A_NORMAL      /* normal text        */
+# define M_QUERY_COL  A_BOLD        /* query              */
+# define M_MARG_COL   A_BOLD        /* margins            */
+# define M_FOUND_CTRL A_REVERSE     /* matched binary     */
 
 # if COLOUR
 
+#  ifndef LINE_G
 private
-chtype found_col = FOUND_COL,      /* matched text       */
-cntrl_col        = CNTRL_COL,      /* control characters */
-eof_col          = EOF_COL,        /* EOF marker         */
-scale_col        = SCALE_COL,      /* the scale line     */
-status_col       = STATUS_COL,     /* the status line    */
-norm_col         = NORM_COL,       /* normal text        */
-query_col        = QUERY_COL,      /* query              */
-marg_col         = MARG_COL,       /* margins            */
-found_ctrl       = FOUND_CTRL;     /* matched binary     */
+chtype
+  found_col        = FOUND_COL,      /* matched text       */
+  cntrl_col        = CNTRL_COL,      /* control characters */
+  eof_col          = EOF_COL,        /* EOF marker         */
+  scale_col        = SCALE_COL,      /* the scale line     */
+  status_col       = STATUS_COL,     /* the status line    */
+  norm_col         = NORM_COL,       /* normal text        */
+  query_col        = QUERY_COL,      /* query              */
+  marg_col         = MARG_COL,       /* margins            */
+  found_ctrl       = FOUND_CTRL;     /* matched binary     */
+#  endif  /* ifndef LINE_G */
 
 # else  /* if COLOUR */
 
+#  ifndef LINE_G
 private
-chtype found_col = M_FOUND_COL,    /* matched text       */
-  cntrl_col      = M_CNTRL_COL,    /* control characters */
-  eof_col        = M_EOF_COL,      /* EOF marker         */
-  scale_col      = M_SCALE_COL,    /* the scale line     */
-  status_col     = M_STATUS_COL,   /* the status line    */
-  norm_col       = M_NORM_COL,     /* normal text        */
-  query_col      = M_QUERY_COL,    /* query              */
-  marg_col       = M_MARG_COL,     /* margins            */
-  found_ctrl     = M_FOUND_CTRL;   /* matched binary     */
+chtype
+  found_col        = M_FOUND_COL,    /* matched text       */
+  cntrl_col        = M_CNTRL_COL,    /* control characters */
+  eof_col          = M_EOF_COL,      /* EOF marker         */
+  scale_col        = M_SCALE_COL,    /* the scale line     */
+  status_col       = M_STATUS_COL,   /* the status line    */
+  norm_col         = M_NORM_COL,     /* normal text        */
+  query_col        = M_QUERY_COL,    /* query              */
+  marg_col         = M_MARG_COL,     /* margins            */
+  found_ctrl       = M_FOUND_CTRL;   /* matched binary     */
+#  endif  /* ifndef LINE_G */
 
 # endif  /* if COLOUR */
 
@@ -1197,7 +1225,9 @@ chtype found_col = M_FOUND_COL,    /* matched text       */
 
 /* address of cursor in screen buffer */
 
-#define BUF(c) ( &s_buf[row][c] )
+#ifndef LINE_G
+# define BUF(c) ( &s_buf[row][c] )
+#endif  /* ifndef LINE_G */
 
 #ifndef kbd_check
 # ifdef __DGUX__
@@ -1270,13 +1300,17 @@ typedef enum
  *  Cursor to end of line.
  */
 
-#define c_eol() set_col(eor[row])
+#ifndef LINE_G
+# define c_eol() set_col(eor[row])
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor right one character.
  */
 
-#define c_right() set_col(FILE_COL + 1)
+#ifndef LINE_G
+# define c_right() set_col(FILE_COL + 1)
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor to start of line.
@@ -1288,23 +1322,27 @@ typedef enum
  *  Sync screen & file
  */
 
-#define se_sync() file_move(-START_OF_PAGE)
+#ifndef LINE_G
+# define se_sync() file_move(-START_OF_PAGE)
+#endif  /* ifndef LINE_G */
 
 #if UNIX  /* for smooth scrolling */
 
-# define se_insertln()         \
-  {                            \
-    (void)idlok(stdscr, YES);  \
-    (void)insertln();          \
-    ++idlpending;              \
+# ifndef LINE_G
+#  define se_insertln()         \
+  {                             \
+    (void)idlok(stdscr, YES);   \
+    (void)insertln();           \
+    ++idlpending;               \
   }
 
-# define se_deleteln()         \
-  {                            \
-    (void)idlok(stdscr, YES);  \
-    (void)deleteln();          \
-    ++idlpending;              \
+#  define se_deleteln()         \
+  {                             \
+    (void)idlok(stdscr, YES);   \
+    (void)deleteln();           \
+    ++idlpending;               \
   }
+# endif  /* ifndef LINE_G */
 
 #else  /* if UNIX */
 
@@ -1337,8 +1375,10 @@ void message(char csc);
 private
 void inform(char csc);
 
+#ifndef LINE_G
 private
 void se_execute(const ACTION, const int);
+#endif  /* ifndef LINE_G */
 
 private
 void alter_end(int, const int);
@@ -1379,11 +1419,15 @@ void Drive(const int);
 /* system specific strings */
 
 #if DOS || DOS_CONSOLE
-FSTR shell_bin[] = "COMMAND",     near tty_file[] = "CON",
-near se_pcom[]   = "snLPT1,te,x", near shell_var[] = "COMSPEC",
+FSTR shell_bin[] = "COMMAND",
+near tty_file[]  = "CON",
+near shell_var[] = "COMSPEC"
+# ifndef LINE_G
+,near se_pcom[]  = "snLPT1,te,x", 
 near se_lcom[]   = ".tss:DIR /W:"
+# endif  /* ifndef LINE_G */
 # ifdef __MINGW32__
-,write_only[] = "w"
+,write_only[]    = "w"
 # endif  /* ifdef __MINGW32__ */
 ;
 # if defined(__MINGW32__) || defined(DOS_CONSOLE)
@@ -1392,9 +1436,14 @@ FSTR_LIST save_dirs[] = {
 };                                                        
 # endif  /* if defined(__MINGW32__) || defined(DOS_CONSOLE) */
 #else  /* if DOS || DOS_CONSOLE */
-FSTR shell_var[] = "SHELL", shell_bin[] = "sh",
-  se_pcom[]      = "S!\177lp -c '-tG print: %s' 1>/dev/null 2>&1\177,TE,X",
-  se_lcom[]      = ".tss/ls -C/", write_only[] = "w", tty_file[] = "/dev/tty";
+FSTR shell_var[]  = "SHELL",
+     shell_bin[]  = "sh",
+# ifndef LINE_G
+     se_pcom[]    = "S!\177lp -c '-tG print: %s' 1>/dev/null 2>&1\177,TE,X",
+     se_lcom[]    = ".tss/ls -C/",
+# endif  /* ifndef LINE_G */
+     write_only[] = "w",
+     tty_file[]   = "/dev/tty";
 FSTR_LIST save_dirs[] = {
   ".", "~", "/usr/preserve", "/tmp", NULL
 };
@@ -1407,17 +1456,40 @@ near no_file[] = "*NEW*";
 
 /* strings used more than once */
 
-FSTR se_find[]  = "Find:", near let_s[] = "s",
-near se_ep[]    = "End point:", near se_fin1[] = "(unchanged) ",
-near se_fcom1[] = "TR\177%s\177", near se_hit[] = "\r\n[Enter to Continue] ",
-near let_col[]  = ":", near empty[] = "", near endsent[] = ".!?;",
-near ft_out[]   = "Output", near bra_start[] = "({[<",
-near bra_end[]  = ")}]>", near hextrans[] = "0123456789ABCDEF",
-near ft_merge[] = "Merge", near esc_symb[] = "VANTBFR0",
-near c_rom[]    = "IXCMZVLDWixcmzvldw", near line_pos[] = "Line %d.%d",
-near ft_in[]    = "Input", near pt_list[] = "\nListing from %s file %s",
-near ps_name[]  = "%s file: %s", near m_real[] = "%.14g",
-near eof_mess[] = "************ EOF ************";
+FSTR
+#ifndef LINE_G
+     se_find[]    = "Find:",
+#endif  /* ifndef LINE_G */
+near let_s[]      = "s",
+#ifndef LINE_G
+near se_ep[]      = "End point:",
+near se_fin1[]    = "(unchanged) ",
+#endif  /* ifndef LINE_G */
+near se_fcom1[]   = "TR\177%s\177",
+#ifndef LINE_G
+near se_hit[]     = "\r\n[Enter to Continue] ",
+near let_col[]    = ":",
+#endif  /* ifndef LINE_G */
+near empty[]      = "",
+near endsent[]    = ".!?;",
+near ft_out[]     = "Output",
+#ifndef LINE_G
+near bra_start[]  = "({[<",
+near bra_end[]    = ")}]>",
+#endif  /* ifndef LINE_G */
+near hextrans[]   = "0123456789ABCDEF",
+near ft_merge[]   = "Merge",
+near esc_symb[]   = "VANTBFR0",
+near c_rom[]      = "IXCMZVLDWixcmzvldw",
+near line_pos[]   = "Line %d.%d",
+near ft_in[]      = "Input",
+near pt_list[]    = "\nListing from %s file %s",
+near ps_name[]    = "%s file: %s",
+near m_real[]     = "%.14g"
+#ifndef LINE_G
+,near eof_mess[]  = "************ EOF ************"
+#endif  /* ifndef LINE_G */
+;
 
 /* format of details line */
 
@@ -1514,6 +1586,7 @@ FSTR asc_tab[][4]
  *  Help text.
  */
 
+#ifndef LINE_G
 FSTR_LIST hw_mess[] = {
   "Screen Editor Key Strokes.\n\n\
 \tSINGLE KEY COMMANDS\n\
@@ -1557,24 +1630,28 @@ FSTR_LIST hw_mess[] = {
 ^OW\tToggle wordwrap",
   NULL
 };
+#endif  /* ifndef LINE_G */
 
 #if FULL_G
 
+# ifndef LINE_G
 FSTR_LIST h_mess[]
   = {
   "Help gives brief information on the following topics:-\n\n\
 \tha\tArithmetic\n\
 \thd\tG Delimiters\n\
 \the\tList the available End-points\n\
-\thl\tLine-Editor key strokes\n\
+\thl\tLine-editor key strokes\n\
 \thm\tThe predefined Macros\n\
 \thr\tRegular Expression syntax\n\
 \ths\tShorthand forms\n\
-\thv\tContext-Editor Verbs\n\
-\thw\tScreen-Editor key strokes",
+\thv\tContext-editor Verbs\n\
+\thw\tScreen-editor key strokes",
   NULL
   };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hl_mess[]
   = {
   "Line-editor control characters - type these under the line.\n\
@@ -1590,7 +1667,9 @@ An elipsis indicates that a sequence is permitted.\n\n\
 other ...\tReplace character in the line above with this one",
   NULL
   };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hs_mess[] = {
   "The following abbreviations are possible.\n\
 Strings here are terminated by <return>, therefore any\n\
@@ -1607,7 +1686,9 @@ Command\t\t\tExpansion\tAction\n\
 digits\t\t\tT#digits\tMove to absolute line",
   NULL
 };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hv_mess[] = {
   "G Verbs  (See also HE and HD).\n\n\
 A(B)[R]/s1/s2/\tAfter (before) s1 insert s2 [RE]\n\
@@ -1654,7 +1735,9 @@ $n\t\tSet the portion of the line to be displayed\n\
 ;\t\tConditional execution in ()",
   NULL
 };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST he_mess[]
   = {
   "Endpoints for repetition and general verbs - see also HD.\n\
@@ -1677,7 +1760,9 @@ N - negate sense, X - string in hex, I - ignore case\n\n\
 \tW|U<endpoint>\tRepeat while/until (verify) endpoint",
   NULL
   };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hd_mess[] = {
   "Delimiters for search strings.\n\n\
 \t/ : = ? $ % & + ` \' \" [ ] < >\n\n\
@@ -1685,7 +1770,9 @@ Shell commands may only be delimited with \' \" or `\n\
 The delimiter chosen must not appear within the string.",
   NULL
 };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hr_mess[] = {
   "Regular Expressions are like wild cards.\n\n\
 char or \\char matches itself except ...\n\
@@ -1717,7 +1804,9 @@ char or \\char inserts itself except ...\n\
 \\e\tend all case folding",
   NULL
 };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST hm_mess[] = {
   "Predefined Macros.\n\n\
 .c/str1/str2/\t\tChange str1 to str2 from here on (simple)\n\
@@ -1735,7 +1824,9 @@ FSTR_LIST hm_mess[] = {
 .main\t\t\tInsert \'C\' main() template",
   NULL
 };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST ha_mess[]
   = {
   "The syntax of numerical expressions is the same as for C.\n\
@@ -1757,12 +1848,15 @@ such as initialising variables.  To use as a desk calculator, omit the\n\
 closing }.  An empty line or closing } ends this mode.",
   NULL
   };
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 FSTR_LIST *const near help_tab[]
   = {
   hw_mess, ha_mess, he_mess, hr_mess, hl_mess,
   hv_mess, hd_mess, hm_mess, hs_mess, h_mess
   };
+# endif  /* ifndef LINE_G */
 
 #endif  /* if FULL_G */
 
@@ -1986,7 +2080,12 @@ int near infile_recs;  /* saved number of old file recs for EQ */
 /* Environments for error trap returns */
 
 private
-jmp_buf near set_err, near save_err, near se_ret, near se_err;
+jmp_buf near set_err, near save_err;
+
+#ifndef LINE_G
+private
+jmp_buf near se_ret, near se_err;
+#endif  /* ifndef LINE_G */
 
 /* justification parameters */
 
@@ -1997,12 +2096,19 @@ private
 int near adjust = YES  /*, overhang = NO */;
 
 private
-int near left_right, near t_margin, near wordwrap = NO;
+int near left_right, near t_margin;
+
+#ifndef LINE_G
+private
+int near wordwrap = NO;
+#endif  /* ifndef LINE_G */
 
 /* status line EOF column */
 
+#ifndef LINE_G
 private
 int near se_save_eof;
+#endif  /* ifndef LINE_G */
 
 /* warn of truncated records on input */
 
@@ -2019,66 +2125,99 @@ int near in_count = 0;
 
 /* deleted lines stack */
 
+#ifndef LINE_G
 private
 stack *near del_stack = NULL;
+#endif  /* ifndef LINE_G */
 
 /* se only history stack ptr */
 
+#ifndef LINE_G
 private
 stack *near hist_ptr = NULL;
+#endif  /* ifndef LINE_G */
 
 /* idlok needs clearing */
 
-#if UNIX
+#ifndef LINE_G
+# if UNIX
 private
 int idlpending = NO;
-#endif  /* if UNIX */
+# endif  /* if UNIX */
+#endif  /* ifndef LINE_G */
 
 /* these depend on LINES & COLS in curses.h */
 
+#ifndef LINE_G
 private
-int near last_line, near last_col, near text_lines, near h_inc;
+int near last_line;
+
+private
+int near last_col, near h_inc;
+
+private
+int near text_lines;
+#endif  /* ifndef LINE_G */
 
 /* cursor tracking */
 
+#ifndef LINE_G
 private
-int near row, near col, near offset, near text_row, near text_col,
-near text_offset, near last_offset;
+int near text_row, near text_offset, near text_col, near last_offset,
+    near offset, near row, near col;
+#endif  /* ifndef LINE_G */
 
 /* currently in a QQ loop */
 
+#ifndef LINE_G
 private
 int near qq_loop = NO;
+#endif  /* ifndef LINE_G */
 
 /* expand mode */
 
+#ifndef LINE_G
 private
 int near expand = YES;
+#endif  /* ifndef LINE_G */
 
 /* in full screen mode */
 
+#ifndef LINE_G
 private
 word near fscreen = NO;
+#endif  /* ifndef LINE_G */
 
 /* redisplay needed after error in CE */
 
+#ifndef LINE_G
 private
 word near redisplay = NO;
+#endif  /* ifndef LINE_G */
 
 /* screen soft tab columns default to every 4 */
 
+#ifndef LINE_G
 private
 int near screen_tabs = 4;
+#endif  /* ifndef LINE_G */
 
 /* main screen buffer */
 
+#ifndef LINE_G
 private
 char **near s_buf = NULL;
+#endif  /* ifndef LINE_G */
 
 /* the "end of record" index */
 
+#ifndef LINE_G
 private
-short *near eor, *near s_eor;
+short *near eor;
+
+private
+short *near s_eor;
+#endif  /* ifndef LINE_G */
 
 private
 FILE_LIST *near f_free_list = NULL;
@@ -2212,24 +2351,26 @@ say(char csc s)
  *  Wait for user to hit return
  */
 
+#ifndef LINE_G
 private
 void
 wait_user(void)
 {
   putstr(se_hit);
-#if DOS
-# if ASM86
+# if DOS
+#  if ASM86
   bios_wait();
-# else  /* if ASM86  */
+#  else  /* if ASM86  */
   (void)_bios_keybrd(_KEYBRD_READ);
-# endif  /* if ASM86 */
-#else  /* if DOS */
+#  endif  /* if ASM86 */
+# else  /* if DOS */
   {
     char buf[8];
     (void)!read(kbd_fd, buf, 8);
   }
-#endif  /* if DOS */
+# endif  /* if DOS */
 }
+#endif  /* ifndef LINE_G */
 
 /* malloc wrappers */
 
@@ -3328,6 +3469,7 @@ vsreload(void)
 
 /* check integrity of primary files */
 
+# ifndef LINE_G
 private
 void
 ckpage(UNIT csc fp, PAGE_PTR csc cp)
@@ -3379,7 +3521,9 @@ ckpage(UNIT csc fp, PAGE_PTR csc cp)
   assert(rec == end_rec + 1);
   assert(p == cp->base + ep);
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 cklinked(UNIT csc fp, PAGE_PTR csc cp)
@@ -3416,6 +3560,7 @@ cklinked(UNIT csc fp, PAGE_PTR csc cp)
       assert(cp->end_pos == 0 || lp->end_pos == 0);
     }
 }
+# endif  /* ifndef LINE_G */
 
 private
 void
@@ -3561,6 +3706,7 @@ g_err(const int code, char csc ptr)
 
   inform(buf);
 
+#ifndef LINE_G
   if (fscreen)
     {
       while (f_list != NULL)
@@ -3569,6 +3715,7 @@ g_err(const int code, char csc ptr)
           Xit(&opt);
         }
     }
+#endif  /* ifndef LINE_G */
 
   if (running)
     {
@@ -5295,6 +5442,7 @@ push_line(stack **const line_stack, char csc text, const int len)
     }
 }
 
+#ifndef LINE_G
 private
 void
 pop_line(stack **const line_stack, char *const line)
@@ -5318,11 +5466,13 @@ pop_line(stack **const line_stack, char *const line)
       --in_count;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Write the screen buffer to the output file.
  */
 
+#ifndef LINE_G
 private
 void
 buf_to_file(const int com)
@@ -5339,9 +5489,9 @@ buf_to_file(const int com)
 
   /* in case buf_to_file gets called again (from SIGUSR2) */
 
-#if UNIX
+# if UNIX
   eor[FIRST_LINE] = EOF;
-#endif  /* if UNIX */
+# endif  /* if UNIX */
 
   switch (com)
     {
@@ -5360,6 +5510,7 @@ buf_to_file(const int com)
       (void)fill_buff();
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Swap roles of input and output files (as in T#0 etc).
@@ -5414,10 +5565,12 @@ save_work(char *const mess)
   int recs, i;
   FNAME filename;
 
+# ifndef LINE_G
   if (fscreen)
     {
       buf_to_file(SE_LEAVE);
     }
+# endif  /* ifndef LINE_G */
 
   lon = 0;
   (void)wrapround();
@@ -5478,10 +5631,12 @@ g_intr(int sig)
       /* fallthrough */
 
     case SIGUSR2:
+#  ifndef LINE_G
       if (fscreen)
         {
           buf_to_file(SE_LEAVE);
         }
+#  endif  /* ifndef LINE_G */
 
       Exit();
       abort();
@@ -7130,7 +7285,11 @@ void
 Xit(VERB csc opts)
 {
   int mode = opts->o1.q, recs, fflag = YES;
-  const int verbose = lon && !fscreen;
+  const int verbose = lon
+#ifndef LINE_G
+      && !fscreen
+#endif  /* ifndef LINE_G */
+  ;
 
 #if UNIX
   int c_out, save_fd_in;
@@ -7354,7 +7513,11 @@ void
 Merge(VERB csc opts)
 {
   new_input_file(opts, &f_list, &in_u);
-  if (lon && !fscreen)
+  if (lon
+#ifndef LINE_G
+          && !fscreen
+#endif  /* ifndef LINE_G */
+     )
     {
       print_i_size(ft_merge, f_list->name, in_u);
     }
@@ -8480,6 +8643,7 @@ G_compile(VERB **start, const char *ptr)
  *  Initialise screen mode.
  */
 
+#ifndef LINE_G
 private
 void
 init_screen(void)
@@ -8492,14 +8656,14 @@ init_screen(void)
   noecho();
   keypad(stdscr, YES);
 
-#if defined(IMMEDOK) && !defined(__WATCOMC__)
+# if defined(IMMEDOK) && !defined(__WATCOMC__)
   (void)immedok(stdscr, YES);
-#endif  /* if defined(IMMEDOK) && !defined(__WATCOMC__) */
+# endif  /* if defined(IMMEDOK) && !defined(__WATCOMC__) */
 
-#if DOS
+# if DOS
   lines = LINES;
-#else  /* if DOS */
-# if COLOUR
+# else  /* if DOS */
+#  if COLOUR
   if (start_color() == OK)
     {
       (void)init_pair(1, COLOR_WHITE,   COLOR_RED);   /* matched text       */
@@ -8514,6 +8678,7 @@ init_screen(void)
     }
   else
     {
+#   ifndef LINE_G
       found_col  = M_FOUND_COL;   /* matched text       */
       cntrl_col  = M_CNTRL_COL;   /* control characters */
       eof_col    = M_EOF_COL;     /* EOF marker         */
@@ -8523,9 +8688,10 @@ init_screen(void)
       query_col  = M_QUERY_COL;   /* query              */
       marg_col   = M_MARG_COL;    /* margins            */
       found_ctrl = M_FOUND_CTRL;  /* matched binary     */
+#   endif  /* ifndef LINE_G */
     }
 
-# endif  /* if COLOUR */
+#  endif  /* if COLOUR */
 
   /* define constants that depend on window size */
 
@@ -8533,7 +8699,7 @@ init_screen(void)
   h_inc = COLS / 2;
   last_line = ( lines = LINES ) - 1;
   text_lines = lines - FIRST_LINE;
-#endif  /* if DOS */
+# endif  /* if DOS */
 
   /* get space for all vectors and divide them up */
 
@@ -8548,11 +8714,13 @@ init_screen(void)
   s_eor = eor + lines;
   wfill(s_eor, L_LEN, lines);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Check buffer line size and expand if needed.
  */
 
+#ifndef LINE_G
 private
 int
 set_eor(const int line, const int nsize)
@@ -8578,12 +8746,14 @@ set_eor(const int line, const int nsize)
 
   return NO;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Get the next record in the old_file, either from the stack, or
  *  if the stack is empty, from the file itself.
  */
 
+#ifndef LINE_G
 private
 int
 next_line(const int line)
@@ -8613,11 +8783,13 @@ next_line(const int line)
 
   return YES;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Read the input file into the screen buffer.
  */
 
+#ifndef LINE_G
 private
 void
 file_to_buf(const int com)
@@ -8651,11 +8823,13 @@ file_to_buf(const int com)
 
   wfill(&eor[line], EOF, LINES - line);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Move to absolute position in file.
  */
 
+#ifndef LINE_G
 private
 void
 move_to(int line)
@@ -8675,6 +8849,7 @@ move_to(int line)
       alter_end(line, 'T');
     }
 }
+#endif  /* ifndef LINE_G */
 
 #if DOS
 
@@ -8682,19 +8857,22 @@ move_to(int line)
  *  Mini Curses for G code.
  */
 
+# ifndef LINE_G
 private
 short curs_row, curs_col;
 
-# if ( TINY_G && !defined(WCL386) ) \
+#  if ( TINY_G && !defined(WCL386) )              \
+    || ( FULL_G && defined(__WATCOMC__) && DOS && !defined(WCL386) ) \
     || ( DOS && defined(_MSC_VER) )
 private
 chtype *near v_base = (chtype *)0xb8000000;
-#  define call_bios int86
-# else
+#   define call_bios int86
+#  else
 private
 chtype *v_base = (chtype *)0xb8000;
-#  define call_bios int386
-# endif  /* if ( TINY_G && !defined(WCL386) )
+#   define call_bios int386
+#  endif  /* if ( TINY_G && !defined(WCL386) )
+              || ( FULL_G && defined(__WATCOMC__) && DOS && !defined(WCL386) )
               || ( DOS && defined(_MSC_VER) ) */
 
 private
@@ -8719,11 +8897,11 @@ initscr(void)
 
   if (bios_word(0x463) == 0x3B4)  /* or bios_byte( 0x449 ) == 7 */
     {
-# if TINY_G
+#  if TINY_G
       v_base = (chtype *)0xb0000000;
-# else  /* if TINY_G  */
+#  else  /* if TINY_G  */
       v_base = (chtype *)0xb0000;
-# endif  /* if TINY_G */
+#  endif  /* if TINY_G */
     }
 
   last_line = rows;
@@ -8732,13 +8910,16 @@ initscr(void)
   last_col = cols - 1;
   t_base = ( h_base = v_base + cols ) + cols;
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 clrtoeol(void)
 {
   wfill(v_base + curs_row * COLS + curs_col, norm_space, COLS - curs_col);
 }
+# endif  /* ifndef LINE_G */
 
 # if ASM86
 
@@ -8775,6 +8956,7 @@ extern void berase(void *start, short len);
 
 # else  /* if ASM86 */
 
+#  ifndef LINE_G
 private
 void
 bios_gotoxy(const byte row, const byte col)
@@ -8787,23 +8969,27 @@ bios_gotoxy(const byte row, const byte col)
   regs.h.dl =  col;
   call_bios(0x10, &regs, &regs);
 }
+#  endif  /* ifndef LINE_G */
 
-#  define scr_fill(start, len)   wfill(start, 0x0A20, len)
-#  define scale_fill(start, len) wfill(start, 0x0E2E, len)
-#  define berase(start, len)     wfill(start, 0x0720, len)
+#  ifndef LINE_G
+#   define scr_fill(start, len)   wfill(start, 0x0A20, len)
+#   define scale_fill(start, len) wfill(start, 0x0E2E, len)
+#   define berase(start, len)     wfill(start, 0x0720, len)
+#  endif  /* ifndef LINE_G */
 
 # endif  /* if ASM86 */
 
+# ifndef LINE_G
 private
 ushort
 curs_getc(void)
 {
   bios_gotoxy( (byte)curs_row, (byte)curs_col );
 
-# if ASM86
+#  if ASM86
   return bios_getc();
 
-# else  /* if ASM86 */
+#  else  /* if ASM86 */
   {
     const ushort c = _bios_keybrd(_KEYBRD_READ);
     if (c & 0xFF)
@@ -8813,9 +8999,11 @@ curs_getc(void)
 
     return c;
   }
-# endif  /* if ASM86 */
+#  endif  /* if ASM86 */
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 deleteln(void)
@@ -8824,7 +9012,9 @@ deleteln(void)
 
   (void)bmovelr(curs_y, curs_y + COLS, ( last_line - curs_row ) * B_COLS);
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 insertln(void)
@@ -8834,7 +9024,9 @@ insertln(void)
   (void)bmoverl(curs_y + COLS, curs_y, ( last_line - curs_row ) * B_COLS);
   scr_fill(curs_y, B_COLS);
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 curs_chins(void)
@@ -8843,6 +9035,7 @@ curs_chins(void)
 
   (void)wmoverl(p + 1, p, last_col - curs_col);
 }
+# endif  /* ifndef LINE_G */
 
 private
 void
@@ -8856,121 +9049,129 @@ napms(const unsigned long msec)
     }
 }
 
+# ifndef LINE_G
 private
 void
 put_byte(const chtype c)
 {
   ( v_base + curs_row * COLS )[curs_col++] = c | cntrl_col;
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 mv_put_byte(const int y, const int x, const chtype c)
 {
   v_base[y * COLS + x] = c | cntrl_col;
 }
+# endif  /* ifndef LINE_G */
 
 # if ASM86
 
 /* scale line writes */
 
 extern void put_scale(chtype *start, const char *s, ushort n);
-#  pragma aux put_scale =                                     \
-  "mov ah,0eh"                                                \
-  "nextc: lodsb"                                              \
-  "stosw"                                                     \
-  "dec dx"                                                    \
+#  pragma aux put_scale =                                      \
+  "mov ah,0eh"                                                 \
+  "nextc: lodsb"                                               \
+  "stosw"                                                      \
+  "dec dx"                                                     \
   "jnz nextc" parm[es di][ds si][dx] modify[ax];
 
 /* status line writes */
 
 extern void put_status(chtype *start, const char *s, ushort n);
-#  pragma aux put_status =                                    \
-  "mov ah,0bh"                                                \
-  "nextc: lodsb"                                              \
-  "stosw"                                                     \
-  "dec dx"                                                    \
+#  pragma aux put_status =                                     \
+  "mov ah,0bh"                                                 \
+  "nextc: lodsb"                                               \
+  "stosw"                                                      \
+  "dec dx"                                                     \
   "jnz nextc" parm[es di][ds si][dx] modify[ax];
 
 /* write text (fixed attribute given) and clear remainder of line */
 
+#  ifndef LINE_G
 extern void put_seq(chtype *start, const char *s, ushort n, ushort attr,
                     ushort c);
-#  pragma aux put_seq =                                       \
-  "sub cx,bx"                                                 \
-  "nextc: lodsb"                                              \
-  "stosw"                                                     \
-  "dec bx"                                                    \
-  "jnz nextc"                                                 \
-  "mov ax,0a20h"                                              \
+#   pragma aux put_seq =                                       \
+  "sub cx,bx"                                                  \
+  "nextc: lodsb"                                               \
+  "stosw"                                                      \
+  "dec bx"                                                     \
+  "jnz nextc"                                                  \
+  "mov ax,0a20h"                                               \
   "rep stosw" parm[es di][ds si][bx][ax][cx];
+#  endif  /* ifndef LINE_G */
 
 /* write matched text (variable attributes), clear remainder */
 
 extern void put_matched(chtype *start, const char *s, ushort n);
-#  pragma aux put_matched =                                   \
-  "mov ah,4fh"                                                \
-  "nextw: lodsb"                                              \
-  "cmp al,20h"                                                \
-  "jb ctrlc"                                                  \
-  "cmp al,7Fh"                                                \
-  "jae ctrlc"                                                 \
-  "stosw"                                                     \
-  "dec bx"                                                    \
-  "jnz nextw"                                                 \
-  "jmp endw"                                                  \
-  "ctrlc: and al,7Fh"                                         \
-  "cmp al,20h"                                                \
-  "jl stctl"                                                  \
-  "cmp al,7Fh"                                                \
-  "jl print"                                                  \
-  "stctl: and al,1fh"                                         \
-  "add al,40h"                                                \
-  "print: mov ah,49h"                                         \
-  "stosw"                                                     \
-  "mov ah,4fh"                                                \
-  "dec bx"                                                    \
-  "jnz nextw"                                                 \
+#  pragma aux put_matched =                                    \
+  "mov ah,4fh"                                                 \
+  "nextw: lodsb"                                               \
+  "cmp al,20h"                                                 \
+  "jb ctrlc"                                                   \
+  "cmp al,7Fh"                                                 \
+  "jae ctrlc"                                                  \
+  "stosw"                                                      \
+  "dec bx"                                                     \
+  "jnz nextw"                                                  \
+  "jmp endw"                                                   \
+  "ctrlc: and al,7Fh"                                          \
+  "cmp al,20h"                                                 \
+  "jl stctl"                                                   \
+  "cmp al,7Fh"                                                 \
+  "jl print"                                                   \
+  "stctl: and al,1fh"                                          \
+  "add al,40h"                                                 \
+  "print: mov ah,49h"                                          \
+  "stosw"                                                      \
+  "mov ah,4fh"                                                 \
+  "dec bx"                                                     \
+  "jnz nextw"                                                  \
   "endw:" parm[es di][ds si][bx] modify[ax];
 
 /* write normal text (variable attributes), clear remainder */
 
+#  ifndef LINE_G
 extern chtype *put_text(chtype *start, const char *s, ushort n, ushort c);
-#  pragma aux put_text =                                      \
-  "mov ah,0ah"                                                \
-  "test dx,dx"                                                \
-  "jle endw"                                                  \
-  "cmp dx,cx"                                                 \
-  "jb partr"                                                  \
-  "mov dx,cx"                                                 \
-  "partr: sub cx,dx"                                          \
-  "nextw: lodsb"                                              \
-  "cmp al,20h"                                                \
-  "jb ctrlc"                                                  \
-  "cmp al,7Fh"                                                \
-  "jae ctrlc"                                                 \
-  "stosw"                                                     \
-  "dec dx"                                                    \
-  "jnz nextw"                                                 \
-  "jmp endw"                                                  \
-  "ctrlc: and al,7Fh"                                         \
-  "cmp al,20h"                                                \
-  "jl still"                                                  \
-  "cmp al,7Fh"                                                \
-  "jl print"                                                  \
-  "still: and al,1fh"                                         \
-  "add al,40h"                                                \
-  "print: mov ah,1fh"                                         \
-  "stosw"                                                     \
-  "mov ah,0ah"                                                \
-  "dec dx"                                                    \
-  "jnz nextw"                                                 \
-  "endw: mov eax,0A200A20h"                                   \
-  "shr cx,1"                                                  \
-  "rep stosd"                                                 \
-  "jnc nocp"                                                  \
-  "stosw"                                                     \
+#   pragma aux put_text =                                      \
+  "mov ah,0ah"                                                 \
+  "test dx,dx"                                                 \
+  "jle endw"                                                   \
+  "cmp dx,cx"                                                  \
+  "jb partr"                                                   \
+  "mov dx,cx"                                                  \
+  "partr: sub cx,dx"                                           \
+  "nextw: lodsb"                                               \
+  "cmp al,20h"                                                 \
+  "jb ctrlc"                                                   \
+  "cmp al,7Fh"                                                 \
+  "jae ctrlc"                                                  \
+  "stosw"                                                      \
+  "dec dx"                                                     \
+  "jnz nextw"                                                  \
+  "jmp endw"                                                   \
+  "ctrlc: and al,7Fh"                                          \
+  "cmp al,20h"                                                 \
+  "jl still"                                                   \
+  "cmp al,7Fh"                                                 \
+  "jl print"                                                   \
+  "still: and al,1fh"                                          \
+  "add al,40h"                                                 \
+  "print: mov ah,1fh"                                          \
+  "stosw"                                                      \
+  "mov ah,0ah"                                                 \
+  "dec dx"                                                     \
+  "jnz nextw"                                                  \
+  "endw: mov eax,0A200A20h"                                    \
+  "shr cx,1"                                                   \
+  "rep stosd"                                                  \
+  "jnc nocp"                                                   \
+  "stosw"                                                      \
   "nocp:" value[es di] parm[es di][ds si][dx][cx] modify[ax];
+#  endif  /* ifndef LINE_G */
 
 # endif  /* if ASM86 */
 
@@ -8980,6 +9181,7 @@ extern chtype *put_text(chtype *start, const char *s, ushort n, ushort c);
 
 # if DOS
 
+#  ifndef LINE_G
 private
 void
 put_seq(const char *s, int n, chtype attr)
@@ -8991,7 +9193,9 @@ put_seq(const char *s, int n, chtype attr)
       curs_y[curs_col++] = *s++ | attr;
     }
 }
+#  endif  /* ifndef LINE_G */
 
+#  ifndef LINE_G
 private
 void
 cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
@@ -9011,6 +9215,7 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
         }
     }
 }
+#  endif  /* ifndef LINE_G */
 
 # else  /* if DOS */
 
@@ -9019,6 +9224,7 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
 #  define put_byte(c) addch( (chtype)( c ) )
 #  define mv_put_byte(y, x, c) ( move(y, x), put_byte(c) )
 
+#  ifndef LINE_G
 private
 void
 put_seq(const char *s, int n, chtype attr)
@@ -9029,7 +9235,9 @@ put_seq(const char *s, int n, chtype attr)
       (void)put_byte(*s++);
     }
 }
+#  endif  /* ifndef LINE_G */
 
+#  ifndef LINE_G
 private
 void
 cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
@@ -9050,9 +9258,11 @@ cput_seq(const char *s, int n, chtype attr_print, chtype attr_cntrl)
         }
     }
 }
+#  endif  /* ifndef LINE_G */
 
 # endif  /* if DOS */
 
+# ifndef LINE_G
 private
 void
 put_text(const char *s, int len, int rem)
@@ -9072,6 +9282,7 @@ put_text(const char *s, int len, int rem)
       (void)clrtoeol();
     }
 }
+# endif  /* ifndef LINE_G */
 
 # define put_status movelr
 
@@ -9081,6 +9292,7 @@ put_text(const char *s, int len, int rem)
  *  Convert a column number into a screen offset and col.
  */
 
+#ifndef LINE_G
 private
 void
 set_col(int new_col)
@@ -9108,29 +9320,33 @@ set_col(int new_col)
       col = new_col - offset;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display the ********* EOF ********* marker.
  */
 
+#ifndef LINE_G
 private
 void
 disp_eof(const int r)
 {
-#if ASM86
+# if ASM86
   put_seq(v_base + r * COLS, eof_mess, 29, eof_col, COLS);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   (void)move(r, 0);
   put_seq(eof_mess, 29, eof_col);
   attrset(norm_col);
   (void)clrtoeol();
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display the template line.
  */
 
+#ifndef LINE_G
 private
 void
 disp_template(void)
@@ -9138,7 +9354,7 @@ disp_template(void)
   int i, len;
   char buf[4];
 
-#if ASM86
+# if ASM86
   chtype *p = t_base;
   chtype csc last = p + COLS;
 
@@ -9154,7 +9370,7 @@ disp_template(void)
       put_scale(p, buf, len);
     }
 
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   string scale;
   char *p = scale;
   char csc last = p + COLS;
@@ -9174,45 +9390,51 @@ disp_template(void)
   (void)move(TEMPLATE_LINE, 0);
   put_seq(scale, COLS, scale_col);
   attrset(norm_col);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display remainder of line.
  */
 
+#ifndef LINE_G
 private
 void
 disp_rest(void)
 {
   const ushort f_col = FILE_COL;
 
-#if ASM86
+# if ASM86
   chtype *const start = v_base + row * COLS + col;
   put_text(start, BUF(f_col), eor[row] - f_col, COLS - col);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   (void)move(row, col);
   put_text(BUF(f_col), eor[row] - f_col, COLS - col);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display one line on the screen.
  */
 
+#ifndef LINE_G
 private
 void
 disp_line(void)
 {
-#if ASM86
+# if ASM86
   chtype *const start = v_base + row * COLS;
   put_text(start, BUF(offset), eor[row] - offset, COLS);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   (void)move(row, 0);
   put_text(BUF(offset), eor[row] - offset, COLS);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 }
+#endif  /* ifndef LINE_G */
 
+#ifndef LINE_G
 private
 void
 disp_matched_text(const int m_row, const int m_col, int m_len)
@@ -9224,20 +9446,22 @@ disp_matched_text(const int m_row, const int m_col, int m_len)
 
   if (m_len > 0)
     {
-#if ASM86
+# if ASM86
       chtype *const start = v_base + m_row * COLS + m_col;
       put_matched(start, s_buf[m_row] + m_col + offset, m_len);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
       (void)move(m_row, m_col);
       cput_seq(s_buf[m_row] + m_col + offset, m_len, found_col, found_ctrl);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display the text in the screen buffer.
  */
 
+#ifndef LINE_G
 private
 void
 disp_row(const int r)
@@ -9249,12 +9473,12 @@ disp_row(const int r)
           disp_eof(r);
         }
 
-#if DOS
+# if DOS
       else
         {
           scr_fill(v_base + r * COLS, B_COLS);
         }
-#endif  /* if DOS */
+# endif  /* if DOS */
     }
   else
     {
@@ -9264,62 +9488,67 @@ disp_row(const int r)
       row = c_row;
     }
 }
+#endif  /* ifndef LINE_G */
 
+#ifndef LINE_G
 private
 void
 disp_home(void)
 {
-#if ASM86
+# if ASM86
   put_text(
     h_base,
     s_buf[COMMAND_LINE] + offset,
     eor[COMMAND_LINE] - offset,
     COLS);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   (void)move(COMMAND_LINE, 0);
   put_text(s_buf[COMMAND_LINE] + offset, eor[COMMAND_LINE] - offset, COLS);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display entire text area
  */
 
+#ifndef LINE_G
 private
 void
 disp_text(void)
 {
   int i;
 
-#if ASM86
+# if ASM86
   chtype *start = v_base + FIRST_LINE * COLS;
   for (i = FIRST_LINE; i < LINES && eor[i] != EOF; ++i)
     {
       start = put_text(start, s_buf[i] + offset, eor[i] - offset, COLS);
     }
 
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   for (i = FIRST_LINE; i < LINES && eor[i] != EOF; ++i)
     {
       (void)move(i, 0);
       put_text(s_buf[i] + offset, eor[i] - offset, COLS);
     }
 
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
   if (i < LINES)
     {
       disp_eof(i);
-#if ASM86
+# if ASM86
       scr_fill(start + COLS, ( LINES - i + 1 ) * B_COLS);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
       while (++i < LINES)
         {
           (void)move(i, 0);
           (void)clrtoeol();
         }
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Delete a segment of a line.
@@ -9327,6 +9556,7 @@ disp_text(void)
  *  the end_col.
  */
 
+#ifndef LINE_G
 private
 void
 del_seg(const int end_col)
@@ -9343,11 +9573,13 @@ del_seg(const int end_col)
 
   disp_rest();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Update cursor position, eof on status line.
  */
 
+#ifndef LINE_G
 private
 void
 status(void)
@@ -9388,12 +9620,12 @@ status(void)
     }
 
   pos_len = len;
-#if ASM86
+# if ASM86
   put_status(v_base + 5, buf, len);
-#else  /* if ASM86 */
+# else  /* if ASM86 */
   (void)move(STATUS_LINE, 5);
   put_seq(buf, len, status_col);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 
   for (len = last_line; eor[len] == EOF; --len)
     {
@@ -9406,28 +9638,28 @@ status(void)
     {
       len = sprintf(buf, " EOF %d", se_save_eof = len);
       eof_start = COLS - len;
-#if ASM86
+# if ASM86
       put_status(v_base + eof_start, buf, len);
-#else  /* if ASM86  */
+# else  /* if ASM86  */
       (void)move(STATUS_LINE, eof_start);
       put_seq(buf, len, status_col);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
     }
 
   new_eor = eof_start;
   if (eol != EOF)
     {
       new_eor -= ( len = sprintf(buf, "EOR %d", eol) );
-#if ASM86
+# if ASM86
       put_status(v_base + new_eor, buf, len);
-#else  /* if ASM86  */
+# else  /* if ASM86  */
       (void)move(STATUS_LINE, new_eor);
       put_seq(buf, len, status_col);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
     }
 
   len = new_eor - eor_start;
-#if DOS
+# if DOS
   if (len > 0)
     {
       wfill(v_base + eor_start, norm_space, len);
@@ -9435,7 +9667,7 @@ status(void)
 
   eor_start = new_eor;
   v_base[h_inc] = ( expand ? 'I' : 'O' ) | status_col;
-#else  /* if DOS */
+# else  /* if DOS */
   if (len > 0)
     {
       (void)move(STATUS_LINE, eor_start);
@@ -9448,13 +9680,15 @@ status(void)
   eor_start = new_eor;
   (void)mv_put_byte(STATUS_LINE, h_inc, expand ? 'I' : 'O');
   (void)attrset(norm_col);
-#endif  /* if DOS */
+# endif  /* if DOS */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Set up the screen.
  */
 
+#ifndef LINE_G
 private
 void
 init(void)
@@ -9463,18 +9697,18 @@ init(void)
 
   /* Setup fixed parts of status line */
 
-#if ASM86
+# if ASM86
   chtype *const mid = v_base + h_inc + 4;
   const char *p, *last;
   scr_fill(v_base, B_COLS);
   put_status(v_base, "LINE", 4);
-#else  /* if ASM86  */
+# else  /* if ASM86  */
   string buf;
   char *const mid = buf + h_inc + 4;
   const char *p, *last;
   space_fill(buf, COLS);
   (void)movelr(buf, "LINE", 4);
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
   se_save_eof = -1;
 
   /* extract basenames */
@@ -9517,10 +9751,10 @@ init(void)
 
   (void)put_status(mid - 6, ">GI>", 4);
 
-#if ASM86 == 0
+# if ASM86 == 0
   (void)move(STATUS_LINE, 0);
   put_seq(buf, COLS, status_col);
-#endif  /* if ASM86 == 0 */
+# endif  /* if ASM86 == 0 */
 
   ++fscreen;
   status();
@@ -9530,6 +9764,7 @@ init(void)
   (void)move(row, col);
   redisplay = NO;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Restart editing on a line.  Analagous to Wrapround.
@@ -9558,6 +9793,7 @@ linewrap(void)
  *  Execute context editor commands.
  */
 
+#ifndef LINE_G
 private
 int
 home_command(const int disp, const int s_start)
@@ -9646,6 +9882,7 @@ home_command(const int disp, const int s_start)
 
   return rc;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Execute a home command without disturbing anything the user has typed in.
@@ -9653,6 +9890,7 @@ home_command(const int disp, const int s_start)
  *  f_rec:  is the line the command commences on (+FILE_LINE)
  */
 
+#ifndef LINE_G
 private
 int
 run_command(char csc com, const int f_rec, const int s_rec)
@@ -9672,11 +9910,13 @@ run_command(char csc com, const int f_rec, const int s_rec)
 
   return home_command(D_SE_AUTO, HFILE_LINE + f_rec);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Decode key sequences.
  */
 
+#ifndef LINE_G
 private
 int
 get_key2(int *const value)
@@ -9694,11 +9934,13 @@ get_key2(int *const value)
   *value = c;
   return c;
 }
+#endif  /* ifndef LINE_G */
 
 /*
- *  Wordstar "Quick" keys (start with ^Q)
+ *  WordStar-like "Quick" keys (start with ^Q)
  */
 
+#ifndef LINE_G
 private
 ACTION
 hand_quick(int *const value)
@@ -9732,15 +9974,15 @@ hand_quick(int *const value)
       return A_C_TOS;
 
     case 'G':  /* ^QGc Find character */
-#if DOS
+# if DOS
       *value = getch();
-#else  /* if DOS */
+# else  /* if DOS */
       if ( ( *value = getch() ) == KEY_ENTER )
         {
           *value = CNTRL('M');
         }
 
-#endif  /* if DOS */
+# endif  /* if DOS */
       return A_FINDC;
 
     case 'H':  /* ^QH  Extension: Cursor Home */
@@ -9786,11 +10028,13 @@ hand_quick(int *const value)
 
   return A_C_STAY;
 }
+#endif  /* ifndef LINE_G */
 
 /*
- *  Wordstar file & block keys (start with ^K)
+ *  WordStar-like file & block keys (start with ^K)
  */
 
+#ifndef LINE_G
 private
 ACTION
 hand_block(int *const value)
@@ -9829,14 +10073,16 @@ hand_block(int *const value)
 
   return A_C_STAY;
 }
+#endif  /* ifndef LINE_G */
 
+#ifndef LINE_G
 private
 ACTION
 get_seq(int *const value)
 {
   const int c = rgetc();
 
-  /* Single WordStar keys */
+  /* Single WordStar-like keys */
 
   switch (c)
     {
@@ -9852,10 +10098,10 @@ get_seq(int *const value)
       /* fallthrough */
     case KEY_NPAGE:
       /* fallthrough */
-#ifdef KEY_NEXT
+# ifdef KEY_NEXT
     case KEY_NEXT:
       /* fallthrough */
-#endif  /* ifdef KEY_NEXT */
+# endif  /* ifdef KEY_NEXT */
       *value = NEXT_PAGE;
       return A_FILE_MOVE;
 
@@ -9883,10 +10129,10 @@ get_seq(int *const value)
 
     case CNTRL('H'):  /* ^H  BS as char delete left */
       /* fallthrough */
-#ifdef KEY_BACKSPACE
+# ifdef KEY_BACKSPACE
     case KEY_BACKSPACE:
       /* fallthrough */
-#endif  /* ifdef KEY_BACKSPACE */
+# endif  /* ifdef KEY_BACKSPACE */
       *value = LEFT;
       return A_DEL_C;
 
@@ -9906,28 +10152,28 @@ get_seq(int *const value)
 
     case CNTRL('M'):  /* ^M  RETURN (split line) */
       /* fallthrough */
-#ifdef KEY_ENTER
+# ifdef KEY_ENTER
     case KEY_ENTER:
       /* fallthrough */
-#endif  /* ifdef KEY_ENTER */
+# endif  /* ifdef KEY_ENTER */
       return A_C_RETURN;
 
     case CNTRL('N'):  /* ^N  Open blank line */
       /* fallthrough */
-#ifdef KEY_IL
+# ifdef KEY_IL
     case KEY_IL:
       /* fallthrough */
-#endif  /* ifdef KEY_IL */
+# endif  /* ifdef KEY_IL */
       return A_OPEN_LINE;
 
     case CNTRL('R'):  /* ^R  Page up */
       /* fallthrough */
     case KEY_PPAGE:
       /* fallthrough */
-#ifdef KEY_PREVIOUS
+# ifdef KEY_PREVIOUS
     case KEY_PREVIOUS:
       /* fallthrough */
-#endif  /* ifdef KEY_PREVIOUS */
+# endif  /* ifdef KEY_PREVIOUS */
       *value = PREV_PAGE;
       return A_FILE_MOVE;
 
@@ -9959,34 +10205,34 @@ get_seq(int *const value)
 
     case CNTRL('Y'):  /* ^Y  Line delete */
       /* fallthrough */
-#ifdef KEY_DL
+# ifdef KEY_DL
     case KEY_DL:
-#endif  /* ifdef KEY_DL */
+# endif  /* ifdef KEY_DL */
       return A_DEL_LINE;
 
     case CNTRL('Z'):  /* ^Z  Scroll down one line */
       *value = NEXT_LINE;
       return A_FILE_MOVE;
 
-#ifdef KEY_END
+# ifdef KEY_END
     case KEY_END:  /* Cursor to end of line */
       /* fallthrough */
-#endif  /* ifdef KEY_END */
-#ifdef KEY_C1
+# endif  /* ifdef KEY_END */
+# ifdef KEY_C1
     case KEY_C1:
       /* fallthrough */
-#endif  /* ifdef KEY_C1 */
-#ifdef KEY_LL
+# endif  /* ifdef KEY_C1 */
+# ifdef KEY_LL
     case KEY_LL:
       /* fallthrough */
-#endif  /* ifdef KEY_LL */
+# endif  /* ifdef KEY_LL */
       return A_C_EOL;
 
-#ifdef KEY_BTAB
+# ifdef KEY_BTAB
     case KEY_BTAB:  /* Back tab */
       return A_B_TAB;
 
-#endif  /* ifdef KEY_BTAB */
+# endif  /* ifdef KEY_BTAB */
     case KEY_F(1):
       return A_HELP;
 
@@ -10012,9 +10258,9 @@ get_seq(int *const value)
 
     case KEY_F(7):  /* ^KQ  Exit GE without saving file */
       /* fallthrough */
-#if DOS
+# if DOS
     case ESC:
-#endif  /* if DOS */
+# endif  /* if DOS */
       *value = 'Q';
       return A_EXIT_EDITOR;
 
@@ -10033,7 +10279,7 @@ get_seq(int *const value)
       *value = 'Q';
       return A_C_HOME;
 
-#ifdef KEY_SLEFT
+# ifdef KEY_SLEFT
     case KEY_SLEFT:  /* Page left */
       *value = LEFT;
       return A_PAGE_SHIFT;
@@ -10042,14 +10288,14 @@ get_seq(int *const value)
       *value = RIGHT;
       return A_PAGE_SHIFT;
 
-#endif  /* ifdef KEY_SLEFT */
+# endif  /* ifdef KEY_SLEFT */
 
-    /* Wordstar "Quick" keys */
+    /* WordStar-like "Quick" keys */
 
     case CNTRL('Q'):
       return hand_quick(value);
 
-    /* Wordstar Justification keys */
+    /* WordStar-like Justification keys */
 
     case CNTRL('O'):
       if ( se_jkey( get_key2(value) ) )
@@ -10059,7 +10305,7 @@ get_seq(int *const value)
 
       return A_C_STAY;
 
-    /* Wordstar file & block keys */
+    /* WordStar-like file & block keys */
 
     case CNTRL('K'):
       return hand_block(value);
@@ -10074,11 +10320,13 @@ get_seq(int *const value)
       return A_C_STAY;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Scroll the text upwards on the screen and in the buffer.
  */
 
+#ifndef LINE_G
 private
 void
 scroll_up(const int line)
@@ -10097,11 +10345,13 @@ scroll_up(const int line)
   s_buf[last_line] = p;
   s_eor[last_line] = e;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Scroll the text downwards on the screen and in the buffer.
  */
 
+#ifndef LINE_G
 private
 void
 scroll_down(const int line)
@@ -10119,12 +10369,14 @@ scroll_down(const int line)
   s_buf[line] = p;
   s_eor[line] = e;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Window movements.
  *  Should be 20 lines for NEXT & PREV PAGE.
  */
 
+#ifndef LINE_G
 private
 void
 file_move(int value)
@@ -10245,11 +10497,13 @@ file_move(int value)
       disp_text();
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor to home position (start of command line).
  */
 
+#ifndef LINE_G
 private
 void
 c_home(const int value)
@@ -10276,12 +10530,14 @@ c_home(const int value)
       set_col(col);
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor up one line.
  *  If the cursor is on the command line, scroll the screen up.
  */
 
+#ifndef LINE_G
 private
 void
 c_up(void)
@@ -10298,11 +10554,13 @@ c_up(void)
       --row;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor down one line.
  */
 
+#ifndef LINE_G
 private
 void
 c_down(void)
@@ -10325,11 +10583,13 @@ c_down(void)
       ++row;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Delete all of line.
  */
 
+#ifndef LINE_G
 private
 void
 del_line(void)
@@ -10343,11 +10603,13 @@ del_line(void)
   (void)next_line(last_line);
   disp_row(last_line);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Join the next line to the end of the current one.
  */
 
+#ifndef LINE_G
 private
 int
 se_join(const int del)
@@ -10418,11 +10680,13 @@ se_join(const int del)
 
   return NO;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Check for start of word.
  */
 
+#ifndef LINE_G
 private
 int
 is_sow(char csc p)
@@ -10436,11 +10700,13 @@ is_sow(char csc p)
 
   return wordch(c) && !wordch(p[-1]) || punctch(c) && !punctch(p[-1]);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Find something forwards in text.
  */
 
+#ifndef LINE_G
 private
 int
 find_forwards(char csc target, const int del)
@@ -10503,11 +10769,13 @@ find_forwards(char csc target, const int del)
 
   return EOF;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Find something backwards in the text.
  */
 
+#ifndef LINE_G
 private
 int
 find_backwards(char csc target, const int del)
@@ -10579,11 +10847,13 @@ find_backwards(char csc target, const int del)
   c_sol();
   return EOF;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Find character sequences.
  */
 
+#ifndef LINE_G
 private
 void
 find_char(const int value)
@@ -10693,15 +10963,22 @@ find_char(const int value)
         }
     }
 }
+#endif  /* ifndef LINE_G */
 
 #if UNIX
+# ifndef LINE_G
 private
-int std_saved = NO, save_fd_0 = -1, save_fd_2 = -1, null_fd = -1;
+int std_saved = NO,
+    save_fd_0 = -1,
+    save_fd_2 = -1,
+    null_fd   = -1;
+# endif  /* ifndef LINE_G */
 
 /*
  *  Save and redirect the standard files
  */
 
+# ifndef LINE_G
 private
 void
 save_std(void)
@@ -10723,7 +11000,9 @@ save_std(void)
 
   ++std_saved;
 }
+# endif  /* ifndef LINE_G */
 
+# ifndef LINE_G
 private
 void
 restore_std(void)
@@ -10737,6 +11016,7 @@ restore_std(void)
       std_saved = NO;
     }
 }
+# endif  /* ifndef LINE_G */
 
 #endif  /* if UNIX */
 
@@ -10748,9 +11028,12 @@ private
 void
 term(void)
 {
+#ifndef LINE_G
   if (!fscreen)
     {
+#endif  /* ifndef LINE_G */
       return;
+#ifndef LINE_G
     }
 
   (void)erase();
@@ -10758,24 +11041,26 @@ term(void)
   fscreen = NO;
   (void)endwin();
   lon = redisplay = SE_WAIT;
+#endif  /* ifdef LINE_G */
 }
 
 /*
  *  Print help text screens.
  */
 
+#ifndef LINE_G
 private
 void
-#if TINY_G
+# if TINY_G
 Help(void)
 {
   char csc *const text = hw_mess;
-#else  /* if TINY_G */
+# else  /* if TINY_G */
 Help(VERB csc opts)
 {
   char csc *const text = help_tab[opts->o1.q];
 
-#endif  /* if TINY_G */
+# endif  /* if TINY_G */
   int line = 0;
 
   term();
@@ -10789,11 +11074,13 @@ Help(VERB csc opts)
   while ( text[line] != NULL );
   redisplay = SE_DISP;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Clear the screen, display message in centre, redraw the screen.
  */
 
+#ifndef LINE_G
 private
 void
 wmessage(const char *text)
@@ -10879,7 +11166,9 @@ wmessage(const char *text)
 
   attrset(norm_col);
 }
+#endif  /* ifndef LINE_G */
 
+#ifndef LINE_G
 private
 void
 message(char csc text)
@@ -10887,6 +11176,7 @@ message(char csc text)
   wmessage(text);
   disp_text();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Inform user in whatever mode.
@@ -10896,26 +11186,31 @@ private
 void
 inform(char csc mess)
 {
+#ifndef LINE_G
   if (fscreen)
     {
       raw();
-#if UNIX
+# if UNIX
       restore_std();
-#endif  /* if UNIX */
+# endif  /* if UNIX */
       wmessage(mess);
     }
   else
     {
+#endif  /* ifndef LINE_G */
       new_line();
       say(mess);
       new_line();
+#ifndef LINE_G
     }
+#endif  /* ifndef LINE_G */
 }
 
 /*
  *  Error handler for screen editor.
  */
 
+#ifndef LINE_G
 private
 void
 se_error(const int code)
@@ -10927,11 +11222,13 @@ se_error(const int code)
   disp_home();
   longjmp(se_err, YES);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Shift screen right one increment.
  */
 
+#ifndef LINE_G
 private
 int
 shift_right(void)
@@ -10945,11 +11242,13 @@ shift_right(void)
   col -= h_inc;
   return YES;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Shift screen left one increment.
  */
 
+#ifndef LINE_G
 private
 int
 shift_left(void)
@@ -10963,11 +11262,13 @@ shift_left(void)
   col += h_inc;
   return YES;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Position EOF on the screen.
  */
 
+#ifndef LINE_G
 private
 void
 set_eof(void)
@@ -10993,11 +11294,13 @@ set_eof(void)
 
   (void)move(row, col);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Page shift left or right.
  */
 
+#ifndef LINE_G
 private
 void
 page_shift(const int value)
@@ -11021,11 +11324,13 @@ page_shift(const int value)
         }
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Line segment operations.
  */
 
+#ifndef LINE_G
 private
 void
 block(const int value)
@@ -11163,17 +11468,17 @@ block(const int value)
               disp_matched_text(start, 0, len);
             }
           else
-#if DOS
+# if DOS
             {
               v_base[start * COLS] = SPACE | found_col;
             }
 
-#else  /* if DOS */
+# else  /* if DOS */
             {
               (void)attrset(found_col);
               (void)mv_put_byte(start, 0, SPACE);
             }
-#endif  /* if DOS */
+# endif  /* if DOS */
         }
 
       return;
@@ -11221,11 +11526,13 @@ block(const int value)
 
   disp_matched_text(row, start, len);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Centre the current line within the margins.
  */
 
+#ifndef LINE_G
 private
 void
 centre(void)
@@ -11303,11 +11610,13 @@ centre(void)
 
   disp_line();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Display the margins.
  */
 
+#ifndef LINE_G
 private
 void
 disp_margins(void)
@@ -11315,34 +11624,36 @@ disp_margins(void)
   int m;
 
   disp_template();
-#if DOS == 0
+# if DOS == 0
   (void)attrset(marg_col);
-#endif  /* if DOS == 0 */
+# endif  /* if DOS == 0 */
   m = l_margin - offset;
   if (m >= 0 && m < COLS)
     {
-#if DOS
+# if DOS
       t_base[m] = '<' | marg_col;
-#else  /* if DOS */
+# else  /* if DOS */
       (void)mv_put_byte(TEMPLATE_LINE, m, '<');
-#endif  /* if DOS */
+# endif  /* if DOS */
     }
 
   m = r_margin - offset;
   if (m >= 0 && m < COLS)
     {
-#if DOS
+# if DOS
       t_base[m] = '>' | marg_col;
-#else  /* if DOS */
+# else  /* if DOS */
       (void)mv_put_byte(TEMPLATE_LINE, m, '>');
-#endif  /* if DOS */
+# endif  /* if DOS */
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Cursor left one character.
  */
 
+#ifndef LINE_G
 private
 void
 c_left(void)
@@ -11358,11 +11669,13 @@ c_left(void)
       c_eol();
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Open a blank line.
  */
 
+#ifndef LINE_G
 private
 void
 open_line(void)
@@ -11397,11 +11710,13 @@ open_line(void)
 
   eor[row] = 0;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Split the current line at the cursor.
  */
 
+#ifndef LINE_G
 private
 void
 split_line(const int margin)
@@ -11455,11 +11770,13 @@ split_line(const int margin)
   c_down();
   set_col(margin);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Perform crude wordwrap.
  */
 
+#ifndef LINE_G
 private
 void
 wrap_text(void)
@@ -11486,11 +11803,13 @@ wrap_text(void)
   eor[row] -= ws - we;
   split_line(l_margin);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  A simple character.
  */
 
+#ifndef LINE_G
 private
 void
 character(const int value)
@@ -11498,9 +11817,9 @@ character(const int value)
   const int b_col = FILE_COL;
   int c_eor = eor[row];
 
-#if DOS
+# if DOS
   chtype *cb;
-#endif  /* if DOS */
+# endif  /* if DOS */
 
   /* past the end of the line, pad with spaces to here */
 
@@ -11547,7 +11866,7 @@ character(const int value)
 
   /* adjust screen */
 
-#if DOS
+# if DOS
   cb = v_base + row * COLS + col;
   if ( isprint(value) )
     {
@@ -11558,7 +11877,7 @@ character(const int value)
       *cb = toprint(value) | cntrl_col;
     }
 
-#else  /* if DOS */
+# else  /* if DOS */
   if ( isprint(value) )
     {
       (void)put_byte( (chtype)value );
@@ -11570,15 +11889,17 @@ character(const int value)
       (void)attrset(norm_col);
     }
 
-#endif  /* if DOS */
+# endif  /* if DOS */
 
   c_right();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Save line on delete stack.
  */
 
+#ifndef LINE_G
 private
 void
 yank(void)
@@ -11590,11 +11911,13 @@ yank(void)
       push_line(&del_stack, BUF(0), c_eor);
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Delete character (left or right)
  */
 
+#ifndef LINE_G
 private
 void
 del_c(const int value)
@@ -11634,18 +11957,20 @@ del_c(const int value)
   else
     {
       *BUF(b_col) = SPACE;
-#if DOS
+# if DOS
       v_base[row * COLS + col] = norm_space;
-#else  /* if DOS */
+# else  /* if DOS */
       (void)mv_put_byte(row, col, SPACE);
-#endif  /* if DOS */
+# endif  /* if DOS */
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Restore deleted line.
  */
 
+#ifndef LINE_G
 private
 void
 rest_line(void)
@@ -11660,11 +11985,13 @@ rest_line(void)
   pop_line( &del_stack, BUF(0) );
   disp_line();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Delete remainder of line.
  */
 
+#ifndef LINE_G
 private
 void
 del_rest(const int value)
@@ -11701,11 +12028,13 @@ del_rest(const int value)
         }
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Horizontal tab.
  */
 
+#ifndef LINE_G
 private
 void
 h_tab(void)
@@ -11718,11 +12047,13 @@ h_tab(void)
       col = c_col;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Back tab.
  */
 
+#ifndef LINE_G
 private
 void
 b_tab(void)
@@ -11735,11 +12066,13 @@ b_tab(void)
       col = c_col;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Handle the return key.
  */
 
+#ifndef LINE_G
 private
 void
 c_return(void)
@@ -11779,7 +12112,9 @@ c_return(void)
       split_line(0);
     }
 }
+#endif  /* ifndef LINE_G */
 
+#ifndef LINE_G
 private
 void
 recall_comm(void)
@@ -11801,6 +12136,7 @@ recall_comm(void)
       set_col(len);
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Read a string (such as a file name or a search pattern).
@@ -11809,6 +12145,7 @@ recall_comm(void)
  *  type is a YES/NO, break on first character. Called only by Query().
  */
 
+#ifndef LINE_G
 private
 int
 read_string(Q_MODE qtype)
@@ -11909,11 +12246,13 @@ read_string(Q_MODE qtype)
       }
   }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Prompt and input a string from the user - on the home command line.
  */
 
+#ifndef LINE_G
 private
 int
 query(char csc prompt, char *const buf, Q_MODE qtype)
@@ -11924,14 +12263,14 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
   int rc, p_len = strlen(prompt);
   string t_buf;
 
-#if ASM86
+# if ASM86
   put_seq(v_base + COLS, prompt, p_len, query_col, COLS);
-#else  /* if ASM86  */
+# else  /* if ASM86  */
   (void)move(COMMAND_LINE, 0);
   put_seq(prompt, p_len, query_col);
   attrset(norm_col);
   (void)clrtoeol();
-#endif  /* if ASM86 */
+# endif  /* if ASM86 */
 
   s_buf[COMMAND_LINE] = t_buf;
   s_eor[COMMAND_LINE] = E_BUFF_LEN;
@@ -11993,11 +12332,13 @@ query(char csc prompt, char *const buf, Q_MODE qtype)
 
   return rc;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Justify a paragraph.
  */
 
+#ifndef LINE_G
 private
 void
 se_justify(const int value)
@@ -12078,6 +12419,7 @@ se_justify(const int value)
 
   disp_home();
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Search for strings, and possibly replace.
@@ -12085,6 +12427,7 @@ se_justify(const int value)
  *  such as C, S etc.
  */
 
+#ifndef LINE_G
 private
 void
 search(const int value)
@@ -12227,11 +12570,13 @@ search(const int value)
       c_sol();
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Leave the editor or return to the context editor.
  */
 
+#ifndef LINE_G
 private
 void
 exit_editor(const int value)
@@ -12286,11 +12631,13 @@ exit_editor(const int value)
       prim_changed = NO;
     }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Read/Write/Execute files.
  */
 
+#ifndef LINE_G
 private
 void
 rwx_file(const int value)
@@ -12314,7 +12661,7 @@ rwx_file(const int value)
     case '!':  /* Read from command */
       /* fallthrough */
     case '|':  /* Filter through command */
-#if UNIX
+# if UNIX
       if (query("Command:", fname, Q_EDIT) == EOF)
         {
           return;
@@ -12336,10 +12683,10 @@ rwx_file(const int value)
 
       *fname = '!';
       break;
-#else  /* if UNIX */
+# else  /* if UNIX */
       return;
 
-#endif  /* if UNIX */
+# endif  /* if UNIX */
 
     case 'A':  /* Append a block to a file */
       if (query("Append to file:", fname, Q_EDIT) == EOF)
@@ -12409,7 +12756,7 @@ make_com:
       sop = NO;
     }
 
-#if UNIX
+# if UNIX
   if (*fname == '!')
     {
       save_std();  /* discard stderr & stdin */
@@ -12418,10 +12765,11 @@ make_com:
   (void)run_command(com, 0, sop);
 
   restore_std();
-#else  /* if UNIX */
+# else  /* if UNIX */
   (void)run_command(com, 0, sop);
-#endif  /* if UNIX */
+# endif  /* if UNIX */
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Count lines, word and chars in old file.
@@ -12488,6 +12836,7 @@ word_count(void)
  *  Misc system operations.
  */
 
+#ifndef LINE_G
 private
 void
 misc_ops(const int value)
@@ -12533,11 +12882,13 @@ misc_ops(const int value)
 
   (void)run_command(com, start, YES);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Execute general repeating commands.
  */
 
+#ifndef LINE_G
 private
 void
 se_loop(int value)
@@ -12584,11 +12935,11 @@ se_loop(int value)
           break;
         }
 
-#if UNIX
+# if UNIX
       (void)refresh();
-#else  /* if UNIX */
+# else  /* if UNIX */
       bios_gotoxy( (byte)curs_row, (byte)curs_col );
-#endif  /* if UNIX */
+# endif  /* if UNIX */
       if (speed > 0)
         {
           (void)napms(speed * 100);
@@ -12597,11 +12948,13 @@ se_loop(int value)
 
   qq_loop = NO;
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Execute an action on the screen.
  */
 
+#ifndef LINE_G
 private
 void
 se_execute(const ACTION act, const int value)
@@ -12670,18 +13023,20 @@ se_execute(const ACTION act, const int value)
       se_justify(value);
       break;
 
+# ifndef LINE_G
     case A_HELP:
-#if TINY_G
+#  if TINY_G
       Help();
-#else  /* if TINY_G */
+#  else  /* if TINY_G */
       {
         VERB opts;
         opts.o1.q = 0;
         Help(&opts);
       }
-#endif  /* if TINY_G */
+#  endif  /* if TINY_G */
       init();
       break;
+# endif  /* ifndef LINE_G */
 
     case A_RWX_FILE:
       rwx_file(value);
@@ -12791,11 +13146,13 @@ d_home:
 
   (void)move(row, col);
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Screen editor driver.
  */
 
+#ifndef LINE_G
 private
 void
 Screen_ed(void)
@@ -12838,17 +13195,18 @@ Screen_ed(void)
   repeat
   {
     const ACTION fun = get_seq(&value);
-#if UNIX
+# if UNIX
     if (idlpending)
       {
         (void)idlok(stdscr, NO);
         idlpending = NO;
       }
 
-#endif  /* if UNIX */
+# endif  /* if UNIX */
     se_execute(fun, value);
   }
 }
+#endif  /* ifndef LINE_G */
 
 /*
  *  Context Editor.
@@ -13105,10 +13463,12 @@ printline(char *ptr)
   int len, sec;
   LINE buf;
 
+#ifndef LINE_G
   if (fscreen)
     {
       return;
     }
+#endif  /* ifndef LINE_G */
 
   if (buff_sec * L_LEN > e_col + i_eor - i_col)
     {
@@ -14037,7 +14397,11 @@ Insert(VERB csc opts)
 #if FULL_G
     case 'A':
     case 'B':
-      if (depth | fscreen)
+      if (depth
+# ifndef LINE_G
+              | fscreen
+# endif  /* ifndef LINE_G */
+         )
         {
           g_err(INT_OPT, opts->errp);
         }
@@ -14085,9 +14449,11 @@ Insert(VERB csc opts)
       return;
 
 #endif  /* if FULL_G */
+#ifndef LINE_G
     case 'P':
       wait_user();
       return;
+#endif  /* ifndef LINE_G */
 
 #if UNIX && !defined(OMIT_POPEN)
     case '!':
@@ -14106,7 +14472,11 @@ Insert(VERB csc opts)
   ch_delim = *s1p++;
   if ( gdss(ss1, &len, &s1p) )
     {
-      if (depth | fscreen)
+      if (depth
+#ifndef LINE_G
+              | fscreen
+#endif  /* ifndef LINE_G */
+         )
         {
           g_err(INT_OPT, opts->errp);
         }
@@ -14304,6 +14674,7 @@ Numbers(VERB csc opts)
 
 #if FULL_G
 
+# ifndef LINE_G
 private
 void
 Window(void)
@@ -14370,6 +14741,7 @@ Window(void)
   new_line();
   g_rec = c_g_rec;
 }
+# endif  /* ifndef LINE_G */
 
 #endif  /* if FULL_G */
 
@@ -14554,10 +14926,12 @@ Oldfile(VERB csc opts)
 
   vsreload();
 
+#ifndef LINE_G
   if (fscreen)
     {
       redisplay = SE_DISP;
     }
+#endif  /* ifndef LINE_G */
 
   prim_changed = NO;
 }
@@ -14594,9 +14968,11 @@ verb(VERB csc v)
       /* fallthrough */
 
 #if FULL_G
+# ifndef LINE_G
     case 'W':
       Window();
       break;
+# endif  /* ifndef LINE_G */
 #endif  /* if FULL_G */
 
     case 'I':
@@ -14666,6 +15042,7 @@ verb(VERB csc v)
 #endif  /* if !defined(OMIT_SYSTEM) */
 
     case ':':
+#ifndef LINE_G
       if (fscreen)
         {
           save_jbuf(set_err, save_err);
@@ -14679,6 +15056,10 @@ verb(VERB csc v)
 
       Screen_ed();
       pop_com_stack(&com_stack);
+#else
+      fprintf(vdu, "\nScreen editor unavailable.\nCulprit: %c\n\n",
+              (char)v->comm);
+#endif  /* ifndef LINE_G */
       break;
 
     case 'J':
@@ -14693,11 +15074,16 @@ verb(VERB csc v)
       break;
 
     case 'H':
-#if TINY_G
+#ifndef LINE_G
+# if TINY_G
       Help();
-#else  /* if TINY_G */
+# else  /* if TINY_G */
       Help(v);
-#endif  /* if TINY_G */
+# endif  /* if TINY_G */
+#else
+      fprintf(vdu, "\nHelp unavailable.\nCulprit: %c\n\n",
+              (char)v->comm);
+#endif  /* ifndef TINY_G */
     }
 
   return G_OK;
@@ -15150,7 +15536,9 @@ Drive(const int level)
       save_jbuf(save_err, set_err);
       if (g_init == NULL)
         {
+#ifndef LINE_G
           Screen_ed();
+#endif  /* ifndef LINE_G */
           pop_com_stack(&com_stack);
         }
     }
@@ -15214,7 +15602,11 @@ Drive(const int level)
         if ( ( len = hist_recall(comm) ) > 0 )
           {
             comm[len] = EOS;
-            if (!fscreen && lon)
+            if (
+#ifndef LINE_G
+                !fscreen &&
+#endif  /* ifndef LINE_G */
+                lon)
               {
                 say(comm);
               }
@@ -15339,6 +15731,7 @@ main(int i, char csc * argv)
               ++ro_mode;
               continue;
 
+#ifndef LINE_G
             case 'S':  /* soft tab width on screen */
               if (*++p == EOS && argv[1])
                 {
@@ -15351,15 +15744,20 @@ main(int i, char csc * argv)
                 }
 
               continue;
+#endif  /* ifndef LINE_G */
 
             case 'V':  /* display version */
-#if TINY_G
-              fprintf(vdu, "Tiny G ");
+#ifdef LINE_G
+              fprintf(vdu, "Line-mode G ");
 #else
+# if TINY_G
+              fprintf(vdu, "Tiny G ");
+# else
               fprintf(vdu, "G ");
-#endif  /* if TINY_G */
+# endif  /* if TINY_G */
+#endif  /* ifdef LINE_G */
 
-#if defined(NCURSES_VERSION) || defined(PDCURSES)
+#if ( defined(NCURSES_VERSION) || defined(PDCURSES) ) && !defined(LINE_G)
               sprintf( cvstring,
                        "%s using %s",
                        VERSION_STRING,
@@ -15400,7 +15798,11 @@ main(int i, char csc * argv)
 
       if (i > 1)
         {
+#ifndef LINE_G
           say("Usage: g [ -rscbv ] [ file [ newfile ] ]");
+#else
+          say("Usage: g [ -rcbv ] [ file [ newfile ] ]");
+#endif  /* ifndef LINE_G */
           _exit(1);
         }
 
@@ -15418,7 +15820,7 @@ main(int i, char csc * argv)
       break;
 
     case 2:  /* both files supplied */
-      in_fname = files[0];
+      in_fname  = files[0];
       out_fname = files[1];
     }
 

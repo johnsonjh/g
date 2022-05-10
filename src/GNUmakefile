@@ -46,11 +46,13 @@
 #     cl /Gs /Gy -DDOS=1 -UUNIX /AL /Os /G0 /c G.C
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
-#  * Use `-DDEBUG=1` to enable extra debugging checks
-#  * Use `-DCOLOUR=0` for older curses implementations
+#   Options:
 #
-#  For MS C (real-mode DOS), the compiler produces compact code, so a full
-#  (non-"TINY_G") build may be practical; add -DFULL_G=1 to the cl invocation.
+#   *  `-DDEBUG=1`  Enables debugging code (for development or troubleshooting)
+#   * `-DLINE_G=1`  Builds only the line-mode editor (no curses library needed)
+#   * `-DCOLOUR=0`  Disables colours (required for some older curses libraries)
+#   * `-DTINY_G=1`  Disables features for lower memory use (default on for DOS)
+#   * `-DFULL_G=1`  Overrides `TINY_G` default (enables a fully-featured build)
 #
 ###############################################################################
 
@@ -115,19 +117,47 @@ ifeq ($(OS),sunos)
 endif # sunos
 
 ###############################################################################
+# Full build
+
+ifdef FULL_G
+#  TINY_G     =
+  CFLAGS    += -DFULL_G=1 -DTINY_G=0
+  WGFLAGS   += -DFULL_G=1 -DTINY_G=0
+endif # FULL_G
+
+###############################################################################
+# Line-mode build
+
+ifdef LINE_G
+  TINY       =
+  CFLAGS    += -DLINE_G=1
+  WGFLAGS   += -DLINE_G=1
+endif # LINE_G
+
+###############################################################################
 # Tiny build
 
 ifdef TINY
-  CFLAGS   += -DTINY_G=1
+  CFLAGS    += -DTINY_G=1
+  WGFLAGS   += -DTINY_G=1
 endif # TINY
 ifdef TINY_G
   ifndef TINY
-    CFLAGS += -DTINY_G=1
+    CFLAGS  += -DTINY_G=1
+    WGFLAGS += -DTINY_G=1
   endif # !TINY
 endif # TINY_G
 
 ###############################################################################
-# Verbose
+# Disable colour
+
+ifeq "$(COLOUR)" "0"
+  CFLAGS   += -DCOLOUR=0
+  WGFLAGS  += -DCOLOUR=0
+endif
+
+###############################################################################
+# Verbose mode
 
 ifdef V
   VERBOSE = set -x
@@ -136,7 +166,7 @@ else
 endif # !V
 
 ###############################################################################
-# Stack protection disable
+# Stack protection
 
 ifdef NOSSP
   ifeq ($(_SUNOS),1)
@@ -181,13 +211,19 @@ endif # LGC
 # Libraries
 
 ifeq ($(OS),aix)
-  CFLAGS    += -I/opt/freeware/include
-  LDFLAGS   += -L/opt/freeware/lib
-  CURSESLIB ?= -lncurses
+  CFLAGS      += -I/opt/freeware/include
+  LDFLAGS     += -L/opt/freeware/lib
+  ifndef LINE_G
+    CURSESLIB ?= -lncurses
+  endif # !LINE_G
 else
-  CURSESLIB ?= -lcurses
+  ifndef LINE_G
+    CURSESLIB ?= -lcurses
+  endif # !LINE_G
 endif # aix
-LDFLAGS     += $(CURSESLIB)
+ifndef LINE_G
+  LDFLAGS     += $(CURSESLIB)
+endif # !LINE_G
 
 ###############################################################################
 # Architectures
@@ -251,7 +287,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr             \
+             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr $(WGFLAGS)  \
                $(WATDBG) -zp2 -j -s -fe=$(OUT)86.exe $(SRC) &&         \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -268,7 +304,7 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
            PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr             \
+             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr $(WGFLAGS)  \
                $(WATDBG) -zp2 -j -s -fe=$(OUT)386r.exe $(SRC) &&       \
                  $(RM) -f "./g.o" 2> /dev/null
 
@@ -286,8 +322,8 @@ endif # !V
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
          PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386) -s  \
           -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -j -fpi @g.lkr   \
-           -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(SRC) &&   \
-            $(RM) -f "./g.o" 2> /dev/null
+           -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(WGFLAGS)  \
+            $(SRC) && $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
 # OpenWatcom Compilation: 16-bit OS/2, 286 (Protected mode)
@@ -301,12 +337,12 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g286p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                             \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:?}"  \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:-.}" \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                  \
            -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767 -s        \
             $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -j -fe=$(OUT)286p.exe   \
-             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"         \
-              2> /dev/null
+             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                 \
+              $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
 # OpenWatcom Compilation: 32-bit OS/2, 386 (Protected mode)
@@ -320,12 +356,12 @@ endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./gos2p.exe" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                            \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:?}"   \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:-.}"  \
           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                 \
            -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767 -s    \
             $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -j -fe=$(OUT)os2p.exe      \
-             $(SRC) "$${WATCOM_PDC_LIBRARY:?}" && $(RM) -f "./g.o"        \
-              2> /dev/null
+             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                \
+              $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
 # DJGPP Compilation: 32-bit DOS, 386 (Protected mode)
