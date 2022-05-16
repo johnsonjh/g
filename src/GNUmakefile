@@ -59,49 +59,50 @@
 ###############################################################################
 # Utilities
 
-CAT     ?= cat
-CC      ?= cc
-CHMOD   ?= chmod
-ENV     ?= env
-GETCONF ?= getconf
-MKTEMP  ?= mktemp
-LN      ?= ln
-PRINTF  ?= printf
-RM      ?= rm -f
-SCRIPT  ?= script
-SSTRIP  ?= sstrip
-STRIP   ?= strip
-TEST    ?= test
-TR      ?= tr
-TRUE    ?= true
-UNAME   ?= uname
-WATWCL  ?= wcl
-WCL386  ?= wcl386
+CAT             ?= cat
+CC              ?= cc
+CHMOD           ?= chmod
+ENV             ?= env
+GETCONF         ?= getconf
+MKTEMP          ?= mktemp
+LN              ?= ln
+PKGCFG          ?= pkg-config
+PRINTF          ?= printf
+RM              ?= rm -f
+SCRIPT          ?= script
+SSTRIP          ?= sstrip
+STRIP           ?= strip
+TEST            ?= test
+TR              ?= tr
+TRUE            ?= true
+UNAME           ?= uname
+WATWCL          ?= wcl
+WCL386          ?= wcl386
 
 ###############################################################################
 # OpenWatcom configuration
 
-WATCOM   ?= /opt/watcom
-WATBIN   ?= binl64
-EXTENDER ?= DOS32A
+WATCOM          ?= /opt/watcom
+WATBIN          ?= binl64
+EXTENDER        ?= DOS32A
 
 ###############################################################################
 # DJGPP configuration
 
-DJGPP_GHOME    ?= /opt/djgpp
-DJGPP_GARCH    ?= i586-pc-msdosdjgpp-
-DJGPP_CCOMP    ?= gcc
-DJGPP_ECOFF    ?= exe2coff
+DJGPP_GHOME     ?= /opt/djgpp
+DJGPP_GARCH     ?= i586-pc-msdosdjgpp-
+DJGPP_CCOMP     ?= gcc
+DJGPP_ECOFF     ?= exe2coff
 ifdef DEBUG
-   DJGPP_STRIP ?= size
+   DJGPP_STRIP  ?= size
 else
-   DJGPP_STRIP ?= strip
+   DJGPP_STRIP  ?= strip
 endif # DEBUG
 
 ###############################################################################
 # CWSDPMI configuration
 
-CWSDPMI_STUB ?= /opt/cwspdmi/cwsdstub.exe
+CWSDPMI_STUB    ?= /opt/cwspdmi/cwsdstub.exe
 
 ###############################################################################
 # Detect operating system
@@ -113,38 +114,67 @@ endif # OS
 ifeq ($(OS),sunos)
     OS=$(shell $(UNAME) -o 2> /dev/null | \
         $(TR) '[:upper:]' '[:lower:]' 2> /dev/null)
-    _SUNOS = 1
+    _SUNOS       = 1
 endif # sunos
+
+###############################################################################
+# Static build
+
+ifdef STATIC
+  STATIC         = 1
+  LDFLAGS       += -static
+  STFLAGS       := --static
+endif # STATIC
+
+###############################################################################
+# pkg-config configuration
+
+ifndef LINE_G
+  CFLAGS        += $(shell $(PKGCFG) ncurses --cflags $(STFLAGS) 2> /dev/null \
+                         || $(PKGCFG) curses --cflags $(STFLAGS) 2> /dev/null)
+  CURSESLIB     += $(shell $(PKGCFG) ncurses --libs $(STFLAGS) 2> /dev/null   \
+                         || $(PKGCFG) curses --libs $(STFLAGS) 2> /dev/null)
+endif # !LINE_G
+
+###############################################################################
+# DUMA build
+
+ifdef DUMA
+  DUMA           = 1
+  NOSSP          = 1
+  CFLAGS        += -DDUMA=1
+  WGFLAGS       += -DDUMA=1
+  DUMALIB       += -lduma
+endif # DUMA
 
 ###############################################################################
 # Full build
 
 ifdef FULL_G
-#  TINY_G     =
-  CFLAGS    += -DFULL_G=1 -DTINY_G=0
-  WGFLAGS   += -DFULL_G=1 -DTINY_G=0
+  CFLAGS        += -DFULL_G=1 -DTINY_G=0
+  WGFLAGS       += -DFULL_G=1 -DTINY_G=0
 endif # FULL_G
 
 ###############################################################################
 # Line-mode build
 
 ifdef LINE_G
-  TINY       =
-  CFLAGS    += -DLINE_G=1
-  WGFLAGS   += -DLINE_G=1
+  TINY           =
+  CFLAGS        += -DLINE_G=1
+  WGFLAGS       += -DLINE_G=1
 endif # LINE_G
 
 ###############################################################################
 # Tiny build
 
 ifdef TINY
-  CFLAGS    += -DTINY_G=1
-  WGFLAGS   += -DTINY_G=1
+  CFLAGS        += -DTINY_G=1
+  WGFLAGS       += -DTINY_G=1
 endif # TINY
 ifdef TINY_G
   ifndef TINY
-    CFLAGS  += -DTINY_G=1
-    WGFLAGS += -DTINY_G=1
+    CFLAGS      += -DTINY_G=1
+    WGFLAGS     += -DTINY_G=1
   endif # !TINY
 endif # TINY_G
 
@@ -152,21 +182,25 @@ endif # TINY_G
 # Disable colour
 
 ifeq "$(COLOUR)" "0"
-  CFLAGS   += -DCOLOUR=0
-  WGFLAGS  += -DCOLOUR=0
-endif
+  CFLAGS        += -DCOLOUR=0
+  WGFLAGS       += -DCOLOUR=0
+endif # !COLOUR
 
 ###############################################################################
 # Verbose mode
 
 ifdef V
-  VERBOSE = set -x
+  VERBOSE        = set -x
 else
-  VERBOSE = set +x
+  VERBOSE        = set +x
 endif # !V
 
 ###############################################################################
 # Stack protection
+
+ifdef DEBUG
+  NOSSP          = 1
+endif # DEBUG
 
 ifdef NOSSP
   ifeq ($(_SUNOS),1)
@@ -175,35 +209,35 @@ ifdef NOSSP
     STACK_FLAGS ?= -fno-stack-protector -U_FORTIFY_SOURCE
   endif # _SUNOS
 else
-  STACK_FLAGS   ?= -D_FORTIFY_SOURCE=1
+  STACK_FLAGS   ?= -D_FORTIFY_SOURCE=2
 endif # NOSSP
 
 ###############################################################################
 # Debugging
 
 ifdef DEBUG
-  CFLAGS     += -Wall -Wextra -DDEBUG=1 -g
+  CFLAGS        += -Wall -Wextra $(STACK_FLAGS) -DDEBUG=1 -g
 else
   ifeq ($(_SUNOS),1)
-    OPTFLAGS ?= -O -xspace
+    OPTFLAGS    ?= -O -xspace
   endif # _SUNOS
-  OPTFLAGS   ?= -Os
-  CFLAGS     += $(OPTFLAGS) $(STACK_FLAGS) -Wno-int-to-pointer-cast
+  OPTFLAGS      ?= -Os
+  CFLAGS        += $(OPTFLAGS) $(STACK_FLAGS) -Wno-int-to-pointer-cast
 endif # DEBUG
 
 ###############################################################################
 # Link-time optimization and garbage collection
 
 ifdef LTO
-  CFLAGS    += -flto=auto
-  LDFLAGS   += -flto=auto
+  CFLAGS        += -flto=auto
+  LDFLAGS       += -flto=auto
 endif # LTO
 
 ifdef LGC
-  CFLAGS    += -fdata-sections -ffunction-sections
-  LDFLAGS   += -Wl,--gc-sections
+  CFLAGS        += -fdata-sections -ffunction-sections
+  LDFLAGS       += -Wl,--gc-sections
   ifdef DEBUG
-    LDFLAGS += -Wl,--print-gc-sections
+    LDFLAGS     += -Wl,--print-gc-sections
   endif # DEBUG
 endif # LGC
 
@@ -211,49 +245,57 @@ endif # LGC
 # Libraries
 
 ifeq ($(OS),aix)
-  CFLAGS      += -I/opt/freeware/include
-  LDFLAGS     += -L/opt/freeware/lib
+  CFLAGS        += -I/opt/freeware/include
+  LDFLAGS       += -L/opt/freeware/lib
   ifndef LINE_G
-    CURSESLIB ?= -lncurses
+    ifeq ($(CURSESLIB),)
+      CURSESLIB := -lncurses
+    endif # !CURSESLIB
   endif # !LINE_G
 else
   ifndef LINE_G
-    CURSESLIB ?= -lcurses
+    ifeq ($(CURSESLIB),)
+      CURSESLIB := -lcurses
+    endif # !CURSESLIB
   endif # !LINE_G
 endif # aix
 ifndef LINE_G
-  LDFLAGS     += $(CURSESLIB)
+  LDFLAGS       += $(CURSESLIB)
 endif # !LINE_G
 
 ###############################################################################
 # Architectures
 
 ifeq ($(OS),aix)
-  MAIXBITS  ?= $(shell command -p $(GETCONF) KERNEL_BITMODE 2> /dev/null || \
-                 $(PRINTF) '%s' "32")
+  MAIXBITS      ?= $(shell command -p $(GETCONF) KERNEL_BITMODE 2> /dev/null  \
+                    || $(PRINTF) '%s' "32")
   ifneq (,$(findstring gcc,$(CC))) # gcc (GNU C)
-    CFLAGS  += -maix$(MAIXBITS)
-    LDFLAGS += -maix$(MAIXBITS) -Wl,-b$(MAIXBITS)
+    CFLAGS      += -maix$(MAIXBITS)
+    LDFLAGS     += -maix$(MAIXBITS) -Wl,-b$(MAIXBITS)
   endif # gcc
   ifneq (,$(findstring clang,$(CC))) # xlclang/ibm-clang (IBM Open XL)
-    CFLAGS  += -m$(MAIXBITS)
-    LDFLAGS += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
+    CFLAGS      += -m$(MAIXBITS)
+    LDFLAGS     += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
   endif # clang
   ifneq (,$(findstring gxlc,$(CC))) # gxlc (IBM XL C)
-    CFLAGS  += -m$(MAIXBITS)
-    LDFLAGS += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
+    CFLAGS      += -m$(MAIXBITS)
+    LDFLAGS     += -m$(MAIXBITS) -Wl,-b$(MAIXBITS)
   endif # gxlc
-  STRARGS  = -X$(MAIXBITS)
+  STRARGS        = -X$(MAIXBITS)
 endif # aix
 
 ###############################################################################
 # Files
 
-SRC  = g.c
-OUT ?= g
+SRC              = g.c
+OUT             ?= g
 
 ###############################################################################
 # Standard Compilation
+
+ifdef DUMA
+  LDFLAGS       += $(DUMALIB)
+endif
 
 .PHONY: all
 .NOTPARALLEL: all g
@@ -269,9 +311,9 @@ endif # !V
 # OpenWatcom Debugging
 
 ifdef DEBUG
-   WATDBG = -d3 -DDEBUG=1
+   WATDBG        = -d3 -DDEBUG=1
 else
-   WATDBG = -d0 -s -zq -oabls
+   WATDBG        = -d0 -s -zq -oabls
 endif # DEBUG
 
 ###############################################################################
@@ -285,10 +327,10 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "g86.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
-           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr $(WGFLAGS)  \
-               $(WATDBG) -zp2 -j -s -fe=$(OUT)86.exe $(SRC) &&         \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"          \
+           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767            \
+             -bcl=DOS -DDOS=1 -DASM86=0 -0 -ml -fpi @g.lkr $(WGFLAGS)         \
+               $(WATDBG) -zp2 -j -s -fe=$(OUT)86.exe $(SRC) &&                \
                  $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -302,10 +344,10 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "g386r.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"   \
-           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767     \
-             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr $(WGFLAGS)  \
-               $(WATDBG) -zp2 -j -s -fe=$(OUT)386r.exe $(SRC) &&       \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"          \
+           PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL) -k32767            \
+             -bcl=DOS -DDOS=1 -DASM86=1 -3 -ml -fpi @g.lkr $(WGFLAGS)         \
+               $(WATDBG) -zp2 -j -s -fe=$(OUT)386r.exe $(SRC) &&              \
                  $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -319,10 +361,10 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g386p.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"        \
-         PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386) -s  \
-          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -j -fpi @g.lkr   \
-           -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(WGFLAGS)  \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)" INCLUDE="$(WATCOM)/h"          \
+         PATH="$(WATCOM)/$(WATBIN):$(WATCOM)/binw:$${PATH:?}" $(WCL386) -s    \
+          -l=$(EXTENDER) -bt=DOS -DDOS=1 -DASM86=0 -3r -mf -j -fpi @g.lkr     \
+           -k32767 $(WATDBG) -zp2 -DWCL386=1 -fe=$(OUT)386p.exe $(WGFLAGS)    \
             $(SRC) && $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -336,12 +378,12 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./g286p.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                             \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:-.}" \
-          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                  \
-           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767 -s        \
-            $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -j -fe=$(OUT)286p.exe   \
-             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                 \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os21x:$${WATCOM_PDC_INCLUDE:-.}"    \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WATWCL)                     \
+           -bcl=OS2 -UDOS -DUNIX=1 -2 -ml -fpi @gos2.lkr -k32767 -s           \
+            $(WATDBG) -D_TIMESPEC_DEFINED -za -zp2 -j -fe=$(OUT)286p.exe      \
+             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                    \
               $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -355,12 +397,12 @@ ifneq ($(V),1)
 endif # !V
 	@$(VERBOSE); $(RM) -f "./g.o" 2> /dev/null || $(TRUE)
 	@$(VERBOSE); $(RM) -f "./gos2p.exe" 2> /dev/null || $(TRUE)
-	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                            \
-         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:-.}"  \
-          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                 \
-           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767 -s    \
-            $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -j -fe=$(OUT)os2p.exe      \
-             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                \
+	@$(VERBOSE); $(ENV) WATCOM="$(WATCOM)"                                \
+         INCLUDE="$(WATCOM)/h:$(WATCOM)/h/os2:$${WATCOM_PDC_INCLUDE:-.}"      \
+          PATH="$(WATCOM)/$(WATBIN):$${PATH:?}" $(WCL386)                     \
+           -bcl=OS2V2 -UDOS -DUNIX=1 -3r -mf -fpi @gos2.lkr -k32767 -s        \
+            $(WATDBG) -D_TIMESPEC_DEFINED -zp2 -j -fe=$(OUT)os2p.exe          \
+             $(WGFLAGS) $(SRC) $${WATCOM_PDC_LIBRARY:-} &&                    \
               $(RM) -f "./g.o" 2> /dev/null
 
 ###############################################################################
@@ -400,17 +442,17 @@ ifneq ($(V),1)
 endif # !V
 	-@$(VERBOSE); $(STRIP) $(STRARGS)    $(OUT) 2> /dev/null || $(TRUE)
 	-@$(VERBOSE); $(STRIP) $(STRARGS) -s $(OUT) 2> /dev/null || $(TRUE)
-	-@$(VERBOSE); $(STRIP) $(STRARGS) -R .gnu.build.attributes   \
-                                          -R .note.gnu.build-id      \
-                                          -R .note.gnu.property      \
-                                          -R .got                    \
-                                          -R .eh_frame               \
-                                          -R .eh_frame_hdr           \
-                                          -R .gnu.version            \
-                                          -R .comment                \
-                                          -R .SUNW_ctf               \
-                                          -R .jcr                    \
-                                          -R .note.netbsd.pax        \
+	-@$(VERBOSE); $(STRIP) $(STRARGS) -R .gnu.build.attributes            \
+                                          -R .note.gnu.build-id               \
+                                          -R .note.gnu.property               \
+                                          -R .got                             \
+                                          -R .eh_frame                        \
+                                          -R .eh_frame_hdr                    \
+                                          -R .gnu.version                     \
+                                          -R .comment                         \
+                                          -R .SUNW_ctf                        \
+                                          -R .jcr                             \
+                                          -R .note.netbsd.pax                 \
                                    $(OUT) 2> /dev/null || $(TRUE)
 	-@$(VERBOSE); $(SSTRIP) -z $(OUT) 2> /dev/null || $(TRUE)
 

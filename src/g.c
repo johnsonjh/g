@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "4.7.4-dev (2022-05-10)"
+#define VERSION_STRING     "4.7.4-dev (2022-05-16)"
 
 #ifdef DOS
 # define UNIX              0
@@ -80,11 +80,11 @@ extern unsigned _stklen = 32767;
 #endif  /* if DOS */
 
 #if ASM86
-# define B_SIZE  2
-# define B_COLS h_inc
+# define B_SIZE   2
+# define B_COLS   h_inc
 #else  /* if ASM86 */
-# define B_SIZE  1
-# define B_COLS COLS
+# define B_SIZE   1
+# define B_COLS   COLS
 #endif  /* if ASM86 */
 
 #ifdef _AIX
@@ -135,6 +135,9 @@ extern unsigned _stklen = 32767;
 # define OMIT_MMAP   1
 #endif  /* ifdef __DJGPP__ */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
@@ -143,14 +146,11 @@ extern unsigned _stklen = 32767;
 # include <signal.h>
 #endif  /* if !defined(OMIT_SIGNAL) */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) )
 # include <io.h>
-#else
+#else  /* if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) ) */
 # include <unistd.h>
 #endif  /* if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) ) */
 
@@ -171,6 +171,13 @@ extern unsigned _stklen = 32767;
 #endif  /* if UNIX */
 
 #undef open
+
+#if DUMA
+# undef DUMA
+# define DUMA 1
+# include <duma.h>
+#endif  /* if DUMA */
+
 #undef lines
 #undef rows
 #undef cols
@@ -312,7 +319,7 @@ case 'F'
 /* length of temp strings */
 
 #define STR_LEN 2048
-typedef char string[STR_LEN];
+typedef char string[STR_LEN + 64];
 
 /* history, del/ins record stacks */
 
@@ -534,7 +541,7 @@ extern void  bios_wait(   void   );
 #  ifndef __DJGPP__
 #   if defined(__BORLANDC__) || defined(_MSC_VER)
 #    include <bios.h>
-#   else
+#   else  /* if defined(__BORLANDC__) || defined(_MSC_VER) */
 #    include <i86.h>
 #   endif  /* if defined(__BORLANDC__) || defined(_MSC_VER) */
 #  endif  /* ifndef __DJGPP__ */
@@ -1053,6 +1060,9 @@ void napms(const unsigned long);
 #  ifdef _HPUX_SOURCE
 #   include <curses_colr/curses.h>
 #  else  /* ifdef _HPUX_SOURCE  */
+#   ifndef _BITS_WCHAR_H
+#    define _BITS_WCHAR_H 1  /* workaround pcc */
+#   endif  /* ifndef _BITS_WCHAR_H */
 #   include <curses.h>
 #  endif  /* ifdef _HPUX_SOURCE */
 # endif  /* ifndef LINE_G */
@@ -1083,14 +1093,25 @@ rgetc(void)
 
 #  ifndef COLOUR
 #   ifdef COLOR_PAIR
-#    define COLOUR 1
+#    define COLOUR  1
 #   else  /* ifdef COLOR_PAIR  */
-#    define COLOUR 0
+#    define COLOUR  0
 #   endif  /* ifdef COLOR_PAIR */
 #  endif  /* ifndef COLOUR */
 # endif  /* ifndef LINE_G */
 
 #endif  /* if DOS */
+
+#ifdef COLS
+# if COLS > 80
+#  define PVMAXCOL  COLS
+# endif  /* if COLS > 80 */
+# undef PVMAXCOL
+#endif  /* ifdef COLS */
+
+#ifndef PVMAXCOL
+# define PVMAXCOL   74
+#endif  /* ifndef PVMAXCOL */
 
 /* Manifests for the Screen Editor */
 
@@ -1392,18 +1413,6 @@ void Exit(void);
 private
 void Drive(const int);
 
-#if 0
-# if defined(__WATCOMC__) && !defined(__OS2__)
-#  pragma aux main     aborts;
-#  pragma aux Quit     aborts;
-#  pragma aux Exit     aborts;
-#  pragma aux g_err    aborts;
-#  pragma aux g_intr   aborts;
-#  pragma aux se_error aborts;
-#  pragma aux _exit    aborts;
-# endif  /* if defined(__WATCOMC__) && !defined(__OS2__) */
-#endif  /* 0 */
-
 #define FBSTR       \
   private           \
   const byte near
@@ -1467,7 +1476,7 @@ near se_fin1[]    = "(unchanged) ",
 #endif  /* ifndef LINE_G */
 near se_fcom1[]   = "TR\177%s\177",
 #ifndef LINE_G
-near se_hit[]     = "\r\n[Enter to Continue] ",
+near se_hit[]     = "\r\n[Return to Continue] ",
 near let_col[]    = ":",
 #endif  /* ifndef LINE_G */
 near empty[]      = "",
@@ -2383,9 +2392,13 @@ getvec(const size_t len)
   if (p == NULL)
     {
       term();
-      say("\rOut of core\r");
-      _exit(1);
+      say("\rFATAL: Out of core, aborting edit.\r\n");
+      abort();
     }
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
 
   return p;
 }
@@ -2395,6 +2408,10 @@ void
 rlsevec(void *const ptr)
 {
   free(ptr);
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
 }
 
 /*
@@ -2532,6 +2549,11 @@ private
 void
 free_page(PAGE_PTR *const cp)
 {
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
+
   *(byte **)cp->base = v_free_list;
   v_free_list = cp->base;
 }
@@ -2545,6 +2567,10 @@ void
 clear_pages(UNIT csc fp)
 {
   PAGE_PTR *pp;
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
 
   for (pp = fp->list; pp->base != NULL; ++pp)
     {
@@ -2565,6 +2591,10 @@ new_page(void)
 {
   byte *ad = v_free_list;
 
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
+
   if (ad != NULL)
     {
       v_free_list = *(byte **)ad;
@@ -2578,7 +2608,7 @@ new_page(void)
           static int warned = 0;
           if (!warned++)
             {
-              inform("WARNING: Low on memory!");
+              inform("Warning: Low on memory!");
             }
 
           page_list = page_list_end;
@@ -2590,6 +2620,11 @@ new_page(void)
 
   ad = (byte *)page_list;
   page_list += PPP;
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
+
   return ad;
 }
 
@@ -2634,6 +2669,11 @@ get_pt(const int len)
     }
 
   page_list += len;
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
+
   return ad;
 }
 
@@ -2646,6 +2686,10 @@ void
 free_pt(UNIT *const fp)
 {
   PAGE_PTR *pp = fp->list, *const last = pp + fp->list_end;
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
 
   for (; pp < last; pp += PPP)
     {
@@ -3448,6 +3492,10 @@ vsreload(void)
 {
   PAGE_PTR *cp;
 
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
+
   for (cp = in_u->list + 1; cp->base != NULL; ++cp)
     {
       free_page(cp);
@@ -3570,11 +3618,14 @@ ckunit(UNIT csc fp)
   const word offset = fp->rec_start - cp->base;
 
   assert(PAGE_SIZE < BLOCK_SIZE);
-# if TINY_G
+# ifndef DUMA
+#  if TINY_G
   assert(sizeof ( PAGE_PTR ) == 10);
-# else  /* if TINY_G */
+#  else  /* if TINY_G */
   assert(sizeof ( PAGE_PTR ) == 12);
-# endif  /* if TINY_G */
+#  endif  /* if TINY_G */
+# endif  /* ifndef DUMA */
+
   if (fp->read)
     {
       assert(fp->page < fp->eof_page);
@@ -3690,7 +3741,7 @@ void
 g_err(const int code, char csc ptr)
 {
   VERB opt;
-  char buf[256];
+  char buf[2080];
 
   err_print(buf, code, ptr);
 
@@ -4553,15 +4604,19 @@ Quit(void)
   if (lon)
 #if UNIX
     {
-      say("Edit abandoned.");
+      say("Edit abandoned.     ");
     }
 
 #else  /* if UNIX  */
     {
-      putstr("Edit abandoned.");
+      putstr("Edit abandoned.     ");
     }
 #endif  /* if UNIX */
+#ifdef DUMA
   _exit(0);
+#else  /* ifdef DUMA */
+  exit(0);
+#endif  /* ifdef DUMA */
 }
 
 /*
@@ -4767,7 +4822,7 @@ printable(char *p, int len)
 
 private
 void
-n_print(char csc line, int len, const int arrowed)
+n_print(char csc line, int len, const long arrowed)
 {
   string buf;
   char *p;
@@ -4785,7 +4840,7 @@ n_print(char csc line, int len, const int arrowed)
     }
 
   p = mcmovelr(buf, arrowed ? ">>" : "  ");
-  (void)movelrz(p, line, len);
+  (void)movelrz( p, line, len );
   printable(p, len);
   say(buf);
 }
@@ -5670,7 +5725,11 @@ g_intr(int sig)
 #  endif  /* if !defined(OMIT_POPEN) */
 
   term();
+#  ifdef DUMA
   _exit(1);
+#  else  /* ifdef DUMA */
+  exit(1);
+#  endif  /* ifdef DUMA */
 # endif  /* if DOS */
 #endif  /* ifndef __MINGW32__ */
 }
@@ -6976,7 +7035,7 @@ private
 void
 print_val(void)
 {
-  char oline[200], rstr[50], astr[20], *p;
+  char oline[126 + PVMAXCOL], rstr[50], astr[20], *p;
   int len;
 
   putstr("==>  ");
@@ -7021,7 +7080,7 @@ print_val(void)
         itoh(val),
         astr,
         rstr);
-      if (len > 74)
+      if (len > PVMAXCOL)
         {
           len = sprintf(
             oline,
@@ -7033,7 +7092,7 @@ print_val(void)
             rstr);
         }
 
-      if (len > 74)
+      if (len > PVMAXCOL)
         {
           (void)sprintf(
                   oline, "Oct: %lo,  Dec: %ld,  Hex: %s",
@@ -8132,7 +8191,7 @@ Create(const char *s)
   MACRO *m;
   int arg_count, i;
   char csc erp = s;
-  char name[MAC_NAME_LEN + 1], subs[3], subs_ch;
+  char name[MAC_NAME_LEN + 32], subs[3], subs_ch;
 
   /* get macro name from command */
 
@@ -8867,7 +8926,9 @@ short curs_row, curs_col;
 private
 chtype *near v_base = (chtype *)0xb8000000;
 #   define call_bios int86
-#  else
+#  else  /* if ( TINY_G && !defined(WCL386) )
+             || ( FULL_G && defined(__WATCOMC__) && DOS && !defined(WCL386) )
+             || ( DOS && defined(_MSC_VER) ) */
 private
 chtype *v_base = (chtype *)0xb8000;
 #   define call_bios int386
@@ -9352,7 +9413,7 @@ void
 disp_template(void)
 {
   int i, len;
-  char buf[4];
+  char buf[16];
 
 # if ASM86
   chtype *p = t_base;
@@ -12432,7 +12493,8 @@ private
 void
 search(const int value)
 {
-  string buf, rhs, find_com, rep_com;
+  char buf[STR_LEN + 1], rhs[STR_LEN + 1];
+  char find_com[STR_LEN + 128], rep_com[8 + STR_LEN * 2];
   int rc, rel, neg, iter = NO, nextl = 0, line, sop;
   const char *p;
 
@@ -12644,7 +12706,8 @@ rwx_file(const int value)
 {
   int sop = YES;
   char optc;
-  string com, nlines;
+  char com[STR_LEN * 3];
+  string nlines;
   FNAME fname;
 
   switch (value)
@@ -13219,6 +13282,10 @@ void
 free_prog(VERB_LIST *const ptr)
 {
   VERB *p = ptr->prog, *last;
+
+#if DUMA
+  DUMA_CHECKALL();
+#endif  /* if DUMA */
 
   do
     {
@@ -14570,13 +14637,17 @@ Exit(void)
       (void)fprintf(vdu, ps_name, ft_out, out_fname);
       print_size( vstell(out_u) );
 #if UNIX
-      say("Edit Finished.");
+      say("Edit completed.     ");
 #else  /* if UNIX */
-      putstr("Edit Finished.");
+      putstr("Edit completed.     ");
 #endif  /* if UNIX */
     }
 
+#ifdef DUMA
   _exit(0);
+#else  /* ifdef DUMA */
+  exit(0);
+#endif  /* ifdef DUMA */
 }
 
 /*
@@ -15056,7 +15127,7 @@ verb(VERB csc v)
 
       Screen_ed();
       pop_com_stack(&com_stack);
-#else
+#else  /* ifndef LINE_G */
       fprintf(vdu, "\nScreen editor unavailable.\nCulprit: %c\n\n",
               (char)v->comm);
 #endif  /* ifndef LINE_G */
@@ -15080,7 +15151,7 @@ verb(VERB csc v)
 # else  /* if TINY_G */
       Help(v);
 # endif  /* if TINY_G */
-#else
+#else  /* if LINE_G */
       fprintf(vdu, "\nHelp unavailable.\nCulprit: %c\n\n",
               (char)v->comm);
 #endif  /* ifndef TINY_G */
@@ -15715,6 +15786,21 @@ main(int i, char csc * argv)
   PAGE_PTR *cp;
   char cvstring[255];
 
+#if DUMA
+# ifdef DUMA_EXPLICIT_INIT
+  duma_init();
+# endif  /* ifdef DUMA_EXPLICIT_INIT */
+# ifndef DEBUG
+#  define DUMA_FILL_VAL 0x00
+# else  /* ifndef DEBUG */
+#  define DUMA_FILL_VAL 0xfe
+# endif  /* ifndef DEBUG */
+  DUMA_SET_FILL(DUMA_FILL_VAL);
+# ifdef DUMA_MIN_ALIGNMENT
+  DUMA_SET_ALIGNMENT(DUMA_MIN_ALIGNMENT);
+# endif  /* ifdef DUMA_MIN_ALIGNMENT */
+#endif  /* if DUMA */
+
   (void)cvstring;
   i = 0;  /* scan .argtype */
   while ( ( p = *++argv ) != NULL )
@@ -15749,10 +15835,10 @@ main(int i, char csc * argv)
             case 'V':  /* display version */
 #ifdef LINE_G
               fprintf(vdu, "Line-mode G ");
-#else
+#else  /* ifdef LINE_G */
 # if TINY_G
               fprintf(vdu, "Tiny G ");
-# else
+# else  /* if TINY_G */
               fprintf(vdu, "G ");
 # endif  /* if TINY_G */
 #endif  /* ifdef LINE_G */
@@ -15764,7 +15850,7 @@ main(int i, char csc * argv)
                        curses_version() );
 # if DOS
               putstr(
-# else  /* if DOS  */
+# else  /* if DOS */
               say(
 # endif  /* if DOS */
                 cvstring);
@@ -15776,7 +15862,11 @@ main(int i, char csc * argv)
 # endif  /* if DOS */
                 VERSION_STRING);
 #endif  /* if defined(NCURSES_VERSION) || defined(PDCURSES) */
+#ifdef DUMA
               _exit(0);
+#else  /* ifdef DUMA */
+              exit(0);
+#endif  /* ifdef DUMA */
 
             case 'C':  /* initial command */
               ++p;
@@ -15800,10 +15890,14 @@ main(int i, char csc * argv)
         {
 #ifndef LINE_G
           say("Usage: g [ -rscbv ] [ file [ newfile ] ]");
-#else
+#else  /* ifndef LINE_G */
           say("Usage: g [ -rcbv ] [ file [ newfile ] ]");
 #endif  /* ifndef LINE_G */
+#ifdef DUMA
           _exit(1);
+#else  /* ifdef DUMA */
+          exit(1);
+#endif  /* ifdef DUMA */
         }
 
       files[i++] = p;
