@@ -1390,8 +1390,10 @@ void Xit(VERB csc);
 private
 void term(void);
 
+#ifndef LINE_G
 private
 void message(char csc);
+#endif  /* ifndef LINE_G */
 
 private
 void inform(char csc);
@@ -3517,7 +3519,6 @@ vsreload(void)
 
 /* check integrity of primary files */
 
-# ifndef LINE_G
 private
 void
 ckpage(UNIT csc fp, PAGE_PTR csc cp)
@@ -3569,9 +3570,7 @@ ckpage(UNIT csc fp, PAGE_PTR csc cp)
   assert(rec == end_rec + 1);
   assert(p == cp->base + ep);
 }
-# endif  /* ifndef LINE_G */
 
-# ifndef LINE_G
 private
 void
 cklinked(UNIT csc fp, PAGE_PTR csc cp)
@@ -3608,7 +3607,6 @@ cklinked(UNIT csc fp, PAGE_PTR csc cp)
       assert(cp->end_pos == 0 || lp->end_pos == 0);
     }
 }
-# endif  /* ifndef LINE_G */
 
 private
 void
