@@ -6,6 +6,31 @@
 
 ###############################################################################
 #
+#  Building G with GNU Make 3.81:
+#
+#  * The following options affecting compilation may be set in the shell
+#    environment or on the make command-line, for example, `make OPTION=1`:
+#
+#    *        `CC`: Overrides default C compiler selection, e.g. `CC=clang`
+#    *     `LTO=1`: Enables link-time optimization
+#    *     `LGC=1`: Enables link-time garbage collection (reducing binary size)
+#    *  `OPTFLAGS`: Overrides default optimization flags, e.g. `OPTFLAGS=-Oz`
+#    *       `V=1`: Enables verbose compilation messages
+#    *   `NOSSP=1`: Disables `FORTIFY_SOURCE` and compiler stack protections
+#    *  `STATIC=1`: Attempt statically linking all required libraries
+#    *    `DUMA=1`: Enables support for the *DUMA* memory debugging library
+#    * `DSTATIC=1`: Attempt statically linking *DUMA* library (needs GNU ld)
+#    *   `DEBUG=1`: Enables debugging code (for development or troubleshooting)
+#    *  `LINE_G=1`: Builds only the line-mode editor (no curses library needed)
+#    *  `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
+#    *  `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
+#    * `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
+#    *  `COLOUR=0`: Disables colours (required for some older curses libraries)
+#
+###############################################################################
+
+###############################################################################
+#
 #  Building G for legacy systems:
 #
 #  * Commodore Amiga UNIX (AMIX):
@@ -42,11 +67,11 @@
 #  * DOS (Borland C 5.02, 8086):
 #     bcc -1- -2- -3- -DDOS=1 -UUNIX -Os -ml -a2 -d g.c
 #
-#  * DOS (Microsoft C/C++ 7.0/8.00a, 8086):
+#  * DOS (Microsoft C/C++ 7.00b/8.00a, MSVC 1.52c, 8086):
 #     cl /Gs /Gy -DDOS=1 -UUNIX /AL /Os /G0 /c G.C
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
-#   Options:
+#   Definitions for compiling G:
 #
 #   *  `-DDEBUG=1`  Enables debugging code (for development or troubleshooting)
 #   * `-DLINE_G=1`  Builds only the line-mode editor (no curses library needed)
@@ -144,7 +169,11 @@ ifdef DUMA
   NOSSP          = 1
   CFLAGS        += -DDUMA=1
   WGFLAGS       += -DDUMA=1
-  DUMALIB       += -lduma
+  ifdef DSTATIC
+    DUMALIB     += -l:libduma.a
+  else # DSTATIC
+    DUMALIB     += -lduma
+  endif # !DSTATIC
 endif # DUMA
 
 ###############################################################################
