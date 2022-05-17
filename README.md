@@ -43,13 +43,16 @@ text editor and calculator, with macro facility.
 - **_`G`_** can operate as either a line editor or as a visual screen
   editor, similar to `ex`/`vi` on _UNIX_ systems.
 
-- The **_`G`_** language uses a conceptually simple (_yet quite clever!_)
-  two-file transcription (_copy_/_edit_) paradigm, which is transparent for
-  the casual screen editor user.
+- The **_`G`_** language uses a conceptually simple two-file transcription
+  (_copy_/_edit_) paradigm, which is transparent for the casual screen
+  editor user.
 
 - **_`G`_** is designed to be as efficient as possible, to be highly
   portable, and to enable manipulation of large files. **_`G`_** has a very
-  fast startup time and needs little memory compared to other applications.
+  fast startup time and needs little memory compared to other applications -
+  approximately **130 KiB** for the standard featured build, **112 KiB** for
+  the *Tiny* build, and **32 KiB** for the *line-mode* editor (measured using
+  *Massif* on AMD64 GNU/Linux system).
 
 - **_`G`_** provides a more flexible way of viewing files than commands
   like `TYPE`, `pg`, or `more`.
