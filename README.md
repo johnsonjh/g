@@ -89,24 +89,24 @@ text editor and calculator, with macro facility.
   are available, e.g. `clean`, `strip`, etc.
 - The following options affecting compilation may be set in the shell
   environment or on the `make` command-line, for example, `make OPTION=1`:
-  *        `CC`: Overrides default C compiler selection, e.g. `CC=clang`
-  *     `LTO=1`: Enables link-time optimization
-  *     `LGC=1`: Enables link-time garbage collection (reducing binary size)
-  *  `OPTFLAGS`: Overrides default optimization flags, e.g. `OPTFLAGS=-Oz`
-  *       `V=1`: Enables verbose compilation messages
-  *   `NOSSP=1`: Disables `FORTIFY_SOURCE` and compiler stack protections
-  *  `STATIC=1`: Attempt statically linking all required libraries
-  *    `DUMA=1`: Enables support for the *DUMA* memory debugging library
-  * `DSTATIC=1`: Attempt statically linking *DUMA* library (needs GNU ld)
-  *   `DEBUG=1`: Enables debugging code (for development or troubleshooting)
-  *  `LINE_G=1`: Builds only the line-mode editor (no curses library needed)
-  *  `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
-  *  `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
+  * `CC`: Overrides default C compiler selection, e.g. `CC=clang`
+  * `LTO=1`: Enables link-time optimization
+  * `LGC=1`: Enables link-time garbage collection (reducing binary size)
+  * `OPTFLAGS`: Overrides default optimization flags, e.g. `OPTFLAGS=-Oz`
+  * `V=1`: Enables verbose compilation messages
+  * `NOSSP=1`: Disables `FORTIFY_SOURCE` and compiler stack protections
+  * `STATIC=1`: Attempt statically linking all required libraries
+  * `DUMA=1`: Enables support for the *DUMA* memory debugging library
+  * `DSTATIC=1`: Attempt statically linking *DUMA* library (*needs GNU ld*)
+  * `DEBUG=1`: Enables debugging code (for development or troubleshooting)
+  * `LINE_G=1`: Builds only the line-mode editor (no curses library needed)
+  * `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
+  * `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
   * `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
-  *  `COLOUR=0`: Disables colours (required for some older curses libraries)
+  * `COLOUR=0`: Disables colours (required for some older curses libraries)
 - Some less common options may be undocumented, and some option combinations
   are not valid. For some practical examples and complete details, review the
-  [GNUmakefile](/src/GNUmakefile) and [x](/test/build.sh).
+  [GNUmakefile](/src/GNUmakefile) and [test script](/test/build.sh).
 
 ### Legacy
 
