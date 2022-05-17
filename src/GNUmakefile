@@ -121,9 +121,9 @@ DJGPP_CCOMP     ?= gcc
 DJGPP_ECOFF     ?= exe2coff
 ifdef DEBUG
    DJGPP_STRIP  ?= size
-else
+else # DEBUG
    DJGPP_STRIP  ?= strip
-endif # DEBUG
+endif # !DEBUG
 
 ###############################################################################
 # CWSDPMI configuration
@@ -226,7 +226,7 @@ endif # !COLOUR
 
 ifdef V
   VERBOSE        = set -x
-else
+else # V
   VERBOSE        = set +x
 endif # !V
 
@@ -240,25 +240,25 @@ endif # DEBUG
 ifdef NOSSP
   ifeq ($(_SUNOS),1)
     STACK_FLAGS ?= -U_FORTIFY_SOURCE
-  else
+  else # _SUNOS
     STACK_FLAGS ?= -fno-stack-protector -U_FORTIFY_SOURCE
-  endif # _SUNOS
-else
+  endif # !_SUNOS
+else # NOSSP
   STACK_FLAGS   ?= -D_FORTIFY_SOURCE=2
-endif # NOSSP
+endif # !NOSSP
 
 ###############################################################################
 # Debugging
 
 ifdef DEBUG
   CFLAGS        += -Wall -Wextra $(STACK_FLAGS) -DDEBUG=1 -g
-else
+else # DEBUG
   ifeq ($(_SUNOS),1)
     OPTFLAGS    ?= -O -xspace
   endif # _SUNOS
   OPTFLAGS      ?= -Os
   CFLAGS        += $(OPTFLAGS) $(STACK_FLAGS) -Wno-int-to-pointer-cast
-endif # DEBUG
+endif # !DEBUG
 
 ###############################################################################
 # Link-time optimization and garbage collection
@@ -287,13 +287,13 @@ ifeq ($(OS),aix)
       CURSESLIB := -lncurses
     endif # !CURSESLIB
   endif # !LINE_G
-else
+else # aix
   ifndef LINE_G
     ifeq ($(CURSESLIB),)
       CURSESLIB ?= -lcurses
     endif # !CURSESLIB
   endif # !LINE_G
-endif # aix
+endif # !aix
 ifndef NOCURSES
   ifndef LINE_G
     LDFLAGS     += $(CURSESLIB)
@@ -332,7 +332,7 @@ OUT             ?= g
 
 ifdef DUMA
   LDFLAGS       += $(DUMALIB)
-endif
+endif # DUMA
 
 .PHONY: all
 .NOTPARALLEL: all g
@@ -349,9 +349,9 @@ endif # !V
 
 ifdef DEBUG
    WATDBG        = -d3 -DDEBUG=1
-else
+else # DEBUG
    WATDBG        = -d0 -s -zq -oabls
-endif # DEBUG
+endif # !DEBUG
 
 ###############################################################################
 # OpenWatcom Compilation: 16-bit DOS, 8086 (Real mode)
