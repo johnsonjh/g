@@ -5684,20 +5684,17 @@ g_intr(int sig)
 #  ifdef SIGTSTP
     case SIGTSTP:
       return;
-      break;
 #  endif  /* ifdef SIGTSTP */
 
 #  ifdef SIGWINCH
     case SIGWINCH:
       return;
-      break;
 #  endif  /* ifdef SIGWINCH */
 
     case SIGQUIT:
     case SIGINT:
       g_err(BREAK_KEY, empty);
       abort();
-      break;
 
     case SIGUSR2:
 #  ifndef LINE_G
@@ -5709,12 +5706,10 @@ g_intr(int sig)
 
       Exit();
       abort();
-      break;
 
     case SIGUSR1:
       Quit();
       abort();
-      break;
 
     case SIGTERM:
       reason = "user termination";
@@ -13041,10 +13036,6 @@ void
 se_execute(const ACTION act, const int value)
 {
   last_offset = offset;
-#if FULL_G
-  VERB opts;
-  opts.o1.q = 0;
-#endif  /* if FULL_G */
 
   switch (act)
     {
@@ -15150,8 +15141,8 @@ verb(VERB csc v)
       Screen_ed();
       pop_com_stack(&com_stack);
 #else  /* ifndef LINE_G */
-      fprintf(vdu, "\nScreen editor unavailable.\nCulprit: %c\n\n",
-              (char)v->comm);
+      (void)fprintf(vdu, "\nScreen editor unavailable.\nCulprit: %c\n\n",
+                    (char)v->comm);
 #endif  /* ifndef LINE_G */
       break;
 
@@ -15174,8 +15165,8 @@ verb(VERB csc v)
       Help(v);
 # endif  /* if TINY_G */
 #else  /* if LINE_G */
-      fprintf(vdu, "\nHelp unavailable.\nCulprit: %c\n\n",
-              (char)v->comm);
+      (void)fprintf(vdu, "\nHelp unavailable.\nCulprit: %c\n\n",
+                    (char)v->comm);
 #endif  /* ifndef TINY_G */
     }
 
@@ -15617,15 +15608,19 @@ Drive(const int level)
       (void)signal(SIGUSR1, g_intr);
       (void)signal(SIGUSR2, g_intr);
 
+#ifdef SIGTSTP
       if (signal(SIGTSTP, g_intr) == SIG_IGN)
         {
           (void)signal(SIGTSTP, SIG_IGN);
         }
+#endif  /* ifdef SIGTSTP */
 
+#ifdef SIGWINCH
       if (signal(SIGWINCH, g_intr) == SIG_IGN)
         {
           (void)signal(SIGWINCH, SIG_IGN);
         }
+#endif  /* ifdef SIGWINCH */
 
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
@@ -15866,20 +15861,20 @@ main(int i, char csc * argv)
 
             case 'V':  /* display version */
 #ifdef LINE_G
-              fprintf(vdu, "Line-mode G ");
+              (void)fprintf(vdu, "Line-mode G ");
 #else  /* ifdef LINE_G */
 # if TINY_G
-              fprintf(vdu, "Tiny G ");
+              (void)fprintf(vdu, "Tiny G ");
 # else  /* if TINY_G */
-              fprintf(vdu, "G ");
+              (void)fprintf(vdu, "G ");
 # endif  /* if TINY_G */
 #endif  /* ifdef LINE_G */
 
 #if ( defined(NCURSES_VERSION) || defined(PDCURSES) ) && !defined(LINE_G)
-              sprintf( cvstring,
-                       "%s using %s",
-                       VERSION_STRING,
-                       curses_version() );
+              (void)sprintf( cvstring,
+                            "%s using %s",
+                            VERSION_STRING,
+                            curses_version() );
 # if DOS
               putstr(
 # else  /* if DOS */

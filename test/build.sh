@@ -7,6 +7,11 @@ set -eu
 
 ##############################################################################
 
+export OPTFLAGS="-Oz" ;                                                      \
+export FPTFLAGS="-Os"
+
+##############################################################################
+
 # shellcheck disable=SC3040
 (set -o pipefail > /dev/null 2>&1) &&                                        \
     set -o pipefail
@@ -140,7 +145,7 @@ unset MAKEFLAGS > /dev/null 2>&1 || true
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline;                \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="gcc"                                                                 \
-    NOSSP=1 LTO=1 LGC=1 V=1                                                  \
+    LTO=1 LGC=1 V=1                                                          \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
@@ -154,8 +159,7 @@ test -f "g" && du -k "g" |                                                   \
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Tiny, Native:"; blline;          \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="gcc"                                                                 \
-    TINY=1                                                                   \
-    NOSSP=1 LTO=1 LGC=1 V=1                                                  \
+    TINY_G=1 LTO=1 LGC=1 V=1                                                 \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
@@ -169,8 +173,7 @@ test -f "g" && du -k "g" |                                                   \
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Line-mode, Native:"; blline;     \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="gcc"                                                                 \
-    LINE_G=1                                                                 \
-    NOSSP=1 LTO=1 LGC=1 V=1                                                  \
+    LINE_G=1 LTO=1 LGC=1 V=1                                                 \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
@@ -184,8 +187,7 @@ test -f "g" && du -k "g" |                                                   \
 { hrline; printf '%s\n' "## ${MYOS:?}: Clang, Native:"; blline;              \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="clang"                                                               \
-    OPTFLAGS="-Oz"                                                           \
-    NOSSP=1 LTO=1 LGC=1 V=1                                                  \
+    LTO=1 LGC=1 V=1                                                          \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
@@ -199,7 +201,7 @@ test -f "g" && du -k "g" |                                                   \
 { hrline; printf '%s\n' "## ${MYOS:?}: PCC, Native:"; blline;                \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="pcc"                                                                 \
-    CFLAGS="-D_BITS_WCHAR_H=1"                                               \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
     NOSSP=1 LTO=1 LGC=1 V=1                                                  \
     ${MAKE:?} 2>&1 |                                                         \
         grep -v -e 'warning: cannot inline but '                             \
@@ -217,7 +219,7 @@ test -f "g" && du -k "g" |                                                   \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="suncc"                                                               \
     PATH="/opt/oracle/developerstudio-latest/bin:${PATH:?}"                  \
-    _SUNOS=1 NOSSP=1 V=1                                                     \
+    _SUNOS=1 V=1                                                             \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
@@ -371,9 +373,10 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} clean > /dev/null &&                                               \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
     CFLAGS="-I${MYPDCURSES:?}"                                               \
     CURSESLIB="${MYPDCURSES:?}/dos/pdcurses.a"                               \
-    FULL_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
+    FULL_G=1 LTO=1 LGC=1 V=1 PKGCFG="false"                                  \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -401,9 +404,10 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} clean > /dev/null &&                                               \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
     CFLAGS="-I${MYPDCURSES:?}"                                               \
     CURSESLIB="${MYPDCURSES:?}/dos/pdcurses.a"                               \
-    TINY_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
+    TINY_G=1 LTO=1 LGC=1 V=1 PKGCFG="false"                                  \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -417,7 +421,8 @@ test -f "g386.exe" && du -k "g386.exe" |                                     \
 
 { hrline; printf '%s\n' "## DOS: DJGPP, Line, Protected:"; blline;           \
 ${MAKE:?} clean > /dev/null &&                                               \
-    LINE_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
+    LINE_G=1 LTO=1 LGC=1 V=1 PKGCFG="false"                                  \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -435,11 +440,11 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="${IA16GCC_CCOMP:?}"                                                  \
     CFLAGS="-march=i8086 -mregparmcall                                       \
             -mcmodel=medium -DDOS=1 -UUNIX"                                  \
-    OPTFLAGS="-Os"                                                           \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
     CURSESLIB=""                                                             \
     LDFLAGS="-li86"                                                          \
     OUT="g.exe"                                                              \
-    NOSSP=1 V=1 PKGCFG="false"                                               \
+    V=1 PKGCFG="false"                                                       \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
@@ -459,7 +464,7 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CURSESLIB=""                                                             \
     LDFLAGS="-li86"                                                          \
     OUT="g.exe"                                                              \
-    LINE_G=1 NOSSP=1 V=1 PKGCFG="false"                                      \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
@@ -475,11 +480,10 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="${IA16GCC_CCOMP:?}"                                                  \
     CFLAGS="-march=i8086 -mregparmcall                                       \
             -mcmodel=medium -UDOS -DUNIX=1"                                  \
-    OPTFLAGS="-Os"                                                           \
+    OPTFLAGS="${FPTFLAGS:?}"                                                 \
     CURSESLIB="-lpdcurses -li86"                                             \
     OUT="g.exe"                                                              \
-    TINY=1                                                                   \
-    NOSSP=1 V=1 PKGCFG="false"                                               \
+    TINY_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
