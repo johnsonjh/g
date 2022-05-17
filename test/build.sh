@@ -172,7 +172,7 @@ test -f "g" && du -k "g" |                                                   \
 
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Line-mode, Native:"; blline;     \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    CC="gcc -ftrivial-auto-var-init+zero"                                    \
+    CC="gcc -ftrivial-auto-var-init=zero"                                    \
     LINE_G=1 LTO=1 LGC=1 V=1                                                 \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
