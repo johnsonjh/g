@@ -727,9 +727,12 @@ typedef struct _unit
 
 #define PPB 8                         /* Pages per allocation unit */
 #define PP_SIZE  sizeof ( PAGE_PTR )  /*   should be 10/12 bytes   */
-#ifndef PAGE_SIZE
-# define PAGE_SIZE ( PP_SIZE * PPP )  /* Data page size */
-#endif  /* ifndef PAGE_SIZE */
+
+#ifdef PAGE_SIZE
+# undef PAGE_SIZE
+#endif  /* ifdef PAGE_SIZE */
+#define PAGE_SIZE ( PP_SIZE * PPP )   /* Data page size */
+
 #define PBLOCK         ( PPP * PPB )  /* Sizeof allocation unit */
 
 /* Max length of text line */
@@ -3624,13 +3627,6 @@ ckunit(UNIT csc fp)
   const word offset = fp->rec_start - cp->base;
 
   assert(PAGE_SIZE < BLOCK_SIZE);
-# ifndef DUMA
-#  if TINY_G
-  assert(sizeof ( PAGE_PTR ) == 10);
-#  else  /* if TINY_G */
-  assert(sizeof ( PAGE_PTR ) == 12);
-#  endif  /* if TINY_G */
-# endif  /* ifndef DUMA */
 
   if (fp->read)
     {
@@ -4612,7 +4608,6 @@ Quit(void)
     {
       say("Edit abandoned.     ");
     }
-
 #else  /* if UNIX  */
     {
       putstr("Edit abandoned.     ");
