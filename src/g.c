@@ -5686,17 +5686,23 @@ g_intr(int sig)
 # else  /* if DOS || defined(OMIT_SIGNAL) */
   switch (sig)
     {
-#  ifndef LINE_G
-#   ifdef SIGWINCH
-    case SIGWINCH:
+#  ifdef SIGTSTP
+    case SIGTSTP:
+      return;
       break;
-#   endif  /* ifdef SIGHUP */
-#  endif  /* ifndef LINE_G */
+#  endif  /* ifdef SIGTSTP */
+
+#  ifdef SIGWINCH
+    case SIGWINCH:
+      return;
+      break;
+#  endif  /* ifdef SIGWINCH */
 
     case SIGQUIT:
     case SIGINT:
       g_err(BREAK_KEY, empty);
-      /* fallthrough */
+      abort();
+      break;
 
     case SIGUSR2:
 #  ifndef LINE_G
@@ -5708,12 +5714,12 @@ g_intr(int sig)
 
       Exit();
       abort();
-      /* fallthrough */
+      break;
 
     case SIGUSR1:
       Quit();
       abort();
-      /* fallthrough */
+      break;
 
     case SIGTERM:
       reason = "user termination";
@@ -5722,13 +5728,17 @@ g_intr(int sig)
     case SIGPIPE:
       errno = EPIPE;
       g_err(FILE_ERROR, NULL);
-      /* fallthrough */
+      break;
 
     case SIGHUP:
       reason = "comms failure";
     }
-  (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n", in_fname, out_fname, reason);
+
+  (void)sprintf(mess, "g ( %s ==> %s ) %s.\n\n",
+          in_fname, out_fname, reason);
+
   save_work(mess);
+
 #  if !defined(OMIT_POPEN)
   if ( ( fp = popen("exec mail $LOGNAME", write_only) ) != NULL )
     {
@@ -15127,6 +15137,7 @@ verb(VERB csc v)
 
     case ':':
 #ifndef LINE_G
+fsed:
       if (fscreen)
         {
           save_jbuf(set_err, save_err);
@@ -15607,6 +15618,16 @@ Drive(const int level)
       (void)signal(SIGTERM, g_intr);
       (void)signal(SIGUSR1, g_intr);
       (void)signal(SIGUSR2, g_intr);
+
+      if (signal(SIGTSTP, g_intr) == SIG_IGN)
+        {
+          (void)signal(SIGTSTP, SIG_IGN);
+        }
+
+      if (signal(SIGWINCH, g_intr) == SIG_IGN)
+        {
+          (void)signal(SIGWINCH, SIG_IGN);
+        }
 
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
