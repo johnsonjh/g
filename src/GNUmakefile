@@ -25,6 +25,7 @@
 #    *  `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
 #    *  `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
 #    * `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
+#    *  `NOCURSES`: Disables linking curses (often used for cross compilations)
 #    *  `COLOUR=0`: Disables colours (required for some older curses libraries)
 #
 ###############################################################################
@@ -154,12 +155,16 @@ endif # STATIC
 ###############################################################################
 # pkg-config configuration
 
-ifndef LINE_G
-  CFLAGS        += $(shell $(PKGCFG) ncurses --cflags $(STFLAGS) 2> /dev/null \
+ifndef NOCURSES
+  ifndef LINE_G
+    ifndef CURSESLIB
+      CFLAGS    += $(shell $(PKGCFG) ncurses --cflags $(STFLAGS) 2> /dev/null \
                          || $(PKGCFG) curses --cflags $(STFLAGS) 2> /dev/null)
-  CURSESLIB     += $(shell $(PKGCFG) ncurses --libs $(STFLAGS) 2> /dev/null   \
+      CURSESLIB += $(shell $(PKGCFG) ncurses --libs $(STFLAGS) 2> /dev/null   \
                          || $(PKGCFG) curses --libs $(STFLAGS) 2> /dev/null)
-endif # !LINE_G
+    endif #!CURSESLIB
+  endif # !LINE_G
+endif # !NOCURSES
 
 ###############################################################################
 # DUMA build
@@ -188,6 +193,7 @@ endif # FULL_G
 # Line-mode build
 
 ifdef LINE_G
+  NOCURSES       = 1
   TINY           =
   CFLAGS        += -DLINE_G=1
   WGFLAGS       += -DLINE_G=1
@@ -284,13 +290,15 @@ ifeq ($(OS),aix)
 else
   ifndef LINE_G
     ifeq ($(CURSESLIB),)
-      CURSESLIB := -lcurses
+      CURSESLIB ?= -lcurses
     endif # !CURSESLIB
   endif # !LINE_G
 endif # aix
-ifndef LINE_G
-  LDFLAGS       += $(CURSESLIB)
-endif # !LINE_G
+ifndef NOCURSES
+  ifndef LINE_G
+    LDFLAGS     += $(CURSESLIB)
+  endif # !LINE_G
+endif # !NOCURSES
 
 ###############################################################################
 # Architectures

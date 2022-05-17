@@ -230,7 +230,7 @@ test -f "g" && du -k "g" |                                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 8086:"; blline;                 \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    V=1                                                                      \
+    V=1 PKGCFG="false"                                                       \
     ${MAKE:?} "g86" 2>&1 |                                                   \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -244,7 +244,7 @@ test -f "g86.exe" && du -k "g86.exe" |                                       \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, Full, 8086:"; blline;           \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    FULL_G=1 V=1                                                             \
+    FULL_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g86" 2>&1 |                                                   \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -258,7 +258,7 @@ test -f "g86.exe" && du -k "g86.exe" |                                       \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, Line, 8086:"; blline;           \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    LINE_G=1 V=1                                                             \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g86" 2>&1 |                                                   \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -272,7 +272,7 @@ test -f "g86.exe" && du -k "g86.exe" |                                       \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Real mode:"; blline;       \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    V=1                                                                      \
+    V=1 PKGCFG="false"                                                       \
     ${MAKE:?} "g386r" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -286,7 +286,7 @@ test -f "g386r.exe" && du -k "g386r.exe" |                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Full, Real mode:"; blline; \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    FULL_G=1 V=1                                                             \
+    FULL_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g386r" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -300,7 +300,7 @@ test -f "g386r.exe" && du -k "g386r.exe" |                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Line, Real mode:"; blline; \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    LINE_G=1 V=1                                                             \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g386r" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -315,7 +315,7 @@ test -f "g386r.exe" && du -k "g386r.exe" |                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Protected:"; blline;       \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    V=1                                                                      \
+    V=1 PKGCFG="false"                                                       \
     ${MAKE:?} "g386p" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -329,7 +329,7 @@ test -f "g386p.exe" && du -k "g386p.exe" |                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Full, Protected:"; blline; \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    FULL_G=1 V=1                                                             \
+    FULL_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g386p" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -343,7 +343,7 @@ test -f "g386p.exe" && du -k "g386p.exe" |                                   \
 
 { hrline; printf '%s\n' "## DOS: OpenWatcom, 386, Line, Protected:"; blline; \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    LINE_G=1 V=1                                                             \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
     ${MAKE:?} "g386p" 2>&1 |                                                 \
         sed 's/ PATH=.\+ w/ w/' |                                            \
             grep -v '^+ rm ' | eval "${REDACT:?}" ;                          \
@@ -373,7 +373,7 @@ printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} clean > /dev/null &&                                               \
     CFLAGS="-I${MYPDCURSES:?}"                                               \
     CURSESLIB="${MYPDCURSES:?}/dos/pdcurses.a"                               \
-    FULL_G=1 NOSSP=1 LTO=1 LGC=1 V=1                                         \
+    FULL_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -403,7 +403,7 @@ printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} clean > /dev/null &&                                               \
     CFLAGS="-I${MYPDCURSES:?}"                                               \
     CURSESLIB="${MYPDCURSES:?}/dos/pdcurses.a"                               \
-    TINY_G=1 NOSSP=1 LTO=1 LGC=1 V=1                                         \
+    TINY_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -417,7 +417,7 @@ test -f "g386.exe" && du -k "g386.exe" |                                     \
 
 { hrline; printf '%s\n' "## DOS: DJGPP, Line, Protected:"; blline;           \
 ${MAKE:?} clean > /dev/null &&                                               \
-    LINE_G=1 NOSSP=1 LTO=1 LGC=1 V=1                                         \
+    LINE_G=1 NOSSP=1 LTO=1 LGC=1 V=1 PKGCFG="false"                          \
     ${MAKE:?} "g386" 2>&1 |                                                  \
         grep -v '^+ rm ' |                                                   \
         grep -v '^+ chmod ' | eval "${REDACT:?}" ;                           \
@@ -439,7 +439,7 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CURSESLIB=""                                                             \
     LDFLAGS="-li86"                                                          \
     OUT="g.exe"                                                              \
-    NOSSP=1 V=1                                                              \
+    NOSSP=1 V=1 PKGCFG="false"                                               \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
@@ -459,7 +459,7 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CURSESLIB=""                                                             \
     LDFLAGS="-li86"                                                          \
     OUT="g.exe"                                                              \
-    LINE_G=1 NOSSP=1 V=1                                                     \
+    LINE_G=1 NOSSP=1 V=1 PKGCFG="false"                                      \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
@@ -479,7 +479,7 @@ ${MAKE:?} "clean" > /dev/null &&                                             \
     CURSESLIB="-lpdcurses -li86"                                             \
     OUT="g.exe"                                                              \
     TINY=1                                                                   \
-    NOSSP=1 V=1                                                              \
+    NOSSP=1 V=1 PKGCFG="false"                                               \
     ${MAKE:?} 2>&1 | eval "${REDACT:?}" ;                                    \
 test -f "g.exe" && du -k "g.exe" |                                           \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
@@ -506,7 +506,7 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    FULL_G=1 V=1                                                             \
+    FULL_G=1 V=1 PKGCFG="false"                                              \
     WATCOM_PDC_INCLUDE="${MYPDCURSES:?}"                                     \
     WATCOM_PDC_LIBRARY="${MYPDCURSES:?}/os2/pdcurses.lib"                    \
    ${MAKE:?} "g286p" 2>&1 |                                                  \
@@ -537,7 +537,7 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    TINY_G=1 V=1                                                             \
+    TINY_G=1 V=1 PKGCFG="false"                                              \
     WATCOM_PDC_INCLUDE="${MYPDCURSES:?}"                                     \
     WATCOM_PDC_LIBRARY="${MYPDCURSES:?}/os2/pdcurses.lib"                    \
    ${MAKE:?} "g286p" 2>&1 |                                                  \
@@ -554,7 +554,7 @@ test -f "g286p.exe" && du -k "g286p.exe" |                                   \
 { hrline; printf '%s\n'                                                      \
     "## OS/2: OpenWatcom, 286, Line, Protected:"; blline;                    \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    LINE_G=1 V=1                                                             \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
    ${MAKE:?} "g286p" 2>&1 |                                                  \
        sed 's/ PATH=.\+ w/ w/' |                                             \
            grep -v '^+ rm ' | eval "${REDACT:?}" ;                           \
@@ -583,7 +583,7 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    FULL_G=1 V=1                                                             \
+    FULL_G=1 V=1 PKGCFG="false"                                              \
     WATCOM_PDC_INCLUDE="${MYPDCURSES:?}"                                     \
     WATCOM_PDC_LIBRARY="${MYPDCURSES:?}/os2/pdcurses.lib"                    \
    ${MAKE:?} "gos2p" 2>&1 |                                                  \
@@ -614,7 +614,7 @@ rm -f "${PDC_BUILD_LOG:?}" 2> /dev/null                                      \
     || true ;                                                                \
 printf '%s\n' "OK." ;                                                        \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    TINY_G=1 V=1                                                             \
+    TINY_G=1 V=1 PKGCFG="false"                                              \
     WATCOM_PDC_INCLUDE="${MYPDCURSES:?}"                                     \
     WATCOM_PDC_LIBRARY="${MYPDCURSES:?}/os2/pdcurses.lib"                    \
    ${MAKE:?} "gos2p" 2>&1 |                                                  \
@@ -631,7 +631,7 @@ test -f "gos2p.exe" && du -k "gos2p.exe" |                                   \
 { hrline; printf                                                             \
     '%s\n' "## OS/2: OpenWatcom, 386, Line, Protected:"; blline;             \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    LINE_G=1 V=1                                                             \
+    LINE_G=1 V=1 PKGCFG="false"                                              \
    ${MAKE:?} "gos2p" 2>&1 |                                                  \
        sed 's/ PATH=.\+ w/ w/' |                                             \
            grep -v '^+ rm ' | eval "${REDACT:?}" ;                           \
