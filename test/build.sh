@@ -144,7 +144,7 @@ unset MAKEFLAGS > /dev/null 2>&1 || true
 
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Native:"; blline;                \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    CC="gcc"                                                                 \
+    CC="gcc -ftrivial-auto-var-init=zero"                                    \
     LTO=1 LGC=1 V=1                                                          \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
@@ -158,7 +158,7 @@ test -f "g" && du -k "g" |                                                   \
 
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Tiny, Native:"; blline;          \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    CC="gcc"                                                                 \
+    CC="gcc -ftrivial-auto-var-init=zero"                                    \
     TINY_G=1 LTO=1 LGC=1 V=1                                                 \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
@@ -172,7 +172,7 @@ test -f "g" && du -k "g" |                                                   \
 
 { hrline; printf '%s\n' "## ${MYOS:?}: GCC, Line-mode, Native:"; blline;     \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    CC="gcc"                                                                 \
+    CC="gcc -ftrivial-auto-var-init+zero"                                    \
     LINE_G=1 LTO=1 LGC=1 V=1                                                 \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
