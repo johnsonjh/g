@@ -49,10 +49,10 @@ text editor and calculator, with macro facility.
 
 - **_`G`_** is designed to be as efficient as possible, to be highly
   portable, and to enable manipulation of large files. **_`G`_** has a very
-  fast startup time and needs little memory compared to other applications -
-  approximately **130 KiB** for the standard featured build, **112 KiB** for
-  the *Tiny* build, and **32 KiB** for the *line-mode* editor (measured using
-  *Massif* on AMD64 GNU/Linux system).
+  fast startup time and utilizes little memory compared to other applications -
+  approximately **130 KiB** for the standard build, **112 KiB** for the *Tiny*
+  build, and **32 KiB** for the *line-mode* editor (*measured using the*
+  **Massif** *heap profiler on an AMD64 system running GNU/Linux*).
 
 - **_`G`_** provides a more flexible way of viewing files than commands
   like `TYPE`, `pg`, or `more`.
