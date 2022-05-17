@@ -579,8 +579,8 @@ wfill(void *s, const short v, int len)
               (void *)( (char *)( a ) + n ) )
 
 # define cwmovelr(a, b, n)                         \
-    memcpy( (void *)( a ),                         \
-            (const void *)( b ), ( n ) )
+    memmove( (void *)( a ),                        \
+             (const void *)( b ), ( n ) )
 
 # define cwmmovelr(a, b, n)                        \
     ( memcpy( (void *)( a ),                       \
@@ -613,7 +613,8 @@ wfill(void *s, const short v, int len)
 
 # define mzmovelr(a, b)                            \
     ( strcpy( (void *)a,                           \
-              (const void *)b), get_eos(a) )
+              (const void *)b),                    \
+      get_eos(a) )
 
 # define cmovelr(a, b)                             \
     strcat( (void *)( a ),                         \
@@ -2104,7 +2105,7 @@ private
 int near l_margin = 0, near r_margin = 68, near line_spacing = 0;
 
 private
-int near adjust = YES  /*, overhang = NO */;
+int near adjust = YES;
 
 private
 int near left_right, near t_margin;
