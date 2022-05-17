@@ -15132,7 +15132,6 @@ verb(VERB csc v)
 
     case ':':
 #ifndef LINE_G
-fsed:
       if (fscreen)
         {
           save_jbuf(set_err, save_err);
