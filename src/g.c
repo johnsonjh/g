@@ -5596,7 +5596,7 @@ wrapround(void)
 
   if (e_col)
     {
-      out_buff()  /* in case user added line to eof */;
+      out_buff();  /* in case user added line to eof */
     }
 
   vsreopen(temp = out_u);
@@ -13046,10 +13046,10 @@ void
 se_execute(const ACTION act, const int value)
 {
   last_offset = offset;
-#if FULL_G
+# if FULL_G
   VERB opts;
   opts.o1.q = 0;
-#endif  /* if FULL_G */
+# endif  /* if FULL_G */
 
   switch (act)
     {
