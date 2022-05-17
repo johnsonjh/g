@@ -3804,7 +3804,7 @@ private
 byte
 xtoc(char csc p)
 {
-  const char *p1, *p2;
+  const char *p1, *p2 = 0;
 
   if ( ( p1 = (const char *)memchr(hextrans, u_star(p), 16) ) == NULL
       || ( p2 = (const char *)memchr(hextrans, u_star(p + 1), 16) ) == NULL)
