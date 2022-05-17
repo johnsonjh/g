@@ -2112,7 +2112,7 @@ private
 int near l_margin = 0, near r_margin = 68, near line_spacing = 0;
 
 private
-int near adjust = YES  /*, overhang = NO */;
+int near adjust = YES;
 
 private
 int near left_right, near t_margin;
@@ -13046,6 +13046,10 @@ void
 se_execute(const ACTION act, const int value)
 {
   last_offset = offset;
+#if FULL_G
+  VERB opts;
+  opts.o1.q = 0;
+#endif  /* if FULL_G */
 
   switch (act)
     {
@@ -13114,11 +13118,7 @@ se_execute(const ACTION act, const int value)
 #  if TINY_G
       Help();
 #  else  /* if TINY_G */
-      {
-        VERB opts;
-        opts.o1.q = 0;
-        Help(&opts);
-      }
+      Help(&opts);
 #  endif  /* if TINY_G */
       init();
       break;
