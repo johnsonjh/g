@@ -5686,6 +5686,13 @@ g_intr(int sig)
 # else  /* if DOS || defined(OMIT_SIGNAL) */
   switch (sig)
     {
+#  ifndef LINE_G
+#   ifdef SIGWINCH
+    case SIGWINCH:
+      break;
+#   endif  /* ifdef SIGHUP */
+#  endif  /* ifndef LINE_G */
+
     case SIGQUIT:
     case SIGINT:
       g_err(BREAK_KEY, empty);
