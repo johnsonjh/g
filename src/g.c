@@ -613,7 +613,8 @@ wfill(void *s, const short v, int len)
 
 # define mzmovelr(a, b)                            \
     ( strcpy( (void *)a,                           \
-              (const void *)b), get_eos(a) )
+              (const void *)b ),                   \
+      get_eos(a) )
 
 # define cmovelr(a, b)                             \
     strcat( (void *)( a ),                         \
@@ -625,9 +626,9 @@ wfill(void *s, const short v, int len)
       get_eos(a) )
 
 # define wmovelr(a, b, n)                          \
-    memcpy( (void *)( a ),                         \
-            (const void *)( b ),                   \
-            ( n ) << 1 )
+    memmove( (void *)( a ),                        \
+             (const void *)( b ),                  \
+             ( n ) << 1 )
 
 # define wmoverl(a, b, n)                          \
     memmove( (void *)( a ),                        \
