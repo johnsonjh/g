@@ -1980,8 +1980,15 @@ FSTR ph[] = "{..=#}# p{..}";
 
 /* Write out a C main() prototype */
 
-FSTR cmain[] = "i///#include <stdio.h>//#include <stdlib.h>\
-////int//main( int argc, char ** argv )//    {////    }/////@";
+FSTR cmain[] = "i///\
+#include <stdio.h>//\
+#include <stdlib.h>\
+////\
+int//\
+main( int argc, char ** argv )//\
+{//\
+//\
+}/////@";
 
 /* Execute system command */
 
