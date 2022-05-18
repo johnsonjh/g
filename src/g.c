@@ -10742,7 +10742,7 @@ se_join(const int del)
 
   (void)movelr(bs + j_col, nbs, len);
 
-  disp_rest();
+  (void)disp_rest();
   refresh();
 
   if (nrow != TEMPLATE_LINE)
@@ -11829,10 +11829,10 @@ split_line(const int margin)
             }
 
           (void)move(n_row, 0);
-          scroll_down(n_row);
+          (void)scroll_down(n_row);
           (void)set_eor(n_row, len + margin);
           (void)movelr(mspace_fill(s_buf[n_row], margin), text, len);
-          disp_row(n_row);
+          (void)disp_row(n_row);
         }
 
       if (len > 0)
