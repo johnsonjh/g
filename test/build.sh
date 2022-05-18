@@ -219,7 +219,7 @@ test -f "g" && du -k "g" |                                                   \
 ${MAKE:?} "clean" > /dev/null &&                                             \
     CC="suncc"                                                               \
     PATH="/opt/oracle/developerstudio-latest/bin:${PATH:?}"                  \
-    _SUNOS=1 V=1                                                             \
+    NOSSP=1 _SUNOS=1 V=1                                                     \
     ${MAKE:?} 2>&1 ;                                                         \
 ${MAKE:?} "strip" > /dev/null 2>&1 ;                                         \
 test -f "g" && du -k "g" |                                                   \
