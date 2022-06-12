@@ -482,11 +482,9 @@ endif # !V
 	-@$(VERBOSE); $(STRIP) $(STRARGS) -R .gnu.build.attributes            \
                                           -R .note.gnu.build-id               \
                                           -R .note.gnu.property               \
-                                          -R .got                             \
                                           -R .eh_frame                        \
                                           -R .eh_frame_hdr                    \
-                                          -R .gnu.version                     \
-                                          -R .comment                         \
+                                          -R .got                             \
                                           -R .SUNW_ctf                        \
                                           -R .jcr                             \
                                           -R .note.netbsd.pax                 \
