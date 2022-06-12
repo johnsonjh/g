@@ -15608,19 +15608,19 @@ Drive(const int level)
       (void)signal(SIGUSR1, g_intr);
       (void)signal(SIGUSR2, g_intr);
 
-#ifdef SIGTSTP
+#  ifdef SIGTSTP
       if (signal(SIGTSTP, g_intr) == SIG_IGN)
         {
           (void)signal(SIGTSTP, SIG_IGN);
         }
-#endif  /* ifdef SIGTSTP */
+#  endif  /* ifdef SIGTSTP */
 
-#ifdef SIGWINCH
+#  ifdef SIGWINCH
       if (signal(SIGWINCH, g_intr) == SIG_IGN)
         {
           (void)signal(SIGWINCH, SIG_IGN);
         }
-#endif  /* ifdef SIGWINCH */
+#  endif  /* ifdef SIGWINCH */
 
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
