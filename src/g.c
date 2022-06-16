@@ -1450,7 +1450,11 @@ near se_lcom[]   = ".tss:DIR /W:"
 ;
 # if defined(__MINGW32__) || defined(DOS_CONSOLE)
 FSTR_LIST save_dirs[] = {                    
-  ".", "~", "/usr/preserve", "/tmp", NULL
+     ".",
+     "~",
+     "/usr/preserve",
+     "/tmp",
+     NULL
 };                                                        
 # endif  /* if defined(__MINGW32__) || defined(DOS_CONSOLE) */
 #else  /* if DOS || DOS_CONSOLE */
@@ -1463,14 +1467,20 @@ FSTR shell_var[]  = "SHELL",
      write_only[] = "w",
      tty_file[]   = "/dev/tty";
 FSTR_LIST save_dirs[] = {
-  ".", "~", "/usr/preserve", "/tmp", NULL
+     ".",
+     "~",
+     "/usr/preserve",
+     "/tmp",
+     NULL
 };
 #endif  /* if DOS || DOS_CONSOLE */
 
 /* standard file names */
 
-FSTR si_file[] = "stdin", near so_file[] = "stdout", near t_fname[] = "*TMP*",
-near no_file[] = "*NEW*";
+FSTR   si_file[] = "stdin",
+  near so_file[] = "stdout",
+  near t_fname[] = "*TMP*",
+  near no_file[] = "*NEW*";
 
 /* strings used more than once */
 
