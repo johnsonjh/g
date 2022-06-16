@@ -14,28 +14,28 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING     "4.7.4-dev (2022-05-17)"
+#define VERSION_STRING      "4.7.4-dev (2022-06-16)"
 
 #ifdef DOS
-# define UNIX              0
+# define UNIX               0
 # ifdef __BORLANDC__
 extern unsigned _stacklen = 32767;
-extern unsigned _stklen = 32767;
+extern unsigned _stklen =   32767;
 # endif  /* ifdef __BORLANDC__ */
 #else  /* ifdef DOS */
-# define UNIX              1
-# define DOS               0
+# define UNIX               1
+# define DOS                0
 # ifndef _DARWIN_C_SOURCE
-#  define _DARWIN_C_SOURCE 1
+#  define _DARWIN_C_SOURCE  1
 # endif  /* ifndef _DARWIN_C_SOURCE */
 # ifndef _XOPEN_SOURCE
-#  define _XOPEN_SOURCE    1
+#  define _XOPEN_SOURCE     1
 # endif  /* ifndef _XOPEN_SOURCE */
 # ifndef _POSIX_SOURCE
-#  define _POSIX_SOURCE    1
+#  define _POSIX_SOURCE     1
 # endif  /* ifndef _POSIX_SOURCE */
 # ifdef __NetBSD__
-#  define _NETBSD_SOURCE   1
+#  define _NETBSD_SOURCE    1
 # endif  /* ifdef __NetBSD__ */
 #endif  /* ifdef DOS */
 
