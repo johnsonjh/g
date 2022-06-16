@@ -1,7 +1,7 @@
 # G
 
-**_`G`_** is a portable, general purpose, programmable
-text editor and calculator, with macro facility.
+**_`G`_** is a portable general purpose programmable
+text editor with calculator and macro facility.
 
 ## Table of Contents
 
