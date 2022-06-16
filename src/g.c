@@ -3764,9 +3764,9 @@ g_err(const int code, char csc ptr)
     {
       (void)sprintf(
         get_eos(buf),
-        "\nCalled from edit file %s (line %d)",
+        "\nCalled from edit file %s (line %u)",
         c_list->name,
-        vstell(comm_u) );
+        (unsigned)vstell(comm_u) );
       c_comm_u();
     }
 
