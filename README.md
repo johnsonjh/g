@@ -110,7 +110,7 @@ text editor with calculator and macro facility.
 - Some less common options may be undocumented, and some option combinations
   may not be valid.
 - For practical examples and complete details, review the
-  [GNUmakefile](/src/GNUmakefile) and [test script](/test/build.sh).
+  [`GNUmakefile`](/src/GNUmakefile) and [test script](/test/build.sh).
 
 ### Legacy
 
