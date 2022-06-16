@@ -1342,7 +1342,9 @@ typedef enum
  *  Cursor to start of line.
  */
 
-#define c_sol() col = offset = 0
+#ifndef LINE_G
+# define c_sol() col = offset = 0
+#endif  /* ifndef LINE_G */
 
 /*
  *  Sync screen & file
