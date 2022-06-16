@@ -50,9 +50,9 @@ text editor and calculator, with macro facility.
 - **_`G`_** is designed to be as efficient as possible, to be highly
   portable, and to enable manipulation of large files. **_`G`_** has a very
   fast startup time and utilizes little memory compared to other applications -
-  approximately **130 KiB** for the standard build, **112 KiB** for the *Tiny*
-  build, and **32 KiB** for the *line-mode* editor (*measured using the*
-  **Massif** *heap profiler on an AMD64 system running GNU/Linux*).
+  approximately **130 KiB** for the standard build, **112 KiB** for the _Tiny_
+  build, and **32 KiB** for the _line-mode_ editor (_measured using the_
+  **Massif** _heap profiler on an AMD64 system running GNU/Linux_).
 
 - **_`G`_** provides a more flexible way of viewing files than commands
   like `TYPE`, `pg`, or `more`.
@@ -86,27 +86,27 @@ text editor and calculator, with macro facility.
 
 #### Building
 
-- Most users of *UNIX*-like operating systems can build **_`G`_** by simply
+- Most users of _UNIX_-like operating systems can build **_`G`_** by simply
   invoking **GNU** **Make** (usually available as `gmake` or `make`) without
   any additional options or configuration. The conventional `make` targets
   are available, e.g. `clean`, `strip`, etc.
 - The following options affecting compilation may be set in the shell
   environment or on the `make` command-line, for example, `make OPTION=1`:
-  * `CC`: Overrides default C compiler selection, e.g. `CC=clang`
-  * `LTO=1`: Enables link-time optimization
-  * `LGC=1`: Enables link-time garbage collection (reducing binary size)
-  * `OPTFLAGS`: Overrides default optimization flags, e.g. `OPTFLAGS=-Oz`
-  * `V=1`: Enables verbose compilation messages
-  * `NOSSP=1`: Disables `FORTIFY_SOURCE` and compiler stack protections
-  * `STATIC=1`: Attempt statically linking all required libraries
-  * `DUMA=1`: Enables support for the *DUMA* memory debugging library
-  * `DSTATIC=1`: Attempt statically linking *DUMA* library (*needs GNU ld*)
-  * `DEBUG=1`: Enables debugging code (for development or troubleshooting)
-  * `LINE_G=1`: Builds only the line-mode editor (no curses library needed)
-  * `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
-  * `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
-  * `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
-  * `COLOUR=0`: Disables colours (required for some older curses libraries)
+  - `CC`: Overrides default C compiler selection, e.g. `CC=clang`
+  - `LTO=1`: Enables link-time optimization
+  - `LGC=1`: Enables link-time garbage collection (reducing binary size)
+  - `OPTFLAGS`: Overrides default optimization flags, e.g. `OPTFLAGS=-Oz`
+  - `V=1`: Enables verbose compilation messages
+  - `NOSSP=1`: Disables `FORTIFY_SOURCE` and compiler stack protections
+  - `STATIC=1`: Attempt statically linking all required libraries
+  - `DUMA=1`: Enables support for the _DUMA_ memory debugging library
+  - `DSTATIC=1`: Attempt statically linking _DUMA_ library (_needs GNU ld_)
+  - `DEBUG=1`: Enables debugging code (for development or troubleshooting)
+  - `LINE_G=1`: Builds only the line-mode editor (no curses library needed)
+  - `TINY_G=1`: Disables features for lower memory use (default for PC DOS)
+  - `FULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
+  - `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
+  - `COLOUR=0`: Disables colours (required for some older curses libraries)
 - Some less common options may be undocumented, and some option combinations
   may not be valid.
 - For practical examples and complete details, review the
