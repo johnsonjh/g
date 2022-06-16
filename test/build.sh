@@ -3,6 +3,17 @@
 # vi: filetype=sh:tabstop=4:tw=79:expandtab
 ##############################################################################
 
+##############################################################################
+#
+# Copyright (c) 2019-2022 Jeffrey H. Johnson <trnsz@pobox.com>
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered "AS-IS",
+# without any warranty.
+#
+##############################################################################
+
 set -eu
 
 ##############################################################################

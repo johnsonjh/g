@@ -27,7 +27,7 @@
 - Ported to Borland Turbo C with PDCurses 2.0 on DOS, Dec 1993
 - Ported to Coherent 3.2 (64K I/D, CE only)
 - Ported to Pyramid (MIPS 4400), DC/OSx 1.1, Mar 1994
-- Support for non-ANSI C comilers removed, now back in a single file
+- Support for non-ANSI C compilers removed, now back in a single file
 - Ported to Solaris 2.3, Mar 1994
 - Ported to Watcom C/C++ 10 on DOS, Aug 1994
 - Ported to HP-UX (PA-RISC), Jan 1995

@@ -6,6 +6,17 @@
 
 ###############################################################################
 #
+# Copyright (c) 2019-2022 Jeffrey H. Johnson <trnsz@pobox.com>
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered "AS-IS",
+# without any warranty.
+#
+###############################################################################
+
+###############################################################################
+#
 #  Building G with GNU Make 3.81:
 #
 #  * The following options affecting compilation may be set in the shell
