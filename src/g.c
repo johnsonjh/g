@@ -8946,7 +8946,7 @@ move_to(int line)
 private
 short curs_row, curs_col;
 
-#  if ( TINY_G && !defined(WCL386) )              \
+#  if ( TINY_G && !defined(WCL386) ) \
     || ( FULL_G && defined(__WATCOMC__) && DOS && !defined(WCL386) ) \
     || ( DOS && defined(_MSC_VER) )
 private
