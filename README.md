@@ -108,7 +108,8 @@ text editor and calculator, with macro facility.
   * `CURSESLIB`: Overrides curses library selection, e.g. `-lcurses -ltinfo`
   * `COLOUR=0`: Disables colours (required for some older curses libraries)
 - Some less common options may be undocumented, and some option combinations
-  are not valid. For some practical examples and complete details, review the
+  may not be valid.
+- For practical examples and complete details, review the
   [GNUmakefile](/src/GNUmakefile) and [test script](/test/build.sh).
 
 ### Legacy
