@@ -41,7 +41,7 @@ extern unsigned _stklen =   32767;
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__)
 # undef _POSIX_C_SOURCE
-# define _POSIX_C_SOURCE 200809L
+# define _POSIX_C_SOURCE    200809L
 #endif  /* if defined(__FreeBSD__) || defined(__OpenBSD__) */
 
 #undef NEVER
