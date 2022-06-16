@@ -731,9 +731,10 @@ typedef struct _unit
 #ifdef PAGE_SIZE
 # undef PAGE_SIZE
 #endif  /* ifdef PAGE_SIZE */
+
 #define PAGE_SIZE ( PP_SIZE * PPP )   /* Data page size */
 
-#define PBLOCK         ( PPP * PPB )  /* Sizeof allocation unit */
+#define PBLOCK        ( PPP * PPB )   /* Sizeof allocation unit */
 
 /* Max length of text line */
 
