@@ -77,8 +77,8 @@ text editor and calculator, with macro facility.
 - A **C** compiler is required. _Oracle_ **Developer Studio**, _LLVM_
   **Clang**, _AMD_ **AOCC**, _GNU_ **GCC**, _IBM_ **XLC**, _IBM_ **OpenXL**,
   _Intel_ **ICX**, _Intel_ **ICC**, **DJGPP**, **Microsoft C**, **MSVC**,
-  **Watcom C/C++**, **OpenWatcom V2**, **Borland C**, and **PCC** are
-  currently known to work.
+  _SGI_ **MIPSpro**, **Watcom C/C++**, **OpenWatcom V2**, **Borland C**, and
+  **PCC** are currently known to work.
 
 - The included `GNUmakefile` can be used if **GNU** **Make** (version 3.81
   or later) is available. **GNU** **Make** is helpful, but is not required
@@ -118,7 +118,7 @@ text editor and calculator, with macro facility.
   UNIX (AMIX), DG/UX, Honeywell GCOS/TSS, HP‑UX, IBM OS/2, ICL CDOS, ICL
   DRS/NX, JRG/Everex ESIX, Microsoft Xenix, MINIX, MWC Coherent, NCR SVR4
   MP‑RAS, Novell/SCO UnixWare, Pyramid DC/OSx, Reliant UNIX/SINIX, SCO
-  OpenServer, Sequent DYNIX, SunOS 3/4, Tulip SVR3, and DEC VAX/VMS.
+  OpenServer, Sequent DYNIX, SGI IRIX, SunOS 3/4, Tulip SVR3, and DEC VAX/VMS.
 
 - The [`GNUmakefile`](https://github.com/johnsonjh/g/blob/master/src/GNUmakefile)
   contains information relevant to building **_`G`_** on many of these older
