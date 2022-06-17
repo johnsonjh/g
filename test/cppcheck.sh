@@ -1,4 +1,17 @@
 #!/usr/bin/env sh
+# vi: filetype=sh:tabstop=8:tw=79:expandtab
+###############################################################################
+
+###############################################################################
+#
+# Copyright (c) 2019-2022 Jeffrey H. Johnson <trnsz@pobox.com>
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered "AS-IS",
+# without any warranty.
+#
+###############################################################################
 
 ${TEST:-test} "-f" "g.c" ||
   {
@@ -32,7 +45,9 @@ eval trap                                                \
 eval ${CPPCHECK:-cppcheck}                                           \
   "--force"                                                          \
   "--inline-suppr"                                                   \
+  "--max-ctu-depth=16"                                               \
   "--suppress=unknownMacro"                                          \
+  "--suppress=syntaxError:/usr/include/stdlib.h"                     \
   "--enable=warning,portability,performance,unusedFunction"          \
   "$( ${CC:-cc} "-E" "-Wp,-v" "-" < "/dev/null" 2>&1 |               \
       ${GREP:-grep} '^ \/' 2> "/dev/null" |                          \

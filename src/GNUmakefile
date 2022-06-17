@@ -86,8 +86,8 @@
 #   Definitions for compiling G:
 #
 #   * `-DDEBUG=1` : Enables debugging code (for development or troubleshooting)
-#   * `-DLINE_G=1`: Builds only the line-mode editor (no curses library needed)
 #   * `-DCOLOUR=0`: Disables colours (required for some older curses libraries)
+#   * `-DLINE_G=1`: Builds only the line-mode editor (no curses library needed)
 #   * `-DTINY_G=1`: Disables features for lower memory use (default on for DOS)
 #   * `-DFULL_G=1`: Overrides `TINY_G` default (enables a fully-featured build)
 #
@@ -532,10 +532,9 @@ endif # !V
 .PHONY: cppcheck
 cppcheck: g.c ../test/cppcheck.sh
 	@$(VERBOSE); $(TEST) -x "$$($(COMMAND) -v cppcheck 2> /dev/null)" ||  \
-          { $(PRINTF) '%s\n' "Error: No \"cppcheck\" found in PATH.";         \
-            exit 1; }
+          { $(PRINTF) '%s\n' "Error: No cppcheck found in PATH."; exit 1; }
 	@$(VERBOSE); export CC="$(CC)" && $(COMMAND) -p $(ENV)                \
-          PATH=\"$$($(COMMAND) -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"        \
+          PATH="$$($(COMMAND) -p $(ENV) $(GETCONF) PATH):$${PATH:?}"          \
             "sh" -c "../test/cppcheck.sh" 2>&1
  
 ###############################################################################

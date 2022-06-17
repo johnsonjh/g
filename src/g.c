@@ -2120,7 +2120,7 @@ const MACRO *near mac_list = mac_tab;  /* list of macros defined */
 private
 int near infile_recs;  /* saved number of old file recs for EQ */
 
-/* Environments for error trap returns */
+/* Environments for error trap returns. */
 
 private
 jmp_buf near set_err, near save_err;
@@ -2302,12 +2302,12 @@ UNIT *near in_u = &primary_in,  *near out_u  = \
                   &primary_out, *near comm_u = NULL,
                   *near trans_u = NULL;
 
-/* detect altered primary files */
+/* detect altered primary files. */
 
 private
 int near prim_changed = NO;
 
-/* no tab processing etc */
+/* no tab processing, etc. */
 
 private
 int near bin_mode = NO;
@@ -3241,7 +3241,7 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
 }
 
 /*
- *  Copy two files
+ *  Copy two files.
  */
 
 private
@@ -3549,7 +3549,7 @@ vsreload(void)
 # define IMMEDOK
 # include <assert.h>
 
-/* check integrity of primary files */
+/* check integrity of primary files. */
 
 private
 void
@@ -9087,6 +9087,7 @@ curs_getc(void)
 #  else  /* if ASM86 */
   {
     const ushort c = _bios_keybrd(_KEYBRD_READ);
+    /* cppcheck-suppress identicalInnerCondition */
     if (c & 0xFF)
       {
         return c & 0xFF;
@@ -11070,7 +11071,7 @@ int std_saved = NO,
 # endif  /* ifndef LINE_G */
 
 /*
- *  Save and redirect the standard files
+ *  Save and redirect the standard files.
  */
 
 # ifndef LINE_G
@@ -12949,6 +12950,7 @@ misc_ops(const int value)
       break;
 
     case 'P':  /* Print the file */
+      /* cppcheck-suppress wrongPrintfScanfArgNum */
       (void)sprintf(buf, se_pcom, in_fname);
       com = buf;
       start = -HFILE_LINE;
@@ -14801,7 +14803,7 @@ Window(void)
 
   if (start == 0)
     {
-      say("********* TOF *********");
+      say("************ TOF ************");
     }
 
   t_out.eof_rec = last;
@@ -14948,6 +14950,7 @@ List(VERB csc opts)
 
       if (lon)
         {
+          /* cppcheck-suppress identicalConditionAfterEarlyExit */
           if (g_eof)
             {
               if (f_list != NULL && f_list->disp == 'M')
@@ -15947,8 +15950,10 @@ main(int i, char csc * argv)
           exit(1);
 #endif  /* ifdef DUMA */
         }
-
-      files[i++] = p;
+      else
+        {
+          files[i++] = p;
+        }
     }
 
   switch (i)
