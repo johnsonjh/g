@@ -9090,6 +9090,7 @@ curs_getc(void)
     /* cppcheck-suppress identicalInnerCondition */
     if (c & 0xFF)
       {
+        /* cppcheck-suppress identicalInnerCondition */
         return c & 0xFF;
       }
 
@@ -13130,6 +13131,7 @@ se_execute(const ACTION act, const int value)
       {
         VERB opts;
         opts.o1.q = 0;
+        /* cppcheck-suppress ctuuninitvar */
         Help(&opts);
       }
 #  endif  /* if TINY_G */
