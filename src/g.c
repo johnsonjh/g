@@ -135,6 +135,12 @@ extern unsigned _stklen =   32767;
 # define OMIT_MMAP   1
 #endif  /* ifdef __DJGPP__ */
 
+#ifdef __CPPCHECK__
+# ifndef __LDBL_REDIR1_DECL
+#  define __LDBL_REDIR1_DECL(x,y)
+# endif  /* ifndef __LDBL_REDIR1_DECL */
+#endif  /* ifdef __CPPCHECK__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

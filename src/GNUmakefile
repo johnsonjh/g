@@ -99,12 +99,14 @@
 CAT             ?= cat
 CC              ?= cc
 CHMOD           ?= chmod
-ENV             ?= env
+COMMAND         := command
+ENV             := env
 GETCONF         ?= getconf
-MKTEMP          ?= mktemp
+M4              ?= m4
+PRINTF          ?= printf
+MKTEMP          ?= $(PRINTF) '%s' 'mkstemp(/tmp/gtmp.XXXXXX)' | $(M4) || exit 1
 LN              ?= ln
 PKGCFG          ?= pkg-config
-PRINTF          ?= printf
 RM              ?= rm -f
 SCRIPT          ?= script
 SSTRIP          ?= sstrip
@@ -315,8 +317,8 @@ endif # !NOCURSES
 # Architectures
 
 ifeq ($(OS),aix)
-  MAIXBITS      ?= $(shell command -p $(GETCONF) KERNEL_BITMODE 2> /dev/null  \
-                    || $(PRINTF) '%s' "32")
+  MAIXBITS      ?= $(shell $(COMMAND) -p $(GETCONF) KERNEL_BITMODE            \
+                     2> /dev/null || $(PRINTF) '%s' "32")
   ifneq (,$(findstring gcc,$(CC))) # gcc (GNU C)
     CFLAGS      += -maix$(MAIXBITS)
     LDFLAGS     += -maix$(MAIXBITS) -Wl,-b$(MAIXBITS)
@@ -525,7 +527,19 @@ endif # !V
 	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
 
 ###############################################################################
-# Tests
+# Cppcheck
+
+.PHONY: cppcheck
+cppcheck: g.c ../test/cppcheck.sh
+	@$(VERBOSE); $(TEST) -x "$$($(COMMAND) -v cppcheck 2> /dev/null)" ||  \
+          { $(PRINTF) '%s\n' "Error: No \"cppcheck\" found in PATH.";         \
+            exit 1; }
+	@$(VERBOSE); export CC="$(CC)" && $(COMMAND) -p $(ENV)                \
+          PATH=\"$$($(COMMAND) -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"        \
+            "sh" -c "../test/cppcheck.sh" 2>&1
+ 
+###############################################################################
+# Test
 
 # WARNING: GNU and Linux-isms abound; must be adaptated to your local system!
 
@@ -533,8 +547,8 @@ endif # !V
 test check: g.c ../test/build.sh
 	@$(VERBOSE); export BUILD_LOG="$$($(MKTEMP))" &&                      \
           $(TEST) -f "$${BUILD_LOG:?}" &&                                     \
-            $(SCRIPT) -q -e -f -c "command -p $(ENV)                          \
-              PATH=\"$$(command -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"       \
+            $(SCRIPT) -q -e -f -c "$(COMMAND) -p $(ENV)                       \
+              PATH=\"$$($(COMMAND) -p $(ENV) $(GETCONF) PATH):$${PATH:?}\"    \
                 \"sh\" -c \"../test/build.sh\" 2>&1" "$${BUILD_LOG:?}" && {   \
                   $(PRINTF) '%s\n' '## Tests completed successfully';         \
                       $(RM) "$${BUILD_LOG:?}"; } || {                         \
