@@ -3,3 +3,5 @@ g
 *.exe
 *.map
 *.err
+*.out
+compile_commands.json

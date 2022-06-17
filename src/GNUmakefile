@@ -108,6 +108,7 @@ MKTEMP          ?= $(PRINTF) '%s' 'mkstemp(/tmp/gtmp.XXXXXX)' | $(M4) || exit 1
 LN              ?= ln
 PKGCFG          ?= pkg-config
 RM              ?= rm -f
+RMDIR           ?= rmdir
 SCRIPT          ?= script
 SSTRIP          ?= sstrip
 STRIP           ?= strip
@@ -512,19 +513,21 @@ clean distclean:
 ifneq ($(V),1)
 	-@$(PRINTF) '\r\t\t$(RM):\t\t%s\n' "(output)" || $(TRUE)
 endif # !V
-	-@$(VERBOSE); $(RM) -f "./gt"             2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./gt.o"           2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./gt.exe"         2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)"         2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT).o"       2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT).exe"     2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT).err"     2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)86.exe"   2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)386.exe"  2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)286p.exe" 2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)os2p.exe" 2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)386p.exe" 2>/dev/null || $(TRUE)
-	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe" 2>/dev/null || $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt"               2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt.o"             2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./gt.exe"           2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)"           2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).o"         2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).exe"       2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT).err"       2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)86.exe"     2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386.exe"    2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)286p.exe"   2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)os2p.exe"   2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386p.exe"   2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "./$(OUT)386r.exe"   2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RM) -f "../cppcheck.out"/*  2> /dev/null  ||  $(TRUE)
+	-@$(VERBOSE); $(RMDIR) "../cppcheck.out"    2> /dev/null  ||  $(TRUE)
 
 ###############################################################################
 # Cppcheck

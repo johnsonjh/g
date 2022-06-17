@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# shellcheck disable=SC2086
 # vi: filetype=sh:tabstop=8:tw=79:expandtab
 ###############################################################################
 
@@ -41,9 +42,15 @@ eval trap                                                \
     EXIT                                                 \
       2> "/dev/null"
 
-# shellcheck disable=SC2086
-eval ${CPPCHECK:-cppcheck}                                           \
+${TEST:-test} -z "${HTMLOUT:-}" ||
+  {
+    XMLARGS="--xml --xml-version=2"
+    export XMLARGS
+  }
+
+eval ${CPPCHECK:-cppcheck} ${XMLARGS:-}                              \
   "--force"                                                          \
+  "--inconclusive"                                                   \
   "--inline-suppr"                                                   \
   "--max-ctu-depth=16"                                               \
   "--suppress=unknownMacro"                                          \
@@ -63,6 +70,23 @@ eval ${CPPCHECK:-cppcheck}                                           \
         ${PRINTF:-printf} '\n%s\n' "## Start of Cppcheck output" ;   \
           ${CAT:-cat} "${tmpfile:?}" 2> "/dev/null" ;                \
             ${PRINTF:-printf} '%s\n' "## End of Cppcheck output"
+
+${TEST:-test} -z "${HTMLOUT:-}" ||
+  {
+    ${MKDIR:-mkdir} "-p" "../cppcheck.out"  \
+      2> "/dev/null"
+    ${TEST:-test} -f "${tmpfile:?}" &&
+      ${TEST:-test} -d "../cppcheck.out" &&
+        {
+          ${RM:-rm} -f "../cppcheck.out"/*  \
+            2> "/dev/null"
+          ${CPPCHECK_HTMLREPORT:-cppcheck-htmlreport}  \
+            --source-dir="."                           \
+            --title="G"                                \
+            --file="${tmpfile:?}"                      \
+            --report-dir="../cppcheck.out"
+        }
+    }
 
 eval ${RM:-rm} "-f" "${tmpfile:?}"  \
   2> "/dev/null"
