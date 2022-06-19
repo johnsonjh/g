@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.4-dev (2022-06-17)"
+#define VERSION_STRING      "4.7.4-dev (2022-06-19)"
 
 #ifdef DOS
 # define UNIX               0
