@@ -2637,7 +2637,7 @@ new_page(void)
 
   if (page_list >= page_list_end)
     {
-      if ( ( page_list = (PAGE_PTR *)malloc(PBLOCK * PP_SIZE) ) == NULL)
+      if ( ( page_list = (PAGE_PTR *)malloc(PBLOCK * PP_SIZE) ) == NULL )
         {
           static int warned = 0;
           if (!warned++)
@@ -3496,7 +3496,7 @@ vsprimary(void)
   out_u->rec_start = in_u->list->base = in_u->rec_start;
   if (in_fname != no_file)
     {
-      if ( ( infile_recs = Disk_to_mem(in_fname, in_u, i_mode) ) == EOF)
+      if ( ( infile_recs = Disk_to_mem(in_fname, in_u, i_mode) ) == EOF )
         {
           in_fname = no_file;
         }
@@ -3828,7 +3828,7 @@ xtoc(char csc p)
   const char *p1, *p2 = 0;
 
   if ( ( p1 = (const char *)memchr(hextrans, u_star(p), 16) ) == NULL
-      || ( p2 = (const char *)memchr(hextrans, u_star(p + 1), 16) ) == NULL)
+      || ( p2 = (const char *)memchr(hextrans, u_star(p + 1), 16) ) == NULL )
     {
       g_err(HEX_INV, NULL);
     }
@@ -4598,7 +4598,7 @@ re_sub(const char *ep, char *const str)
         }
     }
 
-  if ( ( len = (int)( sp - str ) ) > s_save_len)
+  if ( ( len = (int)( sp - str ) ) > s_save_len )
     {
       if (s_save_len > 0)
         {
@@ -5383,7 +5383,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
 # if UNIX || !defined(OMIT_MMAP)
   f_len = lseek(fd, (off_t)0, SEEK_END);
   if ( ( f_p = mmap(NULL, f_len, PROT_READ, MAP_PRIVATE, fd, (off_t)0) )
-      != (caddr_t)-1)
+      != (caddr_t)-1 )
     {
       const char *start = f_p, *p, *const last = start + f_len;
       int len;
@@ -5446,7 +5446,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
           fmode = O_WRONLY | O_CREAT | O_APPEND;
         }
 
-      if ( ( fd = open(prep_name(fname), fmode, 0644) ) == -1)
+      if ( ( fd = open(prep_name(fname), fmode, 0644) ) == -1 )
         {
           return EOF;
         }
@@ -9820,7 +9820,7 @@ init(void)
       p = out_fname;
     }
 
-  if ( ( len = last - p ) > 15)
+  if ( ( len = last - p ) > 15 )
     {
       len = 15;
     }
@@ -13795,7 +13795,7 @@ block_insert(const word ch, const word header)
         g_err(EOF_INSERT, NULL);
       }
 
-    if ( ( e_col = strlen(e_buff) ) == 0)
+    if ( ( e_col = strlen(e_buff) ) == 0 )
       {
         return;
       }
