@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.4-dev (2022-06-19)"
+#define VERSION_STRING      "4.7.4-dev (2022-10-18)"
 
 #ifdef DOS
 # define UNIX               0
@@ -171,7 +171,9 @@ extern unsigned _stklen =   32767;
 
 #if UNIX
 # ifndef caddr_t
-#  define caddr_t void *
+#  ifndef __illumos__
+#   define caddr_t void *
+#  endif /* ifndef __illumos__ */
 # endif  /* ifndef caddr_t */
 # if !defined(OMIT_MMAP)
 #  include <sys/mman.h>
