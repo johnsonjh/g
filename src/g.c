@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.4-dev (2022-10-18)"
+#define VERSION_STRING      "4.7.4-dev (2023-05-20)"
 
 #ifdef DOS
 # define UNIX               0
@@ -135,7 +135,8 @@ extern unsigned _stklen =   32767;
 # define OMIT_MMAP   1
 #endif  /* ifdef __DJGPP__ */
 
-#include <stdio.h>
+#include <stdio.h> /* for NULL, EOF, sprintf, fprintf, stderr, pclose, */
+                   /*     popen,fwrite, FILE, fileno, L_ctermid ...    */
 
 #ifdef __CPPCHECK__
 # undef __LDBL_REDIR1_DECL
@@ -144,22 +145,28 @@ extern unsigned _stklen =   32767;
 # define __THROW
 #endif  /* ifdef __CPPCHECK__ */
 
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <setjmp.h>
+#include <stdlib.h> /* for abort, exit, getenv, atoi, malloc, strtol, free,  */
+                    /*     strtod, system ...                                */
+#include <string.h> /* for memcpy, strchr, strcpy, memset, memmove, strlen,  */
+                    /*     memcmp, memchr, strcat, strcmp, strerror ...      */
+#include <errno.h>  /* for errno, EACCES, EPIPE ...                          */
+#include <fcntl.h>  /* for open, O_CREAT, O_WRONLY, off_t, O_RDONLY,         */
+                    /*     O_RDWR, O_TRUNC, O_APPEND, SEEK_END, SEEK_SET ... */
+#include <setjmp.h> /* for jmp_buf, longjmp, setjmp                          */
 
 #if !defined(OMIT_SIGNAL)
-# include <signal.h>
+# include <signal.h> /* for signal, SIG_IGN, SIGTSTP, SIGWINCH, SIGHUP,  */
+                     /*     SIGINT, SIGPIPE, SIGQUIT, SIGTERM,  SIGUSR1, */
+                     /*     SIGUSR2, size_t ...                          */
 #endif  /* if !defined(OMIT_SIGNAL) */
 
-#include <time.h>
+#include <time.h> /* for ctime, time, time_t */
 
 #if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) )
 # include <io.h>
 #else  /* if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) ) */
-# include <unistd.h>
+# include <unistd.h> /* for close, write, dup, dup2, read, isatty, lseek, */
+                     /*     chdir, unlink ... */
 #endif  /* if ( DOS && defined(__BORLANDC__) ) || ( DOS && defined(_MSC_VER) ) */
 
 #if DOS
@@ -176,7 +183,7 @@ extern unsigned _stklen =   32767;
 #  endif /* ifndef __illumos__ */
 # endif  /* ifndef caddr_t */
 # if !defined(OMIT_MMAP)
-#  include <sys/mman.h>
+#  include <sys/mman.h> /* for mmap, munmap, MAP_PRIVATE, PROT_READ ... */
 # endif  /* if !defined(OMIT_MMAP) */
 #endif  /* if UNIX */
 
