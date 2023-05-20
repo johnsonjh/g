@@ -2,7 +2,7 @@
  *  G  --  g.c
  * ***************************************************************************
  * vi: filetype=c:tabstop=2:tw=79:expandtab
- * 
+ *
  *  Copyright (c) 1981-1982 Robert Ash
  *  Copyright (c) 1981-1982 Roger McCalman
  *  Copyright (c) 1984-1995 Jeremy Hall
@@ -1451,7 +1451,7 @@ FSTR shell_bin[] = "COMMAND",
 near tty_file[]  = "CON",
 near shell_var[] = "COMSPEC"
 # ifndef LINE_G
-,near se_pcom[]  = "snLPT1,te,x", 
+,near se_pcom[]  = "snLPT1,te,x",
 near se_lcom[]   = ".tss:DIR /W:"
 # endif  /* ifndef LINE_G */
 # ifdef __MINGW32__
@@ -1459,13 +1459,13 @@ near se_lcom[]   = ".tss:DIR /W:"
 # endif  /* ifdef __MINGW32__ */
 ;
 # if defined(__MINGW32__) || defined(DOS_CONSOLE)
-FSTR_LIST save_dirs[] = {                    
+FSTR_LIST save_dirs[] = {
      ".",
      "~",
      "/usr/preserve",
      "/tmp",
      NULL
-};                                                        
+};
 # endif  /* if defined(__MINGW32__) || defined(DOS_CONSOLE) */
 #else  /* if DOS || DOS_CONSOLE */
 FSTR shell_var[]  = "SHELL",
@@ -9906,7 +9906,7 @@ home_command(const int disp, const int s_start)
   lon = disp == D_SE_HOME;
 
   noraw();
-  
+
   if ( setjmp(set_err) )
     {
       (void)move_to(sop);
@@ -10526,7 +10526,7 @@ file_move(int value)
     case MOVE_TOF:
       row = FIRST_LINE;
       c_sol();
-      /* fallthrough */ 
+      /* fallthrough */
 
     case PREV_LINE:
       /* fallthrough */
