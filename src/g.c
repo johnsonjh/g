@@ -2333,6 +2333,7 @@ int near bin_mode = NO;
  */
 
 #if DOS
+
 # define put_len(p)                   \
   p[0] = (byte)len;                   \
   if (len > 254)                      \
@@ -2349,7 +2350,9 @@ int near bin_mode = NO;
       len = *(short *)p;              \
       p += 2;                         \
     }
+
 #else  /* if DOS */
+
 # define put_len(p)                   \
   p[0] = (byte)len;                   \
   if (len > 254)                      \
@@ -2366,6 +2369,7 @@ int near bin_mode = NO;
       len = ( word ) * p++ << 8;      \
       len |= *p++;                    \
     }
+
 #endif  /* if DOS */
 
 #define skip_rec(p)                   \

@@ -539,7 +539,7 @@ cppcheck: g.c ../test/cppcheck.sh
 	@$(VERBOSE); export CC="$(CC)" && $(COMMAND) -p $(ENV)                \
           PATH="$$($(COMMAND) -p $(ENV) $(GETCONF) PATH):$${PATH:?}"          \
             "sh" -c "../test/cppcheck.sh" 2>&1
- 
+
 ###############################################################################
 # Test
 
