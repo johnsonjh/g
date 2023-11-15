@@ -8182,11 +8182,15 @@ parse_I(const char *p, VERB *const opts)
       if (opts->comm == 'D')
         {
 #endif  /* if FULL_G */
+#if !defined(FULL_G)
     /*FALLTHRU*/ /* fall through */ /* fallthrough */
     default:
+#endif
+#if !defined(TINY_G)
       g_err(I_OPT, erp);
+#endif
 #if FULL_G
-    }
+        }
   if (*p == '$')
     {
       opts->o2.q = YES;
