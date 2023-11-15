@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.4-dev (2023-05-20)"
+#define VERSION_STRING      "4.7.4-dev (2023-11-15)"
 
 #ifdef DOS
 # define UNIX               0
@@ -1106,6 +1106,7 @@ int
 rgetc(void)
 {
   (void)refresh();
+
   return getch();
 }
 
@@ -2641,6 +2642,7 @@ new_page(void)
   if (ad != NULL)
     {
       v_free_list = *(byte **)ad;
+
       return ad;
     }
 
@@ -2655,6 +2657,7 @@ new_page(void)
             }
 
           page_list = page_list_end;
+
           return (byte *)getvec(PAGE_SIZE);
         }
 
@@ -2681,6 +2684,7 @@ get_page(void)
     {
       byte *const ad = v_free_list;
       v_free_list = *(byte **)ad;
+
       return ad;
     }
 
@@ -2708,6 +2712,7 @@ get_pt(const int len)
 
   if (len > page_list_end - ad)
     {
+
       return (PAGE_PTR *)getvec(len * PP_SIZE);
     }
 
@@ -2898,12 +2903,12 @@ vsopen(void)
 {
   UNIT *const fp = heap(UNIT);
 
-  fp->list = (PAGE_PTR *)get_page();
+  fp->list      = (PAGE_PTR *)get_page();
   bzero( fp->list, PP_SIZE * ( PPP >> B_SIZE ) );
   fp->rec_start = fp->list->base = get_page();
-  fp->rec_num = fp->page = fp->read = 0;
-  fp->link_u = NULL;
-  fp->list_end = PPP - 1;
+  fp->rec_num   = fp->page = fp->read = 0;
+  fp->link_u    = NULL;
+  fp->list_end  = PPP - 1;
 
   return fp;
 }
@@ -3202,7 +3207,7 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
 
       /* next new file page */
 
-      cp2->rec = rec2 += ( rec1 - irec1 );
+      cp2->rec     = rec2 += ( rec1 - irec1 );
       cp2->end_pos = (ushort)( offset2 + len );
       if (++fp2->page >= fp2->list_end)
         {
@@ -3236,9 +3241,9 @@ block_copy(UNIT *const fp2, UNIT *const fp1, const word dst, const int one)
           cp2->base = get_page();
 
       offset2 = 0;
-      rs2 = cp2->base;
-      rem2 = PAGE_SIZE;
-      ep1 = cp1->base + cp1->end_pos;
+      rs2     = cp2->base;
+      rem2    = PAGE_SIZE;
+      ep1     = cp1->base + cp1->end_pos;
     }
 
   fp2->rec_start = cwmmovelr( rs2, rs1, (int)( ep1 - rs1 ) );
@@ -3466,11 +3471,13 @@ fill_buff(void)
     {
       g_eof = YES;
       i_eor = 0;
+
       return NO;
     }
 
   ++g_rec;
   i_eor = ltabex(i_buff, p, len);
+
   return YES;
 }
 
@@ -3945,6 +3952,7 @@ getrnge(const byte *ep)
     }
 
   range = len - low;
+
   return ep;
 }
 
@@ -3956,9 +3964,9 @@ private
 void
 compile(char csc instring, const int len)
 {
-  byte *ep = expbuf, *lastep = NULL;
-  const char *sp = instring;
   word c, lc;
+  byte *ep        = expbuf, *lastep = NULL;
+  const char *sp  = instring;
   byte csc endbuf = ep + RE_BUFF_SIZE;
   char csc endsp  = sp + len;
   char bracket[NBRA], *bracketp = bracket;
@@ -4168,16 +4176,14 @@ nlim:
             default:
               c = xlat(u_map[c], esc_symb, esc_char);
             }
-          /* fallthrough */
           /* Drop through to default to use \ to turn off special chars */
 
 defchar:
-        /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         default:
           lastep = ep;
           *ep++  = CCHR;
           *ep++  = (char)c;
-          /* fallthrough */
         }
     }
 
@@ -4220,11 +4226,12 @@ advance(const char *lp, const byte *ep)
         {
           return NO;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case CCEOF:
       loc2 = lp;
       l2rec = g_rec;
+
       return YES;
 
     case CCL:
@@ -4234,7 +4241,6 @@ advance(const char *lp, const byte *ep)
           ep += CCL_SIZE;
           continue;
         }
-      /* fallthrough */
 
       return NO;
 
@@ -4274,9 +4280,9 @@ advance(const char *lp, const byte *ep)
       return NO;
 
     case CBACK | RNGE:
-      bbeg = braslist[*ep];
-      ct = braelist[*ep++] - bbeg;
-      ep = getrnge(ep);
+      bbeg  = braslist[*ep];
+      ct    = braelist[*ep++] - bbeg;
+      ep    = getrnge(ep);
       curlp = lp;
       while ( low-- && ecmp(bbeg, lp, ct) )
         {
@@ -4289,8 +4295,8 @@ advance(const char *lp, const byte *ep)
       goto cstar;
 
     case CBACK | STAR:
-      bbeg = braslist[*ep];
-      ct = braelist[*ep++] - bbeg;
+      bbeg  = braslist[*ep];
+      ct    = braelist[*ep++] - bbeg;
       curlp = lp;
       while ( ecmp(bbeg, lp, ct) )
         {
@@ -4307,6 +4313,7 @@ cstar:
 
           lp -= ct;
         }
+
       return NO;
 
     case CCHR | RNGE:
@@ -4419,6 +4426,7 @@ star:
               return YES;
             }
         }
+
       return NO;
     }
 }
@@ -4445,9 +4453,11 @@ step(const char *lp)
           if ( advance(++lp, ep) )
             {
               loc1 = lp - 1;
+
               return YES;
             }
         }
+
       return NO;
     }
 
@@ -4458,6 +4468,7 @@ step(const char *lp)
       if ( advance(lp, ep) )
         {
           loc1 = lp;
+
           return YES;
         }
     }
@@ -4493,6 +4504,7 @@ place(char *sp, const char *p1, const char *p2, char csc end_buff)
           g_err(RHS_TOO_LONG, NULL);
         }
     }
+
   return sp;
 }
 
@@ -4541,6 +4553,7 @@ re_sub(const char *ep, char *const str)
         }
 
       tmovelr(sp, s_save, s_save_len);
+
       return s_save_len;
     }
 
@@ -4559,8 +4572,8 @@ re_sub(const char *ep, char *const str)
             {
             case EOS:
               g_err(ILL_RHS_STR, NULL);
-              /* fallthrough */
 
+            /*FALLTHRU*/ /* fall through */ /* fallthrough */
             case 'U':
               cflags = cflags & ~C_NEXT_LOWER | C_NEXT_UPPER;
               continue;
@@ -4621,6 +4634,7 @@ re_sub(const char *ep, char *const str)
     }
 
   tmovelr(s_save, str, len);
+
   return len;
 }
 
@@ -4666,6 +4680,7 @@ get_com(char *str, char csc c_prompt)
       if ( ( len = vsgetrec(comm_u, &p) ) == EOF )
         {
           c_comm_u();
+
           return YES;
         }
 
@@ -4687,6 +4702,7 @@ get_com(char *str, char csc c_prompt)
     {
       (void)zmovelr(str, g_init);
       g_init = NULL;
+
       return NO;
     }
 
@@ -4735,10 +4751,12 @@ gdss(char *const buf, int *const buf_len, char cssc ptr)
   if (*p == EOS)
     {
       *ptr = p;
+
       return YES;
     }
 
   *ptr = p + 1;
+
   return NO;
 }
 
@@ -4919,6 +4937,7 @@ contains(const char *ptr, char csc str, const int len, char csc last)
           loc1 = ptr;
           loc2 = ptr + len;
           l2rec = g_rec;
+
           return YES;
         }
 
@@ -4936,6 +4955,7 @@ ncontains(const char *ptr, char csc str, const int len, char csc i_end)
     {
       ++ptr;
     }
+
   return YES;
 }
 
@@ -5026,8 +5046,8 @@ string_search(char *const ign_buff, char csc str, const int len,
             ++b_ptr;
           }
         r_len = i_end - b_ptr;
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case 'B':
         if (len == 0)
           {
@@ -5070,6 +5090,7 @@ string_search(char *const ign_buff, char csc str, const int len,
             if ( !negate && step(b_ptr) || negate && nstep(b_ptr) )
               {
                 altr_line( (int)( loc1 - b_ptr ), comm );
+
                 return YES;
               }
 
@@ -5097,6 +5118,7 @@ string_search(char *const ign_buff, char csc str, const int len,
                 || negate && ncontains(b_ptr, str, len, i_end) )
               {
                 altr_line( (int)( loc1 - b_ptr ), comm );
+
                 return YES;
               }
 
@@ -5198,8 +5220,8 @@ prep_name(const char *fname)
 
               break;
             }
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         default:
           *p++ = c;
           continue;
@@ -5408,6 +5430,7 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
           start = p + 1;
         }
       (void)munmap(f_p, f_len);
+
       return vstell(vs_u);
     }
 
@@ -5443,6 +5466,7 @@ Mem_to_disk(UNIT *const vs_u, char csc fname, const int mode)
       if ( ro_mode && equal(fname, in_fname) )
         {
           errno = EACCES;
+
           return EOF;
         }
 
@@ -5907,10 +5931,12 @@ priority(const word op)
   switch (op)
     {
     case GEQ:
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case LEQ:
       return 10;
 
     case EQ:
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case NEQ:
       return 8;
 
@@ -5921,9 +5947,11 @@ priority(const word op)
       return 3;
 
     case SHL:
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case SHR:
       return 11;
     }
+
   return 1;  /* = etc */
 }
 
@@ -6000,8 +6028,8 @@ execute(TOKEN *const rhs, TOKEN csc action)
         {
         default:
           g_err(TYPE_ERR, lhs->errp);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '=':
           lhs->opval.r = dest->opval.r = rrval;
           return;
@@ -6321,8 +6349,8 @@ rtoi(char cssc ptr)
         {
         default:
           g_err(BAD_NUM, s);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'I':
           val = pow10 = 1;
           break;
@@ -6413,6 +6441,7 @@ get_op(char cssc ptr)
       break;
 
     case '>':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '<':
       if (c2 == '=')
         {
@@ -6424,6 +6453,7 @@ get_op(char cssc ptr)
           if ( ( c1 = **ptr ) == '=' )
             {
               ++( *ptr );
+
               return COMB(c2, c1);
             }
 
@@ -6433,6 +6463,7 @@ get_op(char cssc ptr)
       break;
 
     case '!':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '=':
       if (c2 == '=')
         {
@@ -6479,8 +6510,11 @@ get_op(char cssc ptr)
       break;
 
     case '*':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '/':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '%':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '^':
       if (c2 == '=')
         {
@@ -6493,15 +6527,20 @@ get_op(char cssc ptr)
       switch (c2)
         {
         case '@':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '#':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '$':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '&':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '.':
           return COMB(c1, c2);
         }
     }
 
   --( *ptr );
+
   return c1;
 }
 
@@ -6521,6 +6560,7 @@ lex(char cssc ptr)
   if ( ( ch = get_op(&e) ) == EOS )
     {
       *ptr = e;
+
       return NULL;
     }
 
@@ -6547,8 +6587,8 @@ lex(char cssc ptr)
           tok.id = LAST_RES;
           break;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case NUMERIC:
       tok.id = LITERAL;
       if (ch == '0')
@@ -6614,21 +6654,21 @@ have_num:
         {
           goto binops;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case UNOP1:
       tok.group = last_was_op ? PREFIX : POSTFIX;
       break;
 
     case '*':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '&':
       if (last_was_op)
         {
           break;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case BINOP:
 binops:
       tok.group = DYADIC;
@@ -6681,6 +6721,7 @@ binops:
     }
 
   *ptr = p;
+
   return &tok;
 }
 
@@ -7025,6 +7066,7 @@ itor(long n)
     }
 
   *cp = EOS;
+
   return rnum;
 }
 
@@ -7040,6 +7082,7 @@ itoc(const long n)
     }
 
   str[1] = (char)n;
+
   return (const char *)str;
 }
 
@@ -7062,6 +7105,7 @@ itob(unsigned long n)
     }
 
   *p = '0';
+
   return p;
 }
 
@@ -7422,24 +7466,24 @@ Xit(VERB csc opts)
     {
     default:
       g_err(XIT_S_M_T, opts->errp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'T':
       f_list->trans = YES;
       (void)zmovelr(f_list->name, t_fname);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'Q':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'A':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'S':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'N':
-      /* fallthrough */
 #if UNIX
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '!':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '|':
 #endif  /* if UNIX */
       if (f_list->disp == 'M')
@@ -7575,16 +7619,16 @@ Save(VERB csc opts)
     {
     default:
       g_err(I_OPT, opts->errp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'Q':
       Xit(opts);
       break;
 
     case 'A':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'N':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '!':
       sptr = get_flist();
       if ( ( sptr->next = f_list ) != NULL )
@@ -7668,6 +7712,7 @@ strhex(char *s, word len)
       sp += 2;
     }
   *s = EOS;
+
   return len >> 1;
 }
 
@@ -7693,8 +7738,8 @@ short_num(char *t, const char *p)
     case '+':
     case '-':
       ++def;
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '#':
       *t++ = 'T';
       *t++ = c;
@@ -7797,8 +7842,8 @@ string_ep(OPTION *const o, const char *p, char csc erp)
       {
       default:
         g_err(M_DELIM, erp);
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case 'X':
         ++hex;
         continue;
@@ -7848,6 +7893,7 @@ string_ep(OPTION *const o, const char *p, char csc erp)
       }
     break;
   }
+
   return p;
 }
 
@@ -7871,15 +7917,18 @@ ep(const char *p, OPTION *const o, const int d, char csc erp)
     {
     default:
       g_err(I_REPEAT, erp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '{':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case NUMERIC:
       o->q = neg ? MRECS : RECS;
+
       return num_ep(o, --p, erp);
 
     case '#':
       o->q = R_END;
+
       return num_ep(o, p, erp);
 
     case '*':
@@ -7897,6 +7946,7 @@ ep(const char *p, OPTION *const o, const int d, char csc erp)
 
     case 'O':
       o->q = OR_END;
+
       return num_ep(o, p, erp);
 
     case 'S':
@@ -7905,22 +7955,23 @@ ep(const char *p, OPTION *const o, const int d, char csc erp)
           o->v = neg;
           break;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'I':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'X':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'F':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'N':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'C':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'R':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case DELIM:
       o->q = d ? 'G' : 'B';
+
       return string_ep(o, --p, erp);
 
     case 'E':
@@ -7956,11 +8007,11 @@ get_name(char cssc ptr, char *name)
   switch (*p)
     {
     case GRAVE:
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case SQUOTE:
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case DQUOTE:
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case DEL:
       ++p;
       (void)gdss(name, &i, &p);
@@ -7981,6 +8032,7 @@ get_name(char cssc ptr, char *name)
     }
 
   *ptr = p;
+
   return i;
 }
 
@@ -8000,6 +8052,7 @@ parse_G(const char *p, VERB *const opts)
     {
       opts->o1.q = ( c1 == ')' ? R_TIMES : RECS );
       opts->o1.v = 1;
+
       return p - 1;
     }
 
@@ -8012,6 +8065,7 @@ parse_G(const char *p, VERB *const opts)
           if ( ( c3 = u_star(p) ) == 'N' )
             {
               opts->o1.q = L_LON;
+
               return p + 1;
             }
 
@@ -8020,28 +8074,29 @@ parse_G(const char *p, VERB *const opts)
               if (u_star(++p) == 'F')
                 {
                   opts->o1.q = L_LOFF;
+
                   return p + 1;
                 }
             }
 
           g_err(I_OPT, erp);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'H':
-          /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'M':
-          /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'X':
-          /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'D':
-          /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'S':
           return p;
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'K':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'J':
       if (c2 == '.')
         {
@@ -8056,11 +8111,11 @@ parse_G(const char *p, VERB *const opts)
       goto standard;
 
     case 'T':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'P':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'V':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case ')':
 standard:
       if (c2 == 'W' || c2 == 'U')
@@ -8127,6 +8182,7 @@ parse_I(const char *p, VERB *const opts)
       if (opts->comm == 'D')
         {
 #endif  /* if FULL_G */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     default:
       g_err(I_OPT, erp);
 #if FULL_G
@@ -8161,6 +8217,7 @@ parse_I(const char *p, VERB *const opts)
           g_err(I_OPT, erp);
         }
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'D':
     case 'F':
 #if FULL_G
@@ -8173,8 +8230,8 @@ parse_I(const char *p, VERB *const opts)
         {
           g_err(I_OPT, erp);
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '{':
       if ( Expr_compile(&opts->o1.e, &p) )
         {
@@ -8452,10 +8509,12 @@ comp:
         }
 
       *ptr = p;
+
       return YES;
 
     case 'C':
       Create(p);
+
       return NO;
     }
 
@@ -8478,16 +8537,17 @@ comp:
   opts->comm = (char)c1;
   opts->o1.q = c2 = ( comsep(*p) ? NO_OPT : u_star(p) );
   opts->o2.q = NO_OPT;
-  opts->dot = NO;
+  opts->dot  = NO;
   opts->o1.e = opts->o2.e = NULL;
 
   switch (c1)
     {
     default:
       g_err(I_COMMAND, erp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '(':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case ';':
       v = par_stack_ptr->next;
       if (v == NULL)
@@ -8555,6 +8615,7 @@ comp:
           g_err(I_OPT, erp);
         }
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'Q':
     case 'E':
     case ':':
@@ -8574,17 +8635,15 @@ comp:
         {
         default:
           g_err(I_OPT, erp);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'A':
-          /* fallthrough */
-
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'N':
           ++p;
-          /* fallthrough */
 
 #if UNIX
-          /* fallthrough */
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case '!':
 #endif  /* if UNIX */
           opts->o1.v = get_name(&p, opts->o1.s);
@@ -8601,9 +8660,9 @@ comp:
       break;
 
     case 'O':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'M':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'U':
       opts->o1.v = get_name(&p, opts->o1.s);
       break;
@@ -8666,16 +8725,16 @@ copy_com:
           par_stack_ptr = par_stack_ptr->prev;
         }
       while ( com != '(' );
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'P':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'T':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'V':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'L':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'K':
       p = parse_G(p + 1, opts);
       break;
@@ -8833,6 +8892,7 @@ set_eor(const int line, const int nsize)
     {
       message("Line too long");
       qq_loop = NO;
+
       return YES;
     }
 
@@ -8875,6 +8935,7 @@ next_line(const int line)
         {
           g_eof = YES;
           eor[line] = EOF;
+
           return NO;
         }
 
@@ -10038,6 +10099,7 @@ get_key2(int *const value)
     }
 
   *value = c;
+
   return c;
 }
 #endif  /* ifndef LINE_G */
@@ -10054,23 +10116,27 @@ hand_quick(int *const value)
   switch ( get_key2(value) )
     {
     case DEL:  /* ^Q DEL  Erase to start of line */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_DC:
       *value = LEFT;
+
       return A_DEL_REST;
 
     case 'A':  /* ^QA  Search for string and replace */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'F':  /* ^QF  Search for string */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'I':  /* ^QI  Move to line number */
       return A_SEARCH;
 
     case 'B':  /* ^QB  Justify and move on */
       *value = 'Q';
+
       return A_JUSTIFY;
 
     case 'C':  /* ^QC  Move to end of file */
       *value = MOVE_EOF;
+
       return A_FILE_MOVE;
 
     case 'D':  /* ^QD  Cursor to end of line */
@@ -10093,6 +10159,7 @@ hand_quick(int *const value)
 
     case 'H':  /* ^QH  Extension: Cursor Home */
       *value = 'Q';
+
       return A_C_HOME;
 
     case 'J':  /* ^QJ  Display help text */
@@ -10103,22 +10170,27 @@ hand_quick(int *const value)
 
     case 'Q':  /* ^QQ  Repeat next command */
       *value = 0;
+
       return A_REPEAT;
 
     case 'V':  /* ^QV  Match brackets & strings */
       *value = -1;
+
       return A_FINDC;
 
     case 'W':  /* ^QW  Fast repeat scroll up */
       *value = PREV_LINE;
+
       return A_REPEAT;
 
     case 'Z':  /* ^QZ  Fast repeat scroll down */
       *value = NEXT_LINE;
+
       return A_REPEAT;
 
     case 'R':  /* ^QR  Move to top of file */
       *value = MOVE_TOF;
+
       return A_FILE_MOVE;
 
     case 'S':  /* ^QS  Cursor to start of line */
@@ -10129,6 +10201,7 @@ hand_quick(int *const value)
 
     case 'Y':  /* ^QY  Erase to end of line */
       *value = RIGHT;
+
       return A_DEL_REST;
     }
 
@@ -10194,52 +10267,56 @@ get_seq(int *const value)
     {
     case CNTRL('A'):  /* ^A  Word move left */
       *value = NO;
+
       return A_W_LEFT;
 
     case CNTRL('B'):  /* ^B  Word delete left */
       *value = YES;
+
       return A_W_LEFT;
 
     case CNTRL('C'):  /* ^C  Page down */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_NPAGE:
-      /* fallthrough */
 # ifdef KEY_NEXT
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_NEXT:
-      /* fallthrough */
 # endif  /* ifdef KEY_NEXT */
       *value = NEXT_PAGE;
+
       return A_FILE_MOVE;
 
     case CNTRL('D'):  /* ^D  Cursor right */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_RIGHT:
       return A_C_RIGHT;
 
     case CNTRL('E'):  /* ^E  Cursor up */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_UP:
       return A_C_UP;
 
     case CNTRL('F'):  /* ^F  Word move right */
       *value = NO;
+
       return A_W_RIGHT;
 
     case CNTRL('G'):  /* ^G  Char delete right */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_DC:
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case DEL:
       *value = RIGHT;
+
       return A_DEL_C;
 
     case CNTRL('H'):  /* ^H  BS as char delete left */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
 # ifdef KEY_BACKSPACE
     case KEY_BACKSPACE:
-      /* fallthrough */
 # endif  /* ifdef KEY_BACKSPACE */
       *value = LEFT;
+
       return A_DEL_C;
 
     case CNTRL('I'):  /* ^I  Horizontal tab */
@@ -10250,87 +10327,89 @@ get_seq(int *const value)
 
     case CNTRL('L'):  /* ^L  Repeat search / replace */
       *value = 'L';
+
       return A_SEARCH;
 
     case CNTRL('P'):  /* ^Pc Enter control character */
       *value = CNTRL( getch() );
+
       return A_CHARACTER;
 
     case CNTRL('M'):  /* ^M  RETURN (split line) */
-      /* fallthrough */
 # ifdef KEY_ENTER
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_ENTER:
-      /* fallthrough */
 # endif  /* ifdef KEY_ENTER */
       return A_C_RETURN;
 
     case CNTRL('N'):  /* ^N  Open blank line */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
 # ifdef KEY_IL
     case KEY_IL:
-      /* fallthrough */
 # endif  /* ifdef KEY_IL */
       return A_OPEN_LINE;
 
     case CNTRL('R'):  /* ^R  Page up */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_PPAGE:
-      /* fallthrough */
 # ifdef KEY_PREVIOUS
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_PREVIOUS:
-      /* fallthrough */
 # endif  /* ifdef KEY_PREVIOUS */
       *value = PREV_PAGE;
+
       return A_FILE_MOVE;
 
     case CNTRL('S'):  /* ^S  Cursor left */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_LEFT:
       return A_C_LEFT;
 
     case CNTRL('T'):  /* ^T  Word delete right */
       *value = YES;
+
       return A_W_RIGHT;
 
     case CNTRL('U'):  /* ^U  Restore line */
       return A_REST_LINE;
 
     case CNTRL('V'):  /* ^V  Toggle expand mode */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_IC:
       return A_EXP_MODE;
 
     case CNTRL('W'):  /* ^W  Scroll up one line */
       *value = PREV_LINE;
+
       return A_FILE_MOVE;
 
     case CNTRL('X'):  /* ^X  Cursor down */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_DOWN:
       return A_C_DOWN;
 
     case CNTRL('Y'):  /* ^Y  Line delete */
-      /* fallthrough */
 # ifdef KEY_DL
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_DL:
 # endif  /* ifdef KEY_DL */
       return A_DEL_LINE;
 
     case CNTRL('Z'):  /* ^Z  Scroll down one line */
       *value = NEXT_LINE;
+
       return A_FILE_MOVE;
 
 # ifdef KEY_END
     case KEY_END:  /* Cursor to end of line */
-      /* fallthrough */
 # endif  /* ifdef KEY_END */
 # ifdef KEY_C1
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_C1:
-      /* fallthrough */
 # endif  /* ifdef KEY_C1 */
 # ifdef KEY_LL
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case KEY_LL:
-      /* fallthrough */
 # endif  /* ifdef KEY_LL */
       return A_C_EOL;
 
@@ -10344,34 +10423,41 @@ get_seq(int *const value)
 
     case KEY_F(2):  /* ^KB  Start block */
       *value = 'B';
+
       return A_BLOCK;
 
     case KEY_F(3):  /* ^KK  End Block */
       *value = 'K';
+
       return A_BLOCK;
 
     case KEY_F(4):  /* ^KC  Copy block */
       *value = 'C';
+
       return A_BLOCK;
 
     case KEY_F(5):  /* ^KR  Read block */
       *value = 'R';
+
       return A_RWX_FILE;
 
     case KEY_F(6):  /* ^KW  Write block */
       *value = 'W';
+
       return A_RWX_FILE;
 
     case KEY_F(7):  /* ^KQ  Exit GE without saving file */
-      /* fallthrough */
 # if DOS
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case ESC:
 # endif  /* if DOS */
       *value = 'Q';
+
       return A_EXIT_EDITOR;
 
     case KEY_F(8):  /* ^KX  Exit GE saving file */
       *value = 'X';
+
       return A_EXIT_EDITOR;
 
     case KEY_F(9):  /* ^QK  Retreive last history event */
@@ -10379,19 +10465,23 @@ get_seq(int *const value)
 
     case KEY_F(10):  /* ^KS  Checkpoint save, stay in SE */
       *value = 'S';
+
       return A_EXIT_EDITOR;
 
     case KEY_HOME:  /* Home Key */
       *value = 'Q';
+
       return A_C_HOME;
 
 # ifdef KEY_SLEFT
     case KEY_SLEFT:  /* Page left */
       *value = LEFT;
+
       return A_PAGE_SHIFT;
 
     case KEY_SRIGHT:  /* Page Right */
       *value = RIGHT;
+
       return A_PAGE_SHIFT;
 
 # endif  /* ifdef KEY_SLEFT */
@@ -10420,6 +10510,7 @@ get_seq(int *const value)
       if ( isprint(c) )
         {
           *value = c;  /* Ordinary printing character */
+
           return A_CHARACTER;
         }
 
@@ -10533,10 +10624,10 @@ file_move(int value)
     case MOVE_TOF:
       row = FIRST_LINE;
       c_sol();
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case PREV_LINE:
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case PREV_PAGE:
       if (sop == 0)
         {
@@ -10753,6 +10844,7 @@ se_join(const int del)
   if (j_col == 0 && bs == nbs)
     {
       (void)del_line();
+
       return NO;
     }
 
@@ -10951,6 +11043,7 @@ find_backwards(char csc target, const int del)
   }
 
   c_sol();
+
   return EOF;
 }
 #endif  /* ifndef LINE_G */
@@ -10997,11 +11090,11 @@ find_char(const int value)
   switch (target)
     {
     case '\'':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '"':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '`':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '/':
       find_str[1] = EOS;
       while (find_forwards(find_str, NO) != EOF)
@@ -11018,21 +11111,21 @@ find_char(const int value)
       return;
 
     case '(':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '{':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '[':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '<':
       find_str[1] = xlat(target, bra_start, (const byte *)bra_end);
       break;
 
     case ')':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '}':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case ']':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '>':
       find_str[1] = xlat(target, bra_end, (const byte *)bra_start);
       forwards = NO;
@@ -11345,7 +11438,8 @@ shift_right(void)
     }
 
   offset += h_inc;
-  col -= h_inc;
+  col    -= h_inc;
+
   return YES;
 }
 #endif  /* ifndef LINE_G */
@@ -11365,7 +11459,8 @@ shift_left(void)
     }
 
   offset -= h_inc;
-  col += h_inc;
+  col    += h_inc;
+
   return YES;
 }
 #endif  /* ifndef LINE_G */
@@ -12270,15 +12365,18 @@ read_string(Q_MODE qtype)
       case A_C_SOL:      /* Move to end of prompt */
         col = c_col;
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       default:           /* Ignore all unknown keys */
         continue;
 
       case A_REST_LINE:  /* Discard this operation */
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case A_EXIT_EDITOR:
         return EOF;
 
       case A_C_RETURN:   /* End of input */
         col = eor[COMMAND_LINE];
+
         return G_FAIL;
 
       case A_DEL_LINE:   /* Delete from end of prompt */
@@ -12308,14 +12406,15 @@ read_string(Q_MODE qtype)
           {
             continue;
           }
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case A_C_LEFT:
         if (col <= c_col)
           {
             continue;
           }
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case A_YANK:       /* unchanged commands */
       case A_BLOCK:
       case A_EXP_MODE:
@@ -12335,8 +12434,8 @@ read_string(Q_MODE qtype)
           {
             continue;
           }
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case A_C_RIGHT:
         if (col >= last_col)
           {
@@ -12458,7 +12557,7 @@ se_justify(const int value)
     /* justify paragraph */
 
     case 'B':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'Q':
       (void)sprintf(buf, "T.%d JP", col > eor[row] ? eor[row] : col);
       (void)run_command(buf, 0, value == 'B');
@@ -12704,8 +12803,8 @@ exit_editor(const int value)
 
       Quit();
       abort();
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'X':  /* Exit, saving file */
       (void)sprintf(
         com,
@@ -12723,8 +12822,8 @@ exit_editor(const int value)
     case 'D':  /* Return to context editor */
       cmd_buf = let_col;
       (void)home_command(D_SE_HOME, fl);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'S':  /* Save the file and return */
       (void)sprintf(
               com, "Save %sfile (y/n) ?", prim_changed ? empty : se_fin1);
@@ -12767,7 +12866,7 @@ rwx_file(const int value)
       break;
 
     case '!':  /* Read from command */
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case '|':  /* Filter through command */
 # if UNIX
       if (query("Command:", fname, Q_EDIT) == EOF)
@@ -13242,6 +13341,7 @@ d_home:
     case A_FINDC:
       find_char(value);
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     default:
       break;
     }
@@ -13390,6 +13490,7 @@ make_line(char *const buf)
     }
 
   (void)movelr(mmovelr(buf, e_buff, e_col), i_buff + i_col, i_len);
+
   return e_col + i_len;
 }
 
@@ -13524,8 +13625,8 @@ alter_end(int last, const int comm)
         {
           g_err(NO_BACK, NULL);
         }
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'P':
       if (g_eof)
         {
@@ -13694,6 +13795,7 @@ hist_recall(char *const comm)
 
   start = (short *)( hist_top + 1 );
   (void)movelr(comm, start + 1, *start);
+
   return *start;
 }
 
@@ -13885,6 +13987,7 @@ Verify(VERB csc opts)
           return !g_eof;
 
         case RECS:
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case MRECS:
           return val == 0;
 
@@ -13927,10 +14030,12 @@ Verify(VERB csc opts)
           return i_col < i_eor;
 
         case 'G':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'r':
           return findstr(opts->o2.s, val, opt, 'V');
 
         case RECS:
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case MRECS:
           return val == 0;
 
@@ -13968,6 +14073,7 @@ PT(VERB csc opts)
         {
           (void)add_line(comm);
         }
+
       return G_OK;
     }
 
@@ -13986,23 +14092,23 @@ PT(VERB csc opts)
         {
         default:
           g_err(I_OPT, opts->errp);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case R_TIMES:
           if (val >= 0)
             {
               goto do_recs;
             }
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case OP_EOF:
           alter_end(EOF, comm);
           break;
 
         case MRECS:
           val = -val;
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case RECS:
 do_recs:
           if (val < 0 && comm != 'P')
@@ -14047,8 +14153,8 @@ do_recs:
             }
 
           val = g_rec + ( val - o_rec );
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case R_END:
           if (val < 0)
             {
@@ -14082,13 +14188,14 @@ do_recs:
         {
         default:
           g_err(I_OPT, opts->errp);
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'S':
           get_space(val, comm);
           break;
 
         case 'G':
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case 'r':
           if ( findstr(opt2, val, opt, comm) )
             {
@@ -14108,8 +14215,8 @@ do_recs:
             {
               goto r_end;
             }
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case OP_EOF:
           altr_line(i_eor - i_col, comm);
           break;
@@ -14121,8 +14228,8 @@ do_recs:
             }
 
           val = i_col + ( val - e_col ) + 1;
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case R_END:
           if (val <= i_col && comm == 'T')
             {
@@ -14137,8 +14244,8 @@ do_recs:
 
         case MRECS:
           val = -val;
-          /* fallthrough */
 
+        /*FALLTHRU*/ /* fall through */ /* fallthrough */
         case RECS:
 r_end:
           if (val < 0 && comm == 'T')
@@ -14180,6 +14287,7 @@ end_line(void)
           return NO;
         }
     }
+
   return YES;
 }
 
@@ -14275,6 +14383,7 @@ pack(void)
       if (ip >= last)  /* end of input text */
         {
           e_col = ep - eb;
+
           return NO;
         }
     }
@@ -14433,6 +14542,7 @@ Join(VERB csc opts)
   if (opts->o1.q == 'P')
     {
       justify();
+
       return G_OK;
     }
 
@@ -15069,25 +15179,26 @@ verb(VERB csc v)
     {
     case 'K':
       linewrap();  /* delete entire lines */
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'P':
-      /* fallthrough */
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'T':
       return PT(v);
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'E':
       Exit();
       abort();
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'Q':
       Quit();
       abort();
-      /* fallthrough */
 
 #if FULL_G
 # ifndef LINE_G
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'W':
       Window();
       break;
@@ -15095,12 +15206,15 @@ verb(VERB csc v)
 #endif  /* if FULL_G */
 
     case 'I':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'D':
       Insert(v);
       break;
 
     case 'A':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'B':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'R':
       ABR(v);
       break;
@@ -15225,6 +15339,7 @@ while_loop(VERB csc vptr, VERB csc prog)
           return G_FAIL;
         }
     }
+
   return G_OK;
 }
 
@@ -15248,16 +15363,16 @@ rec_loop(VERB csc vptr, VERB csc prog)
     {
     default:
       g_err(I_REPEAT, vptr->errp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case MRECS:
       val = -val;
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case RECS:
       val += g_rec;
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case R_END:
       if (val < 0)
         {
@@ -15336,16 +15451,16 @@ line_loop(VERB csc vptr, VERB csc prog)
     {
     default:
       g_err(I_REPEAT, vptr->errp);
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case MRECS:
       val = -val;
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case RECS:
       val += i_col;
-      /* fallthrough */
 
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case R_END:
       if (val < i_col)
         {
@@ -15397,6 +15512,7 @@ line_loop(VERB csc vptr, VERB csc prog)
       break;
 
     case 'G':
+    /*FALLTHRU*/ /* fall through */ /* fallthrough */
     case 'r':
       while ( i_col < i_eor && !g_eof && findstr(vptr->o2.s, val, opt, 'V') )
         {
@@ -15590,13 +15706,14 @@ Line_ed(char *ptr)
             goto put_it_in;
           }
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case EOS:
         break;
 
       case '%':
         ch = SPACE;
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       default:
 put_it_in:  /* replace chars on the line */
         *h_ptr++ = ch;
@@ -15729,8 +15846,8 @@ Drive(const int level)
       {
       case '*':
         (void)add_line('T');
-        /* fallthrough */
 
+      /*FALLTHRU*/ /* fall through */ /* fallthrough */
       case '=':
         if ( ( len = hist_recall(comm) ) > 0 )
           {
@@ -15744,7 +15861,6 @@ Drive(const int level)
                 say(comm);
               }
           }
-
         break;
 
       case SPACE:
@@ -15930,10 +16046,11 @@ main(int i, char csc * argv)
               exit(0);
 #endif  /* ifdef DUMA */
 
+            /*FALLTHRU*/ /* fall through */ /* fallthrough */
             case 'C':  /* initial command */
               ++p;
-              /* fallthrough */
 
+            /*FALLTHRU*/ /* fall through */ /* fallthrough */
             default:
               if (*p != EOS)
                 {
