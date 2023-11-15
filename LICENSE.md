@@ -2,7 +2,7 @@
 Copyright (c) 1981-1982 Robert Ash
 Copyright (c) 1981-1982 Roger McCalman
 Copyright (c) 1984-1995 Jeremy Hall <jah@ilena.demon.co.uk>
-Copyright (c) 2019-2022 Jeffrey H. Johnson <trnsz@pobox.com>
+Copyright (c) 2019-2023 Jeffrey H. Johnson <trnsz@pobox.com>
 
 `G' may be freely distributed.
 

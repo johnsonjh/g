@@ -6,7 +6,7 @@
  *  Copyright (c) 1981-1982 Robert Ash
  *  Copyright (c) 1981-1982 Roger McCalman
  *  Copyright (c) 1984-1995 Jeremy Hall
- *  Copyright (c) 2019-2022 Jeffrey H. Johnson <trnsz@pobox.com>
+ *  Copyright (c) 2019-2023 Jeffrey H. Johnson <trnsz@pobox.com>
  *
  *  See LICENSE for complete redistribution details.
  *
