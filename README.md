@@ -66,9 +66,9 @@ text editor with calculator and macro facility.
 ### Modern
 
 - **_`G`_** can be built for **DOS**, **Windows**, **OS/2**, **Haiku**, and
-  many **UNIX** systems. **AIX**, **Darwin**, **FreeBSD**, **NetBSD**,
-  **OpenBSD**, **Solaris**, **illumos**, and **Linux** are regularly tested
-  and fully supported.
+  many **UNIX** systems. **IBM AIX**, **PASE for IBM i**, **Darwin**,
+  **FreeBSD**, **NetBSD**, **OpenBSD**, **Solaris**, **illumos**, and
+  **Linux** are regularly tested and fully supported.
 
 - A **Curses** library is required on **UNIX** systems. **AT&T System V**
   **Curses**, **XPG4**/**XSI** **Extended Curses**, **PdCurses**,
