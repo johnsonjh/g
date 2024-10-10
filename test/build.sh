@@ -395,7 +395,7 @@ ${MAKE:?} clean > /dev/null &&                                               \
 test -f "g386.exe" && du -k "g386.exe" |                                     \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
             system("file g386.exe"); }' ||                                   \
-                { printf '%s\n' "Error!"; exit 1; } 
+                { printf '%s\n' "Error!"; exit 1; }
 } | eval "${FMTOUT:?}"; blline
 
 ##############################################################################
@@ -426,7 +426,7 @@ ${MAKE:?} clean > /dev/null &&                                               \
 test -f "g386.exe" && du -k "g386.exe" |                                     \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
             system("file g386.exe"); }' ||                                   \
-                { printf '%s\n' "Error!"; exit 1; } 
+                { printf '%s\n' "Error!"; exit 1; }
 } | eval "${FMTOUT:?}"; blline
 
 ##############################################################################
@@ -441,7 +441,7 @@ ${MAKE:?} clean > /dev/null &&                                               \
 test -f "g386.exe" && du -k "g386.exe" |                                     \
     awk '{ printf("+ OK! ["$1 "KiB] ");                                      \
             system("file g386.exe"); }' ||                                   \
-                { printf '%s\n' "Error!"; exit 1; } 
+                { printf '%s\n' "Error!"; exit 1; }
 } | eval "${FMTOUT:?}"; blline
 
 ##############################################################################
