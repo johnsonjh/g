@@ -211,7 +211,8 @@ test -f "g" && du -k "g" |                                                   \
 
 { hrline; printf '%s\n' "## ${MYOS:?}: PCC, Native:"; blline;                \
 ${MAKE:?} "clean" > /dev/null &&                                             \
-    CC="pcc"                                                                 \
+    PATH="/opt/pcc/bin:${PATH:-}"                                            \
+    CC="/opt/pcc/bin/pcc"                                                    \
     OPTFLAGS="${FPTFLAGS:?}"                                                 \
     NOSSP=1 LTO=1 LGC=1 V=1                                                  \
     ${MAKE:?} 2>&1 |                                                         \
