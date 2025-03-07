@@ -121,9 +121,11 @@ text editor with calculator and macro facility.
   MP‑RAS, Novell/SCO UnixWare, Pyramid DC/OSx, Reliant UNIX/SINIX, SCO
   OpenServer, Sequent DYNIX, SGI IRIX, SunOS 3/4, Tulip SVR3, and DEC VAX/VMS.
 
-- The [`GNUmakefile`](https://github.com/johnsonjh/g/blob/master/src/GNUmakefile)
-  contains information relevant to building **_`G`_** on many of these older
-  systems.
+- Line-mode **`_G_`** is known to build on IBM z/OS UNIX (USS) using XL C.
+
+- Read the notes in the
+  [`GNUmakefile`](https://github.com/johnsonjh/g/blob/master/src/GNUmakefile)
+  for information relevant to building **_`G`_** on these systems.
 
 ## Roadmap
 
