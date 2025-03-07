@@ -83,6 +83,10 @@
 #     cl /Gs /Gy -DDOS=1 -UUNIX /AL /Os /G0 /c G.C
 #     link /STACK:32767 G.OBJ,G.EXE,,,,
 #
+#  * z/OS UNIX (USS) 3.1 with IBM XL C/C++ 2.4.1 (line-mode):
+#     xlclang -m64 -qascii -D_ALL_SOURCE -DLINE_G=1 g.c -o g
+#     xlc -q64 -qascii -D_ALL_SOURCE -DLINE_G=1 g.c -o g
+#
 #   Definitions for compiling G:
 #
 #   * `-DDEBUG=1` : Enables debugging code (for development or troubleshooting)
