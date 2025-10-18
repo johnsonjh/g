@@ -5380,9 +5380,9 @@ Disk_to_mem(char csc fname, UNIT *const vs_u, const int mode)
   trunc_recs = 0;
 
 #if DOS || defined(OMIT_MMAP)
-# if !defined(__DJGPP__) && !defined(IA16_GCC_DOS)
+# if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) && !defined(__ELKS__)
   setmode(fd, O_BINARY);
-# endif  /* if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) */
+# endif  /* if !defined(__DJGPP__) && !defined(IA16_GCC_DOS) && !defined(__ELKS__) */
 
   while ( ( len = read(fd, p = buf + len, BLOCK_SIZE) ) > 0 )
     {
