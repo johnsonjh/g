@@ -2210,6 +2210,9 @@ int near last_col, near h_inc;
 
 private
 int near text_lines;
+
+private
+int old_lines = 0;
 #endif  /* ifndef LINE_G */
 
 /* cursor tracking */
@@ -2410,7 +2413,7 @@ say(char csc s)
 
 #ifndef LINE_G
 private
-void
+int
 wait_user(void)
 {
   putstr(se_hit);
@@ -2422,8 +2425,20 @@ wait_user(void)
 #  endif  /* if ASM86 */
 # else  /* if DOS */
   {
-    char buf[8];
-    (void)!read(kbd_fd, buf, 8);
+    int c;
+
+    do
+      {
+        c = getch();
+
+        if (c == KEY_RESIZE)
+          {
+            return KEY_RESIZE;
+          }
+      }
+    while (c == KEY_RESIZE);
+
+    return c;
   }
 # endif  /* if DOS */
 }
@@ -3640,6 +3655,7 @@ cklinked(UNIT csc fp, PAGE_PTR csc cp)
         }
     }
   while ( ++lp < last );
+
   assert(linked_pages == 1);
   lp = lu->list + cp->linked - 1;
   assert(lp->base == data);
@@ -3799,6 +3815,13 @@ g_err(const int code, char csc ptr)
     }
 
   inform(buf);
+
+#ifndef LINE_G
+  if (redisplay == SE_DISP)
+    {
+      return;
+    }
+#endif  /* ifndef LINE_G */
 
 #ifndef LINE_G
   if (fscreen)
@@ -4113,6 +4136,7 @@ compile(char csc instring, const int len)
 nlim:
               c = *sp++;
               i = 0;
+
               do
                 {
                   if (c < '0' || c > '9')
@@ -4407,11 +4431,13 @@ cstar:
 
     case CCL | STAR:
       curlp = lp;
+
       do
         {
           c = ( byte ) * lp++;
         }
       while ( ISTHERE(c) );
+
       ep += CCL_SIZE;
       goto star;
 
@@ -5746,7 +5772,10 @@ g_intr(int sig)
 
 #  ifdef SIGWINCH
     case SIGWINCH:
-      return;
+#ifndef LINE_G
+      redisplay = SE_DISP;
+      longjmp(se_err, YES);
+#endif  /* ifndef LINE_G */
 #  endif  /* ifdef SIGWINCH */
 
     case SIGQUIT:
@@ -7103,6 +7132,7 @@ itob(unsigned long n)
       n >>= 1;
     }
   while ( n != 0 );
+
   if ( ( &bstr[32] - p ) & ODD_MASK )
     {
       return p + 1;
@@ -8250,6 +8280,7 @@ parse_I(const char *p, VERB *const opts)
 
     case DELIM:
       dp = --p;
+
       do
         {
           ++p;
@@ -8259,6 +8290,7 @@ parse_I(const char *p, VERB *const opts)
             }
         }
       while ( *p == c2 );
+
       opts->o1.v = (int)( p - dp );
       (void)movelrz(opts->o1.s, dp, opts->o1.v);
     }
@@ -8359,6 +8391,13 @@ Create(const char *s)
     {
       (void)sprintf(name, "Warning: macro \"%s\" redefined", m->name);
       inform(name);
+
+#ifndef LINE_G
+      if (redisplay == SE_DISP)
+        {
+          return;
+        }
+#endif  /* ifndef LINE_G */
     }
 
   mac_list = m;
@@ -8812,13 +8851,30 @@ G_compile(VERB **start, const char *ptr)
  *  Initialise screen mode.
  */
 
-#ifndef LINE_G
 private
 void
 init_screen(void)
 {
+#ifndef LINE_G
   char **p, **last;
-  int lines;
+  int lines, i;
+
+  if (s_buf != NULL)
+    {
+      for (i = 0; i < old_lines; i++)
+        {
+          rlsevec(s_buf[i]);
+        }
+
+      rlsevec(s_buf);
+      s_buf = NULL;
+
+      rlsevec(eor);
+      eor = NULL;
+
+      rlsevec(s_eor);
+      s_eor = NULL;
+    }
 
   (void)initscr();
   nonl();
@@ -8866,24 +8922,35 @@ init_screen(void)
 
   last_col = COLS - 1;
   h_inc = COLS / 2;
-  last_line = ( lines = LINES ) - 1;
+  last_line = ( lines = old_lines = LINES ) - 1;
   text_lines = lines - FIRST_LINE;
+
+  if (lines < FIRST_LINE + 1)
+    {
+      lines = FIRST_LINE + 1;
+      last_line = lines - 1;
+      text_lines = lines - FIRST_LINE;
+    }
 # endif  /* if DOS */
 
   /* get space for all vectors and divide them up */
 
-  p = s_buf = (char **)getvec( ( sizeof ( char * ) + 4 ) * lines );
-  last = p++ + lines;
-  while (p < last)
+  s_buf = (char **)getvec(sizeof(char *) * lines);
+  for (i = 0; i < lines; i++)
     {
-      *p++ = getbuf(L_LEN);
+      char *line_buf = getbuf(COLS + 2);
+      (void)memset(line_buf, 0, COLS + 2);
+      s_buf[i] = line_buf;
     }
-  eor = (short *)p;
+  eor = (short *)getvec(sizeof(short) * lines);
+  wfill(eor, EOF, lines);
   eor[TEMPLATE_LINE] = 0;
-  s_eor = eor + lines;
-  wfill(s_eor, L_LEN, lines);
-}
+  s_eor = (short *)getvec(sizeof(short) * lines);
+  wfill(s_eor, COLS + 2, lines);
+#else  /* ifndef LINE_G */
+  /* Empty function body when LINE_G is defined */
 #endif  /* ifndef LINE_G */
+}
 
 /*
  *  Check buffer line size and expand if needed.
@@ -8990,6 +9057,7 @@ file_to_buf(const int com)
         }
     }
   while ( next_line(line++) );
+
   --line;
 
   wfill(&eor[line], EOF, LINES - line);
@@ -10333,6 +10401,11 @@ get_seq(int *const value)
     case CNTRL('J'):  /* ^J  Save line on delete stack */
       return A_YANK;
 
+# ifdef KEY_RESIZE
+    case KEY_RESIZE:
+      return A_REDRAW;
+# endif
+
     case CNTRL('L'):  /* ^L  Repeat search / replace */
       *value = 'L';
 
@@ -11269,16 +11342,26 @@ Help(VERB csc opts)
 
 # endif  /* if TINY_G */
   int line = 0;
+  int c;
 
   term();
+
   do
     {
       new_line();
       say(text[line++]);
-      wait_user();
+      c = wait_user();
+
+      if (c == KEY_RESIZE)
+        {
+          redisplay = SE_DISP;
+          return;
+        }
+
       new_line();
     }
   while ( text[line] != NULL );
+
   redisplay = SE_DISP;
 }
 #endif  /* ifndef LINE_G */
@@ -11369,7 +11452,10 @@ wmessage(const char *text)
       (void)put_byte(*p);
     }
 
-  (void)rgetc();
+  if (rgetc() == KEY_RESIZE)
+    {
+      redisplay = SE_DISP;
+    }
 
   attrset(norm_col);
 }
@@ -13045,6 +13131,13 @@ word_count(void)
 
   (void)sprintf(res, f_wc, rc, wc, pc, nc, sc, lc, cc + rc);
   inform(res);
+
+#ifndef LINE_G
+  if (redisplay == SE_DISP)
+    {
+      return;
+    }
+#endif  /* ifndef LINE_G */
 }
 
 /*
@@ -13322,8 +13415,35 @@ d_home:
       break;
 
     case A_REDRAW:
-      term();
-      init();
+      {
+        int saved_orec = o_rec;
+        int saved_row = row;
+        int saved_col = col;
+        int saved_offset = offset;
+
+        buf_to_file(SE_LEAVE);
+
+        erase();
+        refresh();
+        term();
+        init_screen();
+
+        o_rec = saved_orec;
+        move_to(o_rec > 0 ? o_rec : 0);
+        file_to_buf(SE_ENTER);
+
+        row = saved_row;
+        col = saved_col;
+        offset = saved_offset;
+
+        if (row >= LINES)
+          row = LINES - 1;
+
+        if (col >= COLS)
+          col = COLS - 1;
+
+        init();
+      }
       break;
 
     case A_YANK:
@@ -14352,7 +14472,6 @@ pack(void)
 
   do
     {
-
       /* skip leading spaces */
 
       while ( ip < last && isspace(*ip) )
@@ -15606,6 +15725,7 @@ George(const VERB *v)
                 }
             }
           while ( v->comm != ';' );
+
           rc = G_OK;
         }
 
@@ -15775,13 +15895,6 @@ Drive(const int level)
         }
 #  endif  /* ifdef SIGTSTP */
 
-#  ifdef SIGWINCH
-      if (signal(SIGWINCH, g_intr) == SIG_IGN)
-        {
-          (void)signal(SIGWINCH, SIG_IGN);
-        }
-#  endif  /* ifdef SIGWINCH */
-
       if (signal(SIGHUP, g_intr) == SIG_IGN)
         {
           (void)signal(SIGHUP, SIG_IGN);
@@ -15792,6 +15905,7 @@ Drive(const int level)
 # endif  /* if UNIX */
 #endif  /* if !defined(__MINGW32__) && !defined(OMIT_SIGNAL) */
       save_jbuf(save_err, set_err);
+
       if (g_init == NULL)
         {
 #ifndef LINE_G
