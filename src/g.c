@@ -2441,6 +2441,7 @@ wait_user(void)
     return c;
   }
 # endif  /* if DOS */
+  return 0;
 }
 #endif  /* ifndef LINE_G */
 
@@ -5772,10 +5773,10 @@ g_intr(int sig)
 
 #  ifdef SIGWINCH
     case SIGWINCH:
-#ifndef LINE_G
+#   ifndef LINE_G
       redisplay = SE_DISP;
       longjmp(se_err, YES);
-#endif  /* ifndef LINE_G */
+#   endif  /* ifndef LINE_G */
 #  endif  /* ifdef SIGWINCH */
 
     case SIGQUIT:
@@ -11352,11 +11353,13 @@ Help(VERB csc opts)
       say(text[line++]);
       c = wait_user();
 
+# ifndef DOS
       if (c == KEY_RESIZE)
         {
           redisplay = SE_DISP;
           return;
         }
+# endif
 
       new_line();
     }
@@ -11452,10 +11455,12 @@ wmessage(const char *text)
       (void)put_byte(*p);
     }
 
+# ifndef DOS
   if (rgetc() == KEY_RESIZE)
     {
       redisplay = SE_DISP;
     }
+# endif
 
   attrset(norm_col);
 }
