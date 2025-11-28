@@ -1,7 +1,7 @@
 # 16-bit OS/2 PdCurses(Mod) cross-compilation helper script for OpenWatcom 2
 ##############################################################################
 #
-# Copyright (c) 2019-2023 Jeffrey H. Johnson <trnsz@pobox.com>
+# Copyright (c) 2019-2023 Jeffrey H. Johnson
 #
 # Copying and distribution of this file, with or without modification,
 # are permitted in any medium without royalty provided the copyright
