@@ -135,7 +135,6 @@ Future plans for **_`G`_**:
 - Improved online help viewer
 - Proper Windows console support
 - VGA-mode DOS port
-- Dynamic resizing
 - UTF-8/multibyte support
 - Binaries via GitHub and GitLab releases
 

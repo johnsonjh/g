@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.4 (2024-05-21)"
+#define VERSION_STRING      "4.7.5 (2026-06-03)"
 
 #ifdef DOS
 # define UNIX               0
@@ -185,6 +185,9 @@ extern unsigned _stklen =   32767;
 # if !defined(OMIT_MMAP)
 #  include <sys/mman.h> /* for mmap, munmap, MAP_PRIVATE, PROT_READ ... */
 # endif  /* if !defined(OMIT_MMAP) */
+# if !defined(LINE_G) && !defined(OMIT_SIGNAL) && defined(SIGWINCH)
+#  include <sys/ioctl.h> /* for ioctl, TIOCGWINSZ, struct winsize (resize) */
+# endif  /* if !LINE_G && !OMIT_SIGNAL && SIGWINCH */
 #endif  /* if UNIX */
 
 #undef open
@@ -252,14 +255,14 @@ case 'F'
 #define ASCII_MASK  0177U
 #define ODD_MASK      01U
 
-#define delim(c)    ( g_map[c] &   01U )
-#define comsep(c)   ( g_map[c] &   02U )
-#define isdigit(c)  ( g_map[c] &  010U )
-#define isupper(c)  ( g_map[c] &  020U )
-#define se_b4key(c) ( g_map[c] &  040U )
-#define se_jkey(c)  ( g_map[c] & 0100U )
-#define se_b1key(c) ( g_map[c] & 0200U )
-#define wordch(c)   ( g_map[c] & ( 04U | 010U | 020U ) )
+#define delim(c)    ( g_map[(unsigned char)( c )] &   01U )
+#define comsep(c)   ( g_map[(unsigned char)( c )] &   02U )
+#define isdigit(c)  ( g_map[(unsigned char)( c )] &  010U )
+#define isupper(c)  ( g_map[(unsigned char)( c )] &  020U )
+#define se_b4key(c) ( g_map[(unsigned char)( c )] &  040U )
+#define se_jkey(c)  ( g_map[(unsigned char)( c )] & 0100U )
+#define se_b1key(c) ( g_map[(unsigned char)( c )] & 0200U )
+#define wordch(c)   ( g_map[(unsigned char)( c )] & ( 04U | 010U | 020U ) )
 
 #if DOS
 # define path_sep(c) ( c == SLASH || c == BSLASH )
@@ -295,7 +298,7 @@ case 'F'
 
 /* case conversion */
 
-#define u_star(p) u_map[*( p )]
+#define u_star(p) u_map[(unsigned char)*( p )]
 
 #define TAB_WIDTH  8
 
@@ -1089,6 +1092,41 @@ void napms(const unsigned long);
 #  endif  /* ifdef _HPUX_SOURCE */
 # endif  /* ifndef LINE_G */
 
+/*
+ *  Live terminal-resize (SIGWINCH) support.
+ *
+ *  This is deliberately conservative: it is only enabled when we have a
+ *  curses that can actually be resized at run time (ncurses or PDCurses),
+ *  the SIGWINCH signal, and a portable way to ask the terminal for its new
+ *  size (TIOCGWINSZ).  On every other target -- classic SysV/BSD curses,
+ *  DOS, line-mode -- G_RESIZE is 0 and none of the resize code is compiled,
+ *  so behaviour there is byte-for-byte unchanged.
+ *
+ *  The signal handler does nothing but set g_winch; the real work (querying
+ *  the size, telling curses, reallocating the screen vectors and repainting)
+ *  happens later, synchronously, from the key-input path -- never from the
+ *  handler, and never while a half-drawn modal still holds stale geometry.
+ */
+
+# if !defined(LINE_G) && !defined(OMIT_SIGNAL) && defined(SIGWINCH) \
+   && defined(TIOCGWINSZ) && ( defined(NCURSES_VERSION) || defined(PDCURSES) )
+#  define G_RESIZE 1
+# else  /* resize unsupported on this target */
+#  define G_RESIZE 0
+# endif
+
+# if G_RESIZE
+#  define G_MIN_COLS 40       /* keep init()'s status-line arithmetic in range */
+#  define G_MAX_COLS STR_LEN  /* never overrun the fixed-size 'string' scratch  */
+#  define G_MAX_ROWS 1000     /* sanity cap on the per-row vector allocation     */
+
+private volatile sig_atomic_t g_winch = 0;  /* raised by the SIGWINCH handler  */
+
+private int  se_reconcile(void);   /* adopt the terminal's current size         */
+private void se_winch(void);       /* consume g_winch: resize + full repaint     */
+private int  se_getch(void);       /* getch() that quietly absorbs resize events */
+# endif  /* if G_RESIZE */
+
 /* specials for AIX */
 
 # ifndef LINE_G
@@ -1100,19 +1138,62 @@ void napms(const unsigned long);
 #   define ACS_LLCORNER   '+'
 #   define ACS_LRCORNER   '+'
 #   define wtimeout(w, t) ( ( w )->_nodelay = ( t ) )
+#   define G_RGETC_REFRESH 1  /* AIX curses wants a refresh() before each read */
+#  else  /* ifndef ACS_HLINE  */
+#   define G_RGETC_REFRESH 0
+#  endif  /* ifndef ACS_HLINE */
+
+/*
+ *  Read one key.
+ *
+ *  With resize support compiled in, a SIGWINCH (delivered as ERR from an
+ *  interrupted getch(), or as a curses KEY_RESIZE) is absorbed here: the
+ *  screen is rebuilt at the new size via se_winch() and KEY_RESIZE is then
+ *  reported to the caller.  The main loop treats that as a no-op; a modal
+ *  prompt uses it to redraw itself rather than acting on stale geometry.
+ *  A bare ERR (some other interrupted read) is retried so that callers
+ *  never see -1 -- which would index u_map[] out of bounds.
+ */
 
 private
 int
 rgetc(void)
 {
+#  if G_RESIZE
+  for ( ; ; )
+    {
+      const int c = getch();
+
+      if (c == KEY_RESIZE)
+        {
+          g_winch = 1;
+        }
+
+      if (g_winch)
+        {
+          se_winch();
+
+          if (c == ERR || c == KEY_RESIZE)
+            {
+              return KEY_RESIZE;
+            }
+        }
+
+      if (c == ERR)
+        {
+          continue;
+        }
+
+      return c;
+    }
+#  else  /* if G_RESIZE */
+#   if G_RGETC_REFRESH
   (void)refresh();
+#   endif  /* if G_RGETC_REFRESH */
 
   return getch();
+#  endif  /* if G_RESIZE */
 }
-
-#  else  /* ifndef ACS_HLINE  */
-#   define rgetc() getch()
-#  endif  /* ifndef ACS_HLINE */
 
 #  ifndef COLOUR
 #   ifdef COLOR_PAIR
@@ -1124,6 +1205,17 @@ rgetc(void)
 # endif  /* ifndef LINE_G */
 
 #endif  /* if DOS */
+
+#ifndef G_RESIZE
+# define G_RESIZE 0  /* DOS / line-mode / non-resizable curses */
+#endif  /* ifndef G_RESIZE */
+
+/* getch() for the handful of sites that read a follow-on key directly */
+#if G_RESIZE
+# define SE_GETCH() se_getch()
+#else  /* if G_RESIZE */
+# define SE_GETCH() getch()
+#endif  /* if G_RESIZE */
 
 #ifdef COLS
 # if COLS > 80
@@ -2780,7 +2872,7 @@ find_rec(UNIT csc fp, const int dest)
   word len, rec;
   PAGE_PTR csc cp = fp->list + fp->page;
 
-  if (dest == cp->rec)
+  if ((unsigned int)dest == cp->rec)
     {
       return cp->base + cp->end_pos;
     }
@@ -2795,7 +2887,7 @@ find_rec(UNIT csc fp, const int dest)
     }
 
   p = cp->base;
-  while (rec++ < dest)
+  while (rec++ < (unsigned int)dest)
     {
       skip_rec(p);
     }
@@ -3039,7 +3131,7 @@ vsputrec(UNIT *const fp, const char *record, word len)
   else
     {
       UNIT *const lu = fp->link_u;
-      if (offset == 0 && lu == in_u && pg < lu->list_end)
+      if (offset == 0 && lu == in_u && (unsigned int)pg < lu->list_end)
         {
           PAGE_PTR *lp = lu->list + pg;
           if (lp->base != NULL && ecmp(lp->base, p, len) && !lp->linked)
@@ -4163,7 +4255,7 @@ nlim:
               continue;
 
             case PNUMERIC:
-              if ( ( c -= '1' ) >= closed )
+              if ( ( c -= '1' ) >= (unsigned int)closed )
                 {
                   g_err(RE_BACKREF, instring);
                 }
@@ -4325,7 +4417,7 @@ cstar:
       ep = getrnge(ep);
       while (low--)
         {
-          if (*lp++ != c)
+          if ((unsigned int)( *lp++ ) != c)
             {
               return NO;
             }
@@ -4333,7 +4425,7 @@ cstar:
       curlp = lp;
       while (range--)
         {
-          if (*lp++ != c)
+          if ((unsigned int)( *lp++ ) != c)
             {
               break;
             }
@@ -4579,19 +4671,19 @@ re_sub(const char *ep, char *const str)
 
             /*FALLTHRU*/ /* fall through */ /* fallthrough */
             case 'U':
-              cflags = cflags & ~C_NEXT_LOWER | C_NEXT_UPPER;
+              cflags = ( cflags & ~C_NEXT_LOWER ) | C_NEXT_UPPER;
               continue;
 
             case 'u':
-              cflags = cflags & ~C_LOWER | C_UPPER;
+              cflags = ( cflags & ~C_LOWER ) | C_UPPER;
               continue;
 
             case 'L':
-              cflags = cflags & ~C_NEXT_UPPER | C_NEXT_LOWER;
+              cflags = ( cflags & ~C_NEXT_UPPER ) | C_NEXT_LOWER;
               continue;
 
             case 'l':
-              cflags = cflags & ~C_UPPER | C_LOWER;
+              cflags = ( cflags & ~C_UPPER ) | C_LOWER;
               continue;
 
             case 'e':
@@ -4604,7 +4696,8 @@ re_sub(const char *ep, char *const str)
                   g_err(RE_BACKREF, str);
                 }
 
-              sp = place(sp, braslist[c], braelist[c], end_buff);
+              sp = place(sp, braslist[(unsigned char)c], braelist[(unsigned char)c],
+                         end_buff);
               continue;
 
             case 'x':
@@ -4613,7 +4706,7 @@ re_sub(const char *ep, char *const str)
               break;
 
             default:
-              c = xlat(u_map[c], esc_symb, esc_char);
+              c = xlat(u_map[(unsigned char)c], esc_symb, esc_char);
             }
         }
 
@@ -4789,7 +4882,7 @@ altr_line(int col, const int comm)
 
   if (comm == 'T')
     {
-      if (col + e_col > E_BUFF_LEN)
+      if ((unsigned long)( col + e_col ) > E_BUFF_LEN)
         {
           g_err(LINE_TOO_LONG, NULL);
         }
@@ -4811,7 +4904,7 @@ get_end(void)
 {
   const int i_len = i_eor - i_col;
 
-  if (e_col + i_len > E_BUFF_LEN)
+  if ((unsigned long)( e_col + i_len ) > E_BUFF_LEN)
     {
       g_err(LINE_TOO_LONG, NULL);
     }
@@ -5055,7 +5148,7 @@ string_search(char *const ign_buff, char csc str, const int len,
       case 'B':
         if (len == 0)
           {
-            if (negate + r_len == 0 || negate && r_len > 0)
+            if (negate + r_len == 0 || ( negate && r_len > 0 ))
               {
                 return YES;
               }
@@ -5078,7 +5171,7 @@ string_search(char *const ign_buff, char csc str, const int len,
         switch (type)
           {
           case 'R':
-            if (step(b_ptr) != negate)
+            if ((unsigned int)step(b_ptr) != negate)
               {
                 return YES;
               }
@@ -5088,10 +5181,10 @@ string_search(char *const ign_buff, char csc str, const int len,
           case 'r':
             if (comm == 'V')
               {
-                return advance(b_ptr, expbuf) != negate;
+                return (unsigned int)advance(b_ptr, expbuf) != negate;
               }
 
-            if ( !negate && step(b_ptr) || negate && nstep(b_ptr) )
+            if ( ( !negate && step(b_ptr) ) || ( negate && nstep(b_ptr) ) )
               {
                 altr_line( (int)( loc1 - b_ptr ), comm );
 
@@ -5118,8 +5211,8 @@ string_search(char *const ign_buff, char csc str, const int len,
             break;
 
           case 'G':
-            if ( !negate && contains(b_ptr, str, len, i_end - len)
-                || negate && ncontains(b_ptr, str, len, i_end) )
+            if ( ( !negate && contains(b_ptr, str, len, i_end - len) )
+                || ( negate && ncontains(b_ptr, str, len, i_end) ) )
               {
                 altr_line( (int)( loc1 - b_ptr ), comm );
 
@@ -5129,7 +5222,7 @@ string_search(char *const ign_buff, char csc str, const int len,
             return NO;
 
           case 'C':
-            if (contains(b_ptr, str, len, i_end - len) != negate)
+            if ((unsigned int)contains(b_ptr, str, len, i_end - len) != negate)
               {
                 return YES;
               }
@@ -5270,7 +5363,7 @@ serial_read(UNIT *const vs_u, const int fd)
         {
           if ( ( p = (char *)memchr(p, LFEED, len) ) == NULL )
             {
-              if (len > E_BUFF_LEN)
+              if ((unsigned long)len > E_BUFF_LEN)
                 {
                   len = E_BUFF_LEN + 1;
                 }
@@ -5310,7 +5403,7 @@ Mem_to_proc(UNIT *const vs_u, char csc comm)
     {
       while ( ( len = vsgetrec(vs_u, &p) ) != EOF )
         {
-          if ( fwrite(p, 1, len, fp) != len || \
+          if ( fwrite(p, 1, len, fp) != (size_t)len || \
                fwrite(pt_list, 1, 1, fp) != 1 )
             {
               break;
@@ -5746,6 +5839,16 @@ g_intr(int sig)
 
 #  ifdef SIGWINCH
     case SIGWINCH:
+#   if G_RESIZE
+      /*
+       *  Only ever raise a flag here.  The actual resize -- ioctl, curses
+       *  calls, malloc/free, repaint -- is done later from the input path.
+       *  (A previous version longjmp'd straight out of this handler, which
+       *  corrupted the stack whenever the signal landed while a modal
+       *  message window was blocked inside getch().  Never again.)
+       */
+      g_winch = 1;
+#   endif  /* if G_RESIZE */
       return;
 #  endif  /* ifdef SIGWINCH */
 
@@ -8400,7 +8503,7 @@ dotcallmac(char *const text, const char *p)
   subs_ch = macptr->par_sub;
   c_ptr = macptr->text;
 
-  if (delim(ch = *p) != arg_count > 0)
+  if (delim(ch = *p) != ( arg_count > 0 ))
     {
       g_err(ARG_NUM_INV, erp);
     }
@@ -8769,7 +8872,7 @@ copy_com:
     {
       FSTR h_list[] = "WAERLVDMS";
       char csc h_op = strchr(h_list, c2);
-      if (c2 == NO_OPT || c2 == 'E' && !comsep(p[1]) || h_op == NULL)
+      if (c2 == NO_OPT || ( c2 == 'E' && !comsep(p[1]) ) || h_op == NULL)
         {
           opts->o1.q = 9;
         }
@@ -8896,7 +8999,7 @@ set_eor(const int line, const int nsize)
 {
   const int asize = s_eor[line];
 
-  if (nsize > E_BUFF_LEN)
+  if ((unsigned long)nsize > E_BUFF_LEN)
     {
       message("Line too long");
       qq_loop = NO;
@@ -9005,7 +9108,7 @@ private
 void
 move_to(int line)
 {
-  if (line <= g_rec || g_rec <= o_rec && o_rec >= line)
+  if (line <= g_rec || ( g_rec <= o_rec && o_rec >= line ))
     {
       (void)wrapround();
     }
@@ -9478,7 +9581,7 @@ set_col(int new_col)
       return;
     }
 
-  if (new_col > E_BUFF_LEN)
+  if ((unsigned long)new_col > E_BUFF_LEN)
     {
       new_col = E_BUFF_LEN;
     }
@@ -9859,6 +9962,175 @@ status(void)
 }
 #endif  /* ifndef LINE_G */
 
+#if G_RESIZE
+/*
+ *  Grow or shrink the screen vectors (s_buf / eor / s_eor) from old_n rows
+ *  to the current LINES, preserving the lines that survive.
+ *
+ *  The three vectors live in one allocation laid out exactly as
+ *  init_screen() builds it: LINES row pointers, then eor[LINES], then
+ *  s_eor[LINES].  Row 0 (the status line) never owns a text buffer, so it
+ *  is skipped here just as it is there.  Per-row text buffers are handed
+ *  over to the new block by copying their pointers; only the rows that
+ *  actually disappear are freed, and only the old index block is released.
+ */
+
+private
+void
+se_resize_buffers(const int old_n)
+{
+  const int new_n = LINES;
+  char **nb;
+  short *ne, *ns;
+  int i;
+
+  if (new_n == old_n)
+    {
+      return;  /* width-only change: the row vectors are already the right size */
+    }
+
+  nb = (char **)getvec( ( sizeof ( char * ) + 4 ) * new_n );
+  ne = (short *)( nb + new_n );
+  ns = ne + new_n;
+
+  nb[0] = NULL;   /* status line: no text buffer, matching init_screen() */
+  ne[0] = EOF;
+  ns[0] = L_LEN;
+
+  if (new_n < old_n)
+    {
+      for (i = 1; i < new_n; ++i)
+        {
+          nb[i] = s_buf[i];
+          ne[i] = eor[i];
+          ns[i] = s_eor[i];
+        }
+
+      for (i = new_n; i < old_n; ++i)
+        {
+          rlsevec(s_buf[i]);  /* release the rows that fell off the bottom */
+        }
+    }
+  else
+    {
+      for (i = 1; i < old_n; ++i)
+        {
+          nb[i] = s_buf[i];
+          ne[i] = eor[i];
+          ns[i] = s_eor[i];
+        }
+
+      for (i = old_n; i < new_n; ++i)
+        {
+          nb[i] = getbuf(L_LEN);  /* fresh, empty buffers for the new rows */
+          ne[i] = EOF;
+          ns[i] = L_LEN;
+        }
+    }
+
+  rlsevec(s_buf);  /* free only the old index block; rows were transferred */
+
+  s_buf = nb;
+  eor   = ne;
+  s_eor = ns;
+}
+
+/*
+ *  Adopt the terminal's current size.  Returns YES if anything changed.
+ *
+ *  This is the one place where LINES/COLS and the screen vectors move, and
+ *  they move together: curses is told first (resize_term), then our vectors
+ *  are reshaped to match, then the derived geometry and the cursor are
+ *  brought back in range.  Because it runs only from the input path (never
+ *  the signal handler), allocating and calling curses here is safe.
+ *
+ *  It is also the catch-all for resizes we never saw a signal for -- e.g.
+ *  the terminal was dragged to a new size while G was shelled out -- because
+ *  init() calls it on every full repaint.
+ */
+
+private
+int
+se_reconcile(void)
+{
+  struct winsize ws;
+  int rows, cols, fd, gtty, fcol, old_n;
+
+  if (s_buf == NULL)
+    {
+      return NO;  /* screen not built yet; nothing to reconcile against */
+    }
+
+  gtty = -1;
+  for (fd = 0; fd <= 2; ++fd)
+    {
+      if ( isatty(fd) )
+        {
+          gtty = fd;
+          break;
+        }
+    }
+
+  if (gtty < 0 || ioctl(gtty, TIOCGWINSZ, &ws) != 0)
+    {
+      return NO;  /* cannot learn the size; leave everything as it is */
+    }
+
+  rows = ws.ws_row;
+  cols = ws.ws_col;
+
+  if (rows < FIRST_LINE + 1)
+    {
+      rows = FIRST_LINE + 1;  /* always keep room for status + at least one line */
+    }
+
+  if (rows > G_MAX_ROWS)
+    {
+      rows = G_MAX_ROWS;
+    }
+
+  if (cols < G_MIN_COLS)
+    {
+      cols = G_MIN_COLS;
+    }
+
+  if (cols > G_MAX_COLS)
+    {
+      cols = G_MAX_COLS;
+    }
+
+  if (rows == LINES && cols == COLS)
+    {
+      return NO;  /* nothing actually changed */
+    }
+
+  fcol  = col + offset;  /* file column under the cursor, preserved across the change */
+  old_n = LINES;
+
+  (void)resize_term(rows, cols);  /* curses now owns the new LINES / COLS */
+  se_resize_buffers(old_n);       /* our vectors follow, atomically */
+
+  last_col   = COLS - 1;
+  h_inc      = COLS / 2;
+  last_line  = LINES - 1;
+  text_lines = LINES - FIRST_LINE;
+
+  if (row > last_line)
+    {
+      row = last_line;
+    }
+
+  if (text_row > last_line)
+    {
+      text_row = last_line;
+    }
+
+  set_col(fcol);  /* re-derive col / offset for the new width */
+
+  return YES;
+}
+#endif  /* if G_RESIZE */
+
 /*
  *  Set up the screen.
  */
@@ -9870,17 +10142,35 @@ init(void)
 {
   int len;
 
+# if ASM86
+  chtype *mid;
+  const char *p, *last;
+# else  /* if ASM86  */
+  string buf;
+  char *mid;
+  const char *p, *last;
+# endif  /* if ASM86 */
+
+  /*
+   *  Reconcile the terminal size first: init() is the one repaint that every
+   *  resume path runs through (returning from a shell-out, from Help, from a
+   *  home-line command, or from a ^KZ redraw), so doing it here means a size
+   *  change that happened while we were not in control is picked up before a
+   *  single cell is drawn.  h_inc / COLS may move, hence 'mid' is set after.
+   */
+
+# if G_RESIZE
+  (void)se_reconcile();
+# endif  /* if G_RESIZE */
+
   /* Setup fixed parts of status line */
 
 # if ASM86
-  chtype *const mid = v_base + h_inc + 4;
-  const char *p, *last;
+  mid = v_base + h_inc + 4;
   scr_fill(v_base, B_COLS);
   put_status(v_base, "LINE", 4);
 # else  /* if ASM86  */
-  string buf;
-  char *const mid = buf + h_inc + 4;
-  const char *p, *last;
+  mid = buf + h_inc + 4;
   space_fill(buf, COLS);
   (void)movelr(buf, "LINE", 4);
 # endif  /* if ASM86 */
@@ -9940,6 +10230,59 @@ init(void)
   redisplay = NO;
 }
 #endif  /* ifndef LINE_G */
+
+#if G_RESIZE
+/*
+ *  Consume a pending SIGWINCH.  Called from the key-input path only, so it
+ *  is free to allocate and to call curses.  se_reconcile() does the resize
+ *  while curses is still active; term()/init() then rebuild the screen at
+ *  the new size (init() also reconciles, but that second call is a no-op).
+ *  This is exactly the ^KZ redraw, plus a size change.
+ */
+
+private
+void
+se_winch(void)
+{
+  g_winch = 0;
+  (void)se_reconcile();
+  term();
+  init();
+}
+
+/*
+ *  getch() for the few callers that read a follow-on key directly (^P, ^QG):
+ *  resize events are handled and swallowed so they never masquerade as a
+ *  real keystroke, and ERR is retried so -1 can never reach u_map[].
+ */
+
+private
+int
+se_getch(void)
+{
+  for ( ; ; )
+    {
+      const int c = getch();
+
+      if (c == KEY_RESIZE)
+        {
+          g_winch = 1;
+        }
+
+      if (g_winch)
+        {
+          se_winch();
+        }
+
+      if (c == ERR || c == KEY_RESIZE)
+        {
+          continue;
+        }
+
+      return c;
+    }
+}
+#endif  /* if G_RESIZE */
 
 /*
  *  Restart editing on a line.  Analagous to Wrapround.
@@ -10098,6 +10441,25 @@ get_key2(int *const value)
 {
   int c = getch();
 
+#if G_RESIZE
+  /* swallow any resize that arrives mid-sequence and wait for a real key,
+     so the ERR/-1 never reaches the u_map[] lookup below */
+  while (c == ERR || c == KEY_RESIZE)
+    {
+      if (c == KEY_RESIZE)
+        {
+          g_winch = 1;
+        }
+
+      if (g_winch)
+        {
+          se_winch();
+        }
+
+      c = getch();
+    }
+#endif  /* if G_RESIZE */
+
   if (c <= 0xFF)
     {
       if ( ( c = u_map[c] ) < SPACE )
@@ -10157,7 +10519,7 @@ hand_quick(int *const value)
 # if DOS
       *value = getch();
 # else  /* if DOS */
-      if ( ( *value = getch() ) == KEY_ENTER )
+      if ( ( *value = SE_GETCH() ) == KEY_ENTER )
         {
           *value = CNTRL('M');
         }
@@ -10333,13 +10695,18 @@ get_seq(int *const value)
     case CNTRL('J'):  /* ^J  Save line on delete stack */
       return A_YANK;
 
+#if G_RESIZE
+    case KEY_RESIZE:  /* resize already absorbed in rgetc(): just settle */
+      return A_C_STAY;
+#endif  /* if G_RESIZE */
+
     case CNTRL('L'):  /* ^L  Repeat search / replace */
       *value = 'L';
 
       return A_SEARCH;
 
     case CNTRL('P'):  /* ^Pc Enter control character */
-      *value = CNTRL( getch() );
+      *value = CNTRL( SE_GETCH() );
 
       return A_CHARACTER;
 
@@ -10904,7 +11271,7 @@ is_sow(char csc p)
       return wordch(c) || punctch(c);
     }
 
-  return wordch(c) && !wordch(p[-1]) || punctch(c) && !punctch(p[-1]);
+  return ( wordch(c) && !wordch(p[-1]) ) || ( punctch(c) && !punctch(p[-1]) );
 }
 #endif  /* ifndef LINE_G */
 
@@ -10962,7 +11329,7 @@ find_forwards(char csc target, const int del)
         }
       else
         {  /* move to next line */
-          if (row == COMMAND_LINE || row == last_line && target != NULL)
+          if (row == COMMAND_LINE || ( row == last_line && target != NULL ))
             {
               break;
             }
@@ -11026,7 +11393,7 @@ find_backwards(char csc target, const int del)
           }
       }
 
-    if (row == COMMAND_LINE || row == FIRST_LINE && target != NULL)
+    if (row == COMMAND_LINE || ( row == FIRST_LINE && target != NULL ))
       {
         break;
       }
@@ -11292,9 +11659,22 @@ private
 void
 wmessage(const char *text)
 {
-  const int max_len = COLS - 8;
-  int i, ymax, xmax, lines, cols, begy, begx, longest = 26;
+  int i, ymax, xmax, lines, cols, begy, begx, longest, max_len;
   const char *p, *start;
+
+  /*
+   *  Draw, wait, and -- if a resize arrives while we are blocked in rgetc()
+   *  -- redraw.  se_winch() has by then rebuilt the editor screen underneath
+   *  us, so we recompute the box geometry for the new size and paint it again
+   *  instead of returning with stale begy/begx.  Resizing the terminal while
+   *  this modal window is up is precisely what used to crash.
+   */
+
+#if G_RESIZE
+redraw:
+#endif  /* if G_RESIZE */
+  max_len = COLS - 8;
+  longest = 26;
 
   for (lines = 5, start = p = text; *p; ++lines, start = p + 1)
     {
@@ -11369,7 +11749,14 @@ wmessage(const char *text)
       (void)put_byte(*p);
     }
 
+#if G_RESIZE
+  if (rgetc() == KEY_RESIZE)
+    {
+      goto redraw;  /* screen rebuilt at a new size: redraw the box */
+    }
+#else  /* if G_RESIZE */
   (void)rgetc();
+#endif  /* if G_RESIZE */
 
   attrset(norm_col);
 }
@@ -11440,7 +11827,7 @@ private
 int
 shift_right(void)
 {
-  if (offset + h_inc + last_col > E_BUFF_LEN)
+  if ((unsigned long)( offset + h_inc + last_col ) > E_BUFF_LEN)
     {
       return NO;
     }
@@ -11554,7 +11941,7 @@ block(const int value)
 
   if (value != 'C')
     {
-      if (row == COMMAND_LINE || c_eor == EOF && eor[row - 1] == EOF)
+      if (row == COMMAND_LINE || ( c_eor == EOF && eor[row - 1] == EOF ))
         {
           return;
         }
@@ -11786,7 +12173,7 @@ centre(void)
 
   if (dif > 0)
     {
-      if (E_BUFF_LEN - dif < le - sol)
+      if (E_BUFF_LEN - dif < (unsigned long)( le - sol ))
         {
           dif = E_BUFF_LEN - ( le - sol );
         }
@@ -12251,7 +12638,7 @@ h_tab(void)
   const int c_col = col;
 
   col = ( col / screen_tabs + 1 ) * screen_tabs;
-  if (col >= COLS && !shift_right() || FILE_COL > E_BUFF_LEN)
+  if (( col >= COLS && !shift_right() ) || (unsigned long)FILE_COL > E_BUFF_LEN)
     {
       col = c_col;
     }
@@ -12693,7 +13080,7 @@ search(const int value)
           line = 0;
         }
 
-      elif( line > vssizeof(in_u) )
+      elif( (unsigned int)line > vssizeof(in_u) )
           line = vssizeof(in_u);
 
       if (line >= sop && line < sop + text_lines)
@@ -13492,7 +13879,7 @@ make_line(char *const buf)
 {
   int i_len = i_eor - i_col;
 
-  if (e_col + i_len > E_BUFF_LEN)
+  if ((unsigned long)( e_col + i_len ) > E_BUFF_LEN)
     {
       i_len = E_BUFF_LEN - e_col;
     }
@@ -13783,7 +14170,7 @@ hist_write(char csc comm)
 {
   int len;
 
-  if ( hist_top == NULL || ( len = *(short *)( hist_top + 1 ) )
+  if ( hist_top == NULL || (size_t)( len = *(short *)( hist_top + 1 ) )
       != strlen(comm) || !ecmp(comm, (short *)( hist_top + 1 ) + 1, len) )
     {
       push_line( &hist_top, comm, strlen(comm) );
@@ -14230,7 +14617,7 @@ do_recs:
           break;
 
         case OR_END:
-          if ( (unsigned long)e_col >= val )
+          if ( (unsigned long)e_col >= (unsigned long)val )
             {
               break;
             }
