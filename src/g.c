@@ -14,7 +14,7 @@
  */
 
 #undef VERSION_STRING
-#define VERSION_STRING      "4.7.5 (2026-06-03)"
+#define VERSION_STRING      "4.7.6 (2026-06-03)"
 
 #ifdef DOS
 # define UNIX               0
@@ -1092,22 +1092,6 @@ void napms(const unsigned long);
 #  endif  /* ifdef _HPUX_SOURCE */
 # endif  /* ifndef LINE_G */
 
-/*
- *  Live terminal-resize (SIGWINCH) support.
- *
- *  This is deliberately conservative: it is only enabled when we have a
- *  curses that can actually be resized at run time (ncurses or PDCurses),
- *  the SIGWINCH signal, and a portable way to ask the terminal for its new
- *  size (TIOCGWINSZ).  On every other target -- classic SysV/BSD curses,
- *  DOS, line-mode -- G_RESIZE is 0 and none of the resize code is compiled,
- *  so behaviour there is byte-for-byte unchanged.
- *
- *  The signal handler does nothing but set g_winch; the real work (querying
- *  the size, telling curses, reallocating the screen vectors and repainting)
- *  happens later, synchronously, from the key-input path -- never from the
- *  handler, and never while a half-drawn modal still holds stale geometry.
- */
-
 # if !defined(LINE_G) && !defined(OMIT_SIGNAL) && defined(SIGWINCH) \
    && defined(TIOCGWINSZ) && ( defined(NCURSES_VERSION) || defined(PDCURSES) )
 #  define G_RESIZE 1
@@ -1117,14 +1101,16 @@ void napms(const unsigned long);
 
 # if G_RESIZE
 #  define G_MIN_COLS 40       /* keep init()'s status-line arithmetic in range */
-#  define G_MAX_COLS STR_LEN  /* never overrun the fixed-size 'string' scratch  */
-#  define G_MAX_ROWS 1000     /* sanity cap on the per-row vector allocation     */
+#  define G_MAX_COLS STR_LEN  /* never overrun the fixed-size 'string' scratch */
+#  define G_MAX_ROWS 1000     /* sanity cap on the per-row vector allocation   */
+#  define SE_POLL_MS 100      /* input wait tick: how often g_winch is noticed */
 
 private volatile sig_atomic_t g_winch = 0;  /* raised by the SIGWINCH handler  */
 
-private int  se_reconcile(void);   /* adopt the terminal's current size         */
-private void se_winch(void);       /* consume g_winch: resize + full repaint     */
-private int  se_getch(void);       /* getch() that quietly absorbs resize events */
+private int  se_reconcile(void); /* adopt the terminal's current size          */
+private void se_winch(void);     /* consume g_winch: resize + full repaint     */
+private int  se_getch(void);     /* getch() that quietly absorbs resize events */
+private int  se_kbd_check(void); /* non-blocking probe for the repeat loops    */
 # endif  /* if G_RESIZE */
 
 /* specials for AIX */
@@ -1142,18 +1128,6 @@ private int  se_getch(void);       /* getch() that quietly absorbs resize events
 #  else  /* ifndef ACS_HLINE  */
 #   define G_RGETC_REFRESH 0
 #  endif  /* ifndef ACS_HLINE */
-
-/*
- *  Read one key.
- *
- *  With resize support compiled in, a SIGWINCH (delivered as ERR from an
- *  interrupted getch(), or as a curses KEY_RESIZE) is absorbed here: the
- *  screen is rebuilt at the new size via se_winch() and KEY_RESIZE is then
- *  reported to the caller.  The main loop treats that as a no-op; a modal
- *  prompt uses it to redraw itself rather than acting on stale geometry.
- *  A bare ERR (some other interrupted read) is retried so that callers
- *  never see -1 -- which would index u_map[] out of bounds.
- */
 
 private
 int
@@ -1215,6 +1189,10 @@ rgetc(void)
 # define SE_GETCH() se_getch()
 #else  /* if G_RESIZE */
 # define SE_GETCH() getch()
+#endif  /* if G_RESIZE */
+
+#if G_RESIZE
+# define kbd_check(c) ( c = se_kbd_check() )
 #endif  /* if G_RESIZE */
 
 #ifdef COLS
@@ -8928,6 +8906,10 @@ init_screen(void)
   noecho();
   keypad(stdscr, YES);
 
+# if G_RESIZE
+  wtimeout(stdscr, SE_POLL_MS);
+# endif  /* if G_RESIZE */
+
 # if defined(IMMEDOK) && !defined(__WATCOMC__)
   (void)immedok(stdscr, YES);
 # endif  /* if defined(IMMEDOK) && !defined(__WATCOMC__) */
@@ -9963,18 +9945,6 @@ status(void)
 #endif  /* ifndef LINE_G */
 
 #if G_RESIZE
-/*
- *  Grow or shrink the screen vectors (s_buf / eor / s_eor) from old_n rows
- *  to the current LINES, preserving the lines that survive.
- *
- *  The three vectors live in one allocation laid out exactly as
- *  init_screen() builds it: LINES row pointers, then eor[LINES], then
- *  s_eor[LINES].  Row 0 (the status line) never owns a text buffer, so it
- *  is skipped here just as it is there.  Per-row text buffers are handed
- *  over to the new block by copying their pointers; only the rows that
- *  actually disappear are freed, and only the old index block is released.
- */
-
 private
 void
 se_resize_buffers(const int old_n)
@@ -9999,6 +9969,18 @@ se_resize_buffers(const int old_n)
 
   if (new_n < old_n)
     {
+      int valid = FIRST_LINE;  /* rows holding file lines: FIRST_LINE..valid-1 */
+
+      while (valid < old_n && eor[valid] != EOF)
+        {
+          ++valid;
+        }
+
+      for (i = valid - 1; i >= new_n; --i)
+        {
+          push_line(&in_stack, s_buf[i], eor[i]);
+        }
+
       for (i = 1; i < new_n; ++i)
         {
           nb[i] = s_buf[i];
@@ -10127,6 +10109,24 @@ se_reconcile(void)
 
   set_col(fcol);  /* re-derive col / offset for the new width */
 
+  if (LINES > old_n && old_n > FIRST_LINE)
+    {
+      int i = FIRST_LINE;
+
+      while (i < old_n && eor[i] != EOF)
+        {
+          ++i;
+        }
+
+      if (i == old_n)
+        {
+          while (i <= last_line && next_line(i))
+            {
+              ++i;
+            }
+        }
+    }
+
   return YES;
 }
 #endif  /* if G_RESIZE */
@@ -10232,29 +10232,21 @@ init(void)
 #endif  /* ifndef LINE_G */
 
 #if G_RESIZE
-/*
- *  Consume a pending SIGWINCH.  Called from the key-input path only, so it
- *  is free to allocate and to call curses.  se_reconcile() does the resize
- *  while curses is still active; term()/init() then rebuild the screen at
- *  the new size (init() also reconciles, but that second call is a no-op).
- *  This is exactly the ^KZ redraw, plus a size change.
- */
-
 private
 void
 se_winch(void)
 {
   g_winch = 0;
-  (void)se_reconcile();
-  term();
+
+  if ( !se_reconcile() )
+    {
+      return;  /* same size after all: nothing to do */
+    }
+
+  (void)clearok(stdscr, YES);
+  fscreen = NO;  /* init() raises it again; repeated resizes must not count up */
   init();
 }
-
-/*
- *  getch() for the few callers that read a follow-on key directly (^P, ^QG):
- *  resize events are handled and swallowed so they never masquerade as a
- *  real keystroke, and ERR is retried so -1 can never reach u_map[].
- */
 
 private
 int
@@ -10281,6 +10273,38 @@ se_getch(void)
 
       return c;
     }
+}
+
+/*
+ *  Non-blocking probe behind the kbd_check() macro (the fast-repeat scroll
+ *  loop).  Returns the pending key, or ERR when there is none.  A resize
+ *  event is consumed here -- the screen is rebuilt mid-repeat -- and then
+ *  reported as "no key", so the repeat carries on at the new size instead
+ *  of being mistaken for a stop request.
+ */
+
+private
+int
+se_kbd_check(void)
+{
+  int c;
+
+  wtimeout(stdscr, 0);
+  c = getch();
+  wtimeout(stdscr, SE_POLL_MS);
+
+  if (c == KEY_RESIZE)
+    {
+      g_winch = 1;
+      c = ERR;
+    }
+
+  if (g_winch)
+    {
+      se_winch();
+    }
+
+  return c;
 }
 #endif  /* if G_RESIZE */
 
