@@ -130,7 +130,7 @@ G comprises a single file "g.exe" (88426 bytes long).  There  are  no
 configuration files or environment variables to be set up. To install
 G it is simply necessary to copy g.exe to somewhere on your path.  To
 find out what your path is, type: path <return>.  You will get a list
-of directories,  Since editors tend to be frequently used  its  worth
+of directories.  Since editors tend to be frequently used, it's worth
 putting g.exe in the first directory on the path. There is no harm in
 putting it in the DOS or the WINDOWS directory.  To get  G  to  start
 really quickly, you could copy g.exe to a ram disk.  To do this place
@@ -153,7 +153,7 @@ the path so that the ram disk is looked at first:
 
 The DOS version of G understands  UNIX  files  and  filenames  (paths
 separated by the forward '/' character).  To save conventional memory
-the real mode (16bit) DOS version only,  has some  features  removed.
+the  real  mode (16bit) DOS  version only has s ome features removed.
 Mostly in line mode, these are, the $ template, the IA, IB, IS, and W
 verbs,  and the line editor.  There is help only on the screen editor
 keystrokes.
@@ -180,19 +180,19 @@ set the "sticky" bit for fast startup.
 To install it just for your own use:
 
         cd
-        mkdir bin      /* if its not there */
+        mkdir bin      /* if it's not there */
         cp g bin/g
-        echo $PATH     /* add $HOME/bin if its not there */
+        echo $PATH     /* add $HOME/bin if it's not there */
 
-Log out and back in again to ensure its all set up.
+Log out and back in again to ensure it's all set up.
 
 The only other thing that must be correct is the environment variable
 $TERM.   If  you  have  been  using  vi  or other screen applications
 already, this will probably be set OK anyway and G will run fine.  Vi
 however  is monochrome only,  and while G runs happily in monochrome,
-its much nicer in colour.   Try  echo  $TERM  to  see  what  you  are
-currently  using.   If  its doc18,  or vt220,  vt100 or similar,  try
-changing to "doc18-c" or hpterm for HP/UX.  If its the console of  an
+it's much nicer in colour.   Try  echo  $TERM  to  see  what  you are
+currently  using.   If it's doc18,  or vt220,  vt100 or similar,  try
+changing to "doc18-c" or hpterm for HP/UX.  If it's the console of an
 intel machine it may be set to AT386-M,  try changing to "AT386",  or
 "console", or "ansi" for SCO. To try a new terminal type prefix the G
 command  with TERM=new-term,  E.g.  "TERM=doc18-c g fred" if it looks
@@ -312,9 +312,9 @@ traditional '\'.  For example:
 are both valid DOS commands.
 
 Finally, UNIX filenames starting with ! are taken as system commands,
-G reads from the standard output of the command if its an input file,
-and  writes  to  the  standard  input of the command if its an output
-file.
+G  reads  from the standard  output of  the command if it's  an input
+file, and  writes  to  the  standard input of the command if  it's an
+output file.
 
 Here are some example command lines:
 
@@ -337,7 +337,7 @@ lint  listing  by  calling  G  from within itself.  Using G as a file
 viewer means you need to remember one less set of commands and it has
 more powerful features for moving around and finding things.
 
-For now don't worry about the details of each command, its the use of
+For now don't worry about the details of each command, it's the use of
 the command line that's of interest here.
 
 Here is a complete command to edit  a  named  file  by  changing  all
@@ -420,7 +420,7 @@ When an initial command is given,  the usual automatic entry into the
 screen editor is suppressed and the editor starts in line mode.
 
 The ':' command is used to switch between screen mode and line  mode
-working, To execute some commands prior to a normal full screen edit,
+working. To execute some commands prior to a normal full screen edit,
 try:
 
         g  fred  -t500,:
@@ -439,9 +439,9 @@ command in your ".profile" in the home directory:
         export FCEDIT='g -,'
 
 You  may  now type just 'fc' to edit and re-execute previous commands
-using G's line editor. All the features of G are available, so if its
-a  big multi-line command,  use the ':' verb to flip into full screen
-mode to make the changes.
+using  G's  line editor.  All the features of G are available,  so if
+it's a  big multi-line command,  use  the ':' verb  to flip into full
+screen mode to make the changes.
 
 4.  The Screen Editor
 ~~~~~~~~~~~~~~~~~~~~~
@@ -509,7 +509,7 @@ area  may be left with the down arrow key which skips over the status
 line and leaves the cursor in the corresponding column of  the  first
 file line.  This is also true of the return key,  only if there is no
 text on the command line. When the cursor moves between the file area
-and the home area its last coordinates are remembered.
+and the home area, its last coordinates are remembered.
 
 Commands typed in on the home area may be edited just as if they were
 ordinary text lines.  Text from the file area may  be  moved  to  the
@@ -687,8 +687,8 @@ full description.  They may not be available on all systems.
 
     6.  F10
         save the file without leaving the editor.  Same as ^KS.  This
-        is a useful checkpoint save.  The user is prompted whever the
-        the file has been changed or not.
+        is a useful checkpoint save. The user is prompted whether the
+        file has been changed or not.
 
 
 4.2.3  Quick Key Commands
@@ -950,7 +950,7 @@ and '>' overlaid in magenta.
         default both left  and  right  margins  are  adjusted.   With
         adjustment  on,   gaps  between the words are padded out with
         spaces until the end of the last word reaches the right  hand
-        margin.   Priority  is given to ends of sentences and comma's
+        margin.   Priority  is given  to ends of sentences and commas
         when choosing gaps to add spaces to.
 
     3.  ^OS
@@ -1481,7 +1481,7 @@ when it is the first character on the line.
 
 While  "v#50"  may  be  used to check that the editor is currently at
 line 50,  "v50" or "v{50}" do not check that 50 records have passed -
-its  meaningless.  Instead the value is compared with zero.  If it is
+it's  meaningless.  Instead the value is compared with zero. If it is
 zero the error flag is set, anything other than zero is success.  The
 conditional  operators  in expressions return 1 for a true condition,
 and zero on a false condition. In fact the handling of conditions and
@@ -2900,7 +2900,7 @@ interpreted by the line editor in the following way:
 ESC
 
    if  the  escape character is typed before any of the above special
-   characters they temporarily loose their special  significance  and
+   characters  they temporarily lose their special  significance  and
    behave as any other character as described below.
 
 SPACE
@@ -3035,7 +3035,7 @@ printable values and offsets.
 The  insert  verb I has an option X which permits the string argument
 to be interpreted as hexadecimal.  All characters except the  newline
 (hexadecimal 0A) are inserted untouched.  Newlines inserted cause the
-record to be split at that point.  Ic{ expr } buts the binary  result
+record to be split at that point.  Ic{ expr } puts the binary  result
 of expr, truncated to 8 bits into the file.
 
 In the screen editor,  the "control P" command  may  used  to  insert
