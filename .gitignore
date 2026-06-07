@@ -1,7 +1,8 @@
-g
-*.o
-*.exe
-*.map
-*.err
-*.out
 compile_commands.json
+*.err
+*.exe
+g
+*.hup
+*.map
+*.o
+*.out
